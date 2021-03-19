@@ -92,11 +92,14 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">msm_we</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#jargon">Jargon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#todos">TODOs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#credits">Credits</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_todos.html">TODOs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
 </ul>
@@ -180,6 +183,43 @@
 <li><p>TODO</p></li>
 </ul>
 </div>
+<div class="section" id="jargon">
+<h2>Jargon<a class="headerlink" href="#jargon" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Word</p></th>
+<th class="head"><p>Definition</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Warp</p></td>
+<td><p>When a particle is recycled from a sink state to a source state</p></td>
+</tr>
+<tr class="row-odd"><td><p>Segment</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="todos">
+<h2>TODOs<a class="headerlink" href="#todos" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>When does <code class="code docutils literal notranslate"><span class="pre">segindList</span></code> not contain a consecutive list of integers from 1 to n_segs?</p></li>
+<li><p>What triggers the exception being handled in <code class="code docutils literal notranslate"><span class="pre">get_transition_data()</span></code>?</p></li>
+<li><dl class="simple">
+<dt>What are “warps”? <code class="code docutils literal notranslate"><span class="pre">get_transition_data()</span></code></dt><dd><ul>
+<li><p>Warps are recycling events</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>What exactly is being stored in <code class="code docutils literal notranslate"><span class="pre">seg_histories</span></code>?</p></li>
+</ul>
+</div>
 <div class="section" id="credits">
 <h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
 <p>This package was created with <a class="reference external" href="https://github.com/audreyr/cookiecutter">Cookiecutter</a> and the <a class="reference external" href="https://github.com/audreyr/cookiecutter-pypackage">audreyr/cookiecutter-pypackage</a> project template.</p>
@@ -200,7 +240,7 @@
 
   <div role="contentinfo">
     <p>
-        &#169; Copyright 2021, John Russoz.
+        &#169; Copyright 2021, John Russo.
 
     </p>
   </div>
