@@ -38,7 +38,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Usage" href="usage.html" />
+    <link rel="next" title="msm_we.msm_we.modelWE" href="build/stubs/msm_we.msm_we.modelWE.html" />
     <link rel="prev" title="msm_we" href="readme.html" /> 
 </head>
 
@@ -91,7 +91,10 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="readme.html">msm_we</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="build/stubs/msm_we.msm_we.modelWE.html">msm_we.msm_we.modelWE</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_todos.html">TODOs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
@@ -171,8 +174,461 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="build/stubs/msm_we.msm_we.modelWE.html#msm_we.msm_we.modelWE" title="msm_we.msm_we.modelWE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msm_we.msm_we.modelWE</span></code></a></p></td>
+<td><p>Implementation of haMSM model building, particularly for steady-state estimation (but there are lots of extras), from WE sampling with basis (source) and target (sink) states with recycling.</p></td>
+</tr>
 </tbody>
 </table>
+<span class="target" id="module-msm_we.msm_we"></span><p>Main module.</p>
+<dl class="py class">
+<dt id="msm_we.msm_we.modelWE">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">msm_we.msm_we.</span></code><code class="sig-name descname"><span class="pre">modelWE</span></code><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of haMSM model building, particularly for steady-state estimation (but there are lots of extras),
+from WE sampling with basis (source) and target (sink) states with recycling.</p>
+<p>Set up for typical west.h5 file structure, with coordinates to be stored in west.h5 /iterations/auxdata/coord and
+basis and target definitions from progress coordinates.</p>
+<p>Check out run_msmWE.slurm and run_msmWE_flux.py in scripts folder for an implementation example.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>This code currently, in general, appears to assume a 1-D progress coordinate.</p>
+</div>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<dl class="simple">
+<dt>Stateless refactor</dt><dd><p>In general, this class’s methods generally handle data by holding state in the object. I think in general this
+would benefit from a refactor to be more stateless, rather than shifting things in and out of the object’s fields.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<p>Copperman and Zuckerman,
+<em>Accelerated estimation of long-timescale kinetics by combining weighted ensemble simulation with Markov model
+microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.modelName">
+<code class="sig-name descname"><span class="pre">modelName</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.modelName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name used for storing files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.fileList">
+<code class="sig-name descname"><span class="pre">fileList</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.fileList" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of all filenames with data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.nF">
+<code class="sig-name descname"><span class="pre">nF</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.nF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of files in <code class="code docutils literal notranslate"><span class="pre">fileList</span></code></p>
+<p><strong>TODO</strong>: Deprecate this, this could just be a property</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.pcoord_ndim">
+<code class="sig-name descname"><span class="pre">pcoord_ndim</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.pcoord_ndim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of dimensions in the progress coordinate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.pcoord_len">
+<code class="sig-name descname"><span class="pre">pcoord_len</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.pcoord_len" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of stored progress coordinates for each iteration, per-segment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.tau">
+<code class="sig-name descname"><span class="pre">tau</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.tau" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resampling time for weighted ensemble. (Maybe should be int? Units?)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.WEtargetp1">
+<code class="sig-name descname"><span class="pre">WEtargetp1</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.WEtargetp1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Progress coordinate value at target state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.WEbasisp1_min">
+<code class="sig-name descname"><span class="pre">WEbasisp1_min</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.WEbasisp1_min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum progress coordinate value within basis state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.WEbasisp1_max">
+<code class="sig-name descname"><span class="pre">WEbasisp1_max</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.WEbasisp1_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum progress coordinate value within basis state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.dimReduceMethod">
+<code class="sig-name descname"><span class="pre">dimReduceMethod</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.dimReduceMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dimensionality reduction method. Must be one of “pca”, “vamp”, or “none” (<strong>NOT</strong> NoneType)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.min_walkers">
+<code class="sig-name descname"><span class="pre">min_walkers</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.min_walkers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test description for minwalkers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.segindList">
+<code class="sig-name descname"><span class="pre">segindList</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.segindList" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of segment indices(?)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.n_hist">
+<code class="sig-name descname"><span class="pre">n_hist</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.n_hist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of steps of history information to use when building transitions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.initialize">
+<code class="sig-name descname"><span class="pre">initialize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileSpecifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refPDBfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initPDBfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modelName</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the model-builder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fileSpecifier</strong> (<em>string</em>) – <p>Glob that will produce a list of the output WESTPA files to analyze.</p>
+<p>This is passed to</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls fileSpecifier
+</pre></div>
+</div>
+<p>and <em>all</em> the files returned by this are used in the analysis.</p>
+</p></li>
+<li><p><strong>refPDBfile</strong> (<em>string</em>) – Path to PDB file that defines topology</p></li>
+<li><p><strong>initPDBfile</strong> (<em>string</em>) – Path to PDB file that defines the basis state
+<strong>TODO</strong> can this be states plural? Does it need to be extended to that?</p></li>
+<li><p><strong>modelName</strong> (<em>string</em>) – Name to use in output filenames.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>Some of this logic should be broken into a constructor, and default arguments handled in the constructor’s
+function signature.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.is_WE_basis">
+<code class="sig-name descname"><span class="pre">is_WE_basis</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcoords</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.is_WE_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.is_WE_basis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the input progress coordinates are in the basis state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pcoords</strong> (<em>numpy.ndarray</em><em>(</em><em>num_segments</em><em>, </em><em>num_pcoords</em><em>)</em>) – Array of progress coordinates for each segment.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>True or False</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>This only checks the 0th progress coordinate</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.is_WE_target">
+<code class="sig-name descname"><span class="pre">is_WE_target</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcoords</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.is_WE_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.is_WE_target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the input progress coordinates are in the target state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pcoords</strong> (<em>numpy.ndarray</em><em>(</em><em>num_segments</em><em>, </em><em>num_pcoords</em><em>)</em>) – Array of progress coordinates for each segment.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>True or False</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">Todo</p>
+<p>This only checks the 0th progress coordinate</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_iter_data">
+<code class="sig-name descname"><span class="pre">get_iter_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_iter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_iter_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_iter_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the data corresponding to an iteration and update the object’s fields with it.</p>
+<dl class="simple">
+<dt>Object fields updated with the information from the selected iteration:</dt><dd><ul class="simple">
+<li><p>self.westList</p></li>
+<li><p>self.segindList</p></li>
+<li><p>self.weightList</p></li>
+<li><p>self.nSeg</p></li>
+<li><p>self.pcoord0List</p></li>
+<li><p>self.pcoord1List</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_iter</strong> (<em>int</em>) – Iteration to get data for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id5">
+<p class="admonition-title">Todo</p>
+<p>May want to rework the logic here, depending on how this is used.
+Seems like some of this iteration can be removed/optimized.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_iterations">
+<code class="sig-name descname"><span class="pre">get_iterations</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_iterations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_iterations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates internal state with the maximum number of iterations, and the number of segments in each section.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This updates <code class="code docutils literal notranslate"><span class="pre">numSegments</span></code> – <code class="code docutils literal notranslate"><span class="pre">numSegments</span></code> is actually a <em>list</em> of the number of segments in each iteration.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_iterations_iters">
+<code class="sig-name descname"><span class="pre">get_iterations_iters</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">first_iter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_iter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_iterations_iters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_iterations_iters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates internal state with the maximum number of iterations, and the number of segments in each section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>first_iter</strong> (<em>int</em>) – </p></li>
+<li><p><strong>last_iter</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is potentially deprecated or unnecessary. Currently unused.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.set_topology">
+<code class="sig-name descname"><span class="pre">set_topology</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PDBfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.set_topology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.set_topology" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates internal state with a new topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>PDBfile</strong> (<em>str</em>) – Path to a file containing the PDB with the topology.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.set_basis">
+<code class="sig-name descname"><span class="pre">set_basis</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PDBfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.set_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.set_basis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates internal state with a new basis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>PDBfile</strong> (<em>str</em>) – Path to a file containing the PDB with the new basis state.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_transition_data">
+<code class="sig-name descname"><span class="pre">get_transition_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_lag</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_transition_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_transition_data" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This function analyzes pairs of coordinates at the current iteration, set by <code class="code docutils literal notranslate"><span class="pre">self.n_iter</span></code>, and at some</dt><dd><p>lag in the past, <code class="code docutils literal notranslate"><span class="pre">self.n_iter</span> <span class="pre">-</span> <span class="pre">n_lag</span></code>.</p>
+</dd>
+</dl>
+<p>Segments where a walker was warped (recycled) use the basis coords as the lagged coords.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_lag</strong> (<em>int</em>) – Lag to use for transitions.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_transition_data_lag0">
+<code class="sig-name descname"><span class="pre">get_transition_data_lag0</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_transition_data_lag0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_transition_data_lag0" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>TODO: What does this do exactly?</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id6">
+<p class="admonition-title">Todo</p>
+<p>How is this different from <code class="code docutils literal notranslate"><span class="pre">get_transition_data()</span></code>?</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_warps_from_parent">
+<code class="sig-name descname"><span class="pre">get_warps_from_parent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">first_iter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_iter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_warps_from_parent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_warps_from_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all warps and weights over a range of iterations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>first_iter</strong> (<em>int</em>) – First iteration in range.</p></li>
+<li><p><strong>last_iter</strong> (<em>int</em>) – Last iteration in range.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>warpedWeights</strong> – List of weights for each warp.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_seg_histories">
+<code class="sig-name descname"><span class="pre">get_seg_histories</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_hist</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_seg_histories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_seg_histories" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>TODO: What does this do exactly?</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_hist</strong> (<em>int</em>) – Number of steps of history information to include.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.collect_iter_coordinates">
+<code class="sig-name descname"><span class="pre">collect_iter_coordinates</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.collect_iter_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.collect_iter_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Goes through the generated trajectory segments, and adds data from the segments to an H5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id7">
+<p class="admonition-title">Todo</p>
+<p>Generalize to different filetypes. This appears to be AMBER specific and relies on loading rst7 files</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -181,7 +637,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="usage.html" class="btn btn-neutral float-right" title="Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="build/stubs/msm_we.msm_we.modelWE.html" class="btn btn-neutral float-right" title="msm_we.msm_we.modelWE" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="readme.html" class="btn btn-neutral float-left" title="msm_we" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
