@@ -1,0 +1,443 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>msm_we.msm_we.modelWE &mdash; msm_we 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Usage" href="../usage.html" />
+    <link rel="prev" title="API Reference" href="../api.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> msm_we
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">msm_we</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">msm_we.msm_we.modelWE</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code_todos.html">TODOs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">msm_we</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../api.html">API Reference</a> &raquo;</li>
+        
+      <li>msm_we.msm_we.modelWE</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/stubs/msm_we.msm_we.modelWE.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="msm-we-msm-we-modelwe">
+<h1>msm_we.msm_we.modelWE<a class="headerlink" href="#msm-we-msm-we-modelwe" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="msm_we.msm_we.modelWE">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">msm_we.msm_we.</span></code><code class="sig-name descname"><span class="pre">modelWE</span></code><a class="reference internal" href="../_modules/msm_we/msm_we.html#modelWE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of haMSM model building, particularly for steady-state estimation (but there are lots of extras),
+from WE sampling with basis (source) and target (sink) states with recycling.</p>
+<p>Set up for typical west.h5 file structure, with coordinates to be stored in west.h5 /iterations/auxdata/coord and
+basis and target definitions from progress coordinates.</p>
+<p>Check out run_msmWE.slurm and run_msmWE_flux.py in scripts folder for an implementation example.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>This code currently, in general, appears to assume a 1-D progress coordinate.</p>
+</div>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<dl class="simple">
+<dt>Stateless refactor</dt><dd><p>In general, this class’s methods generally handle data by holding state in the object. I think in general this
+would benefit from a refactor to be more stateless, rather than shifting things in and out of the object’s fields.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<p>Copperman and Zuckerman,
+<em>Accelerated estimation of long-timescale kinetics by combining weighted ensemble simulation with Markov model
+microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/msm_we/msm_we.html#modelWE.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Work-in-progress init function. For now, just start adding attribute definitions in here.</p>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Most logic from initialize() should be moved in here.</p></li>
+<li><p>Also, comment all of these here. Right now most of them have comments throughout the code.</p></li>
+<li><p>Reorganize these attributes into some meaningful structure</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#msm_we.msm_we.modelWE.__init__" title="msm_we.msm_we.modelWE.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p>Work-in-progress init function.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cluster_coordinates</span></code>(n_clusters)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.collect_iter_coordinates" title="msm_we.msm_we.modelWE.collect_iter_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collect_iter_coordinates</span></code></a>()</p></td>
+<td><p>Goes through the generated trajectory segments, and adds data from the segments to an H5 file.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimReduce</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolve_probability</span></code>(nEvolve, nStore)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolve_probability2</span></code>(nEvolve, nStore)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolve_probability_from_initial</span></code>(p0, nEvolve, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolve_target_flux</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Tmatrix</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_backwards_committor</span></code>(conv)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bin_kh_var</span></code>(x)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bin_total_var</span></code>(x)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_committor</span></code>(conv)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_coordSet</span></code>(last_iter, n_coords)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_coordinates</span></code>(first_iter, last_iter)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_direct_target_flux</span></code>(first_iter, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_eqTmatrix</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_flux</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fluxMatrix</span></code>(n_lag, first_iter, last_iter)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_flux_committor</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_hflux</span></code>(conv)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_initial_khbins</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_initial_khbins_equalAlloc</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_aristoffian</span></code>(iter)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_coordinates</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_coordinates0</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_iter_data" title="msm_we.msm_we.modelWE.get_iter_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_data</span></code></a>(n_iter)</p></td>
+<td><p>Find the data corresponding to an iteration and update the object’s fields with it.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_fluxMatrix</span></code>(n_iter)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_pcoord1D_fluxMatrix_lag0</span></code>(n_iter, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_iterations" title="msm_we.msm_we.modelWE.get_iterations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iterations</span></code></a>()</p></td>
+<td><p>Updates internal state with the maximum number of iterations, and the number of segments in each section.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_iterations_iters" title="msm_we.msm_we.modelWE.get_iterations_iters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iterations_iters</span></code></a>(first_iter, last_iter)</p></td>
+<td><p>Updates internal state with the maximum number of iterations, and the number of segments in each section.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_aristoffian</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_clusters</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_steady_state_aristoffian</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pcoord1D_fluxMatrix</span></code>(n_lag, first_iter, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_seg_histories" title="msm_we.msm_we.modelWE.get_seg_histories"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_seg_histories</span></code></a>(n_hist)</p></td>
+<td><p><strong>TODO: What does this do exactly?</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_steady_state_algebraic</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_steady_state_matrixpowers</span></code>(conv)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_steady_state_target_flux</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_traj_coordinates</span></code>(from_iter, traj_length)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_transition_data" title="msm_we.msm_we.modelWE.get_transition_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_transition_data</span></code></a>(n_lag)</p></td>
+<td><p>This function analyzes pairs of coordinates at the current iteration, set by <code class="code docutils literal notranslate"><span class="pre">self.n_iter</span></code>, and at some</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_transition_data_lag0" title="msm_we.msm_we.modelWE.get_transition_data_lag0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_transition_data_lag0</span></code></a>()</p></td>
+<td><p><strong>TODO: What does this do exactly?</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_warps_from_parent" title="msm_we.msm_we.modelWE.get_warps_from_parent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warps_from_parent</span></code></a>(first_iter, last_iter)</p></td>
+<td><p>Get all warps and weights over a range of iterations.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_warps_from_pcoord</span></code>(first_iter, last_iter)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.initialize" title="msm_we.msm_we.modelWE.initialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code></a>(fileSpecifier, refPDBfile, …)</p></td>
+<td><p>Initialize the model-builder.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.is_WE_basis" title="msm_we.msm_we.modelWE.is_WE_basis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_WE_basis</span></code></a>(pcoords)</p></td>
+<td><p>Checks if the input progress coordinates are in the basis state.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.is_WE_target" title="msm_we.msm_we.modelWE.is_WE_target"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_WE_target</span></code></a>(pcoords)</p></td>
+<td><p>Checks if the input progress coordinates are in the target state.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_clusters</span></code>(clusterFile)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">organize_fluxMatrix</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_committor</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_flux</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_flux_committor</span></code>(nwin)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">processCoordinates</span></code>(coords)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reduceCoordinates</span></code>(coords)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.set_basis" title="msm_we.msm_we.modelWE.set_basis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_basis</span></code></a>(PDBfile)</p></td>
+<td><p>Updates internal state with a new basis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.set_topology" title="msm_we.msm_we.modelWE.set_topology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_topology</span></code></a>(PDBfile)</p></td>
+<td><p>Updates internal state with a new topology.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_iter_kh_pcoord</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../usage.html" class="btn btn-neutral float-right" title="Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../api.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, John Russo.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
