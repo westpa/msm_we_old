@@ -172,7 +172,7 @@
 <h1>msm_we.msm_we.modelWE<a class="headerlink" href="#msm-we-msm-we-modelwe" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="msm_we.msm_we.modelWE">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">msm_we.msm_we.</span></code><code class="sig-name descname"><span class="pre">modelWE</span></code><a class="reference internal" href="../_modules/msm_we/msm_we.html#modelWE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">msm_we.msm_we.</code><code class="sig-name descname">modelWE</code><a class="reference internal" href="../_modules/msm_we/msm_we.html#modelWE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msm_we.msm_we.modelWE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implementation of haMSM model building, particularly for steady-state estimation (but there are lots of extras),
 from WE sampling with basis (source) and target (sink) states with recycling.</p>
 <p>Set up for typical west.h5 file structure, with coordinates to be stored in west.h5 /iterations/auxdata/coord and
@@ -196,7 +196,7 @@ would benefit from a refactor to be more stateless, rather than shifting things 
 microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <dl class="py method">
 <dt id="msm_we.msm_we.modelWE.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/msm_we/msm_we.html#modelWE.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/msm_we/msm_we.html#modelWE.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Work-in-progress init function. For now, just start adding attribute definitions in here.</p>
 <div class="admonition-todo admonition" id="id2">
 <p class="admonition-title">Todo</p>
@@ -218,14 +218,14 @@ microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#msm_we.msm_we.modelWE.__init__" title="msm_we.msm_we.modelWE.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
 <td><p>Work-in-progress init function.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cluster_coordinates</span></code>(n_clusters)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.cluster_coordinates" title="msm_we.msm_we.modelWE.cluster_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cluster_coordinates</span></code></a>(n_clusters)</p></td>
+<td><p>Use k-means to cluster coordinates into <cite>n_clusters</cite> cluster centers, and saves the resulting cluster object to a file.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.collect_iter_coordinates" title="msm_we.msm_we.modelWE.collect_iter_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collect_iter_coordinates</span></code></a>()</p></td>
 <td><p>Goes through the generated trajectory segments, and adds data from the segments to an H5 file.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimReduce</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.dimReduce" title="msm_we.msm_we.modelWE.dimReduce"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimReduce</span></code></a>()</p></td>
+<td><p>Dimensionality reduction using the scheme specified in initialization.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolve_probability</span></code>(nEvolve, nStore)</p></td>
 <td><p></p></td>
@@ -269,8 +269,8 @@ microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_flux</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fluxMatrix</span></code>(n_lag, first_iter, last_iter)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_fluxMatrix" title="msm_we.msm_we.modelWE.get_fluxMatrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fluxMatrix</span></code></a>(n_lag, first_iter, last_iter)</p></td>
+<td><p>Compute the matrix of fluxes at a given lag time, for a range of iterations.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_flux_committor</span></code>()</p></td>
 <td><p></p></td>
@@ -287,14 +287,14 @@ microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_aristoffian</span></code>(iter)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_coordinates</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_iter_coordinates" title="msm_we.msm_we.modelWE.get_iter_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_coordinates</span></code></a>()</p></td>
+<td><p>Updates state with the coordinates from the last iteration (or whichever iteration is in <cite>self.n_iter</cite>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_coordinates0</span></code>()</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_iter_data" title="msm_we.msm_we.modelWE.get_iter_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_data</span></code></a>(n_iter)</p></td>
-<td><p>Find the data corresponding to an iteration and update the object’s fields with it.</p></td>
+<td><p>Update state with the data (including pcoord but not including coords) corresponding to an iteration.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_fluxMatrix</span></code>(n_iter)</p></td>
 <td><p></p></td>
@@ -356,11 +356,11 @@ microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.is_WE_target" title="msm_we.msm_we.modelWE.is_WE_target"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_WE_target</span></code></a>(pcoords)</p></td>
 <td><p>Checks if the input progress coordinates are in the target state.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_clusters</span></code>(clusterFile)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.load_clusters" title="msm_we.msm_we.modelWE.load_clusters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_clusters</span></code></a>(clusterFile)</p></td>
+<td><p>Load clusters from a file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">organize_fluxMatrix</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.organize_fluxMatrix" title="msm_we.msm_we.modelWE.organize_fluxMatrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">organize_fluxMatrix</span></code></a>()</p></td>
+<td><p>Do some cleaning on the flux matrix, and update state with the cleaned flux matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_committor</span></code>()</p></td>
 <td><p></p></td>
