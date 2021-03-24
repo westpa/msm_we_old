@@ -218,14 +218,14 @@ microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#msm_we.msm_we.modelWE.__init__" title="msm_we.msm_we.modelWE.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
 <td><p>Work-in-progress init function.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cluster_coordinates</span></code>(n_clusters)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.cluster_coordinates" title="msm_we.msm_we.modelWE.cluster_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cluster_coordinates</span></code></a>(n_clusters)</p></td>
+<td><p>Use k-means to cluster coordinates into <cite>n_clusters</cite> cluster centers, and saves the resulting cluster object to a file.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.collect_iter_coordinates" title="msm_we.msm_we.modelWE.collect_iter_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collect_iter_coordinates</span></code></a>()</p></td>
 <td><p>Goes through the generated trajectory segments, and adds data from the segments to an H5 file.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimReduce</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.dimReduce" title="msm_we.msm_we.modelWE.dimReduce"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimReduce</span></code></a>()</p></td>
+<td><p>Dimensionality reduction using the scheme specified in initialization.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolve_probability</span></code>(nEvolve, nStore)</p></td>
 <td><p></p></td>
@@ -239,8 +239,8 @@ microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolve_target_flux</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Tmatrix</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_Tmatrix" title="msm_we.msm_we.modelWE.get_Tmatrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Tmatrix</span></code></a>()</p></td>
+<td><p>Compute the transition matrix from the flux matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_backwards_committor</span></code>(conv)</p></td>
 <td><p></p></td>
@@ -269,8 +269,8 @@ microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_flux</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fluxMatrix</span></code>(n_lag, first_iter, last_iter)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_fluxMatrix" title="msm_we.msm_we.modelWE.get_fluxMatrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fluxMatrix</span></code></a>(n_lag, first_iter, last_iter)</p></td>
+<td><p>Compute the matrix of fluxes at a given lag time, for a range of iterations.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_flux_committor</span></code>()</p></td>
 <td><p></p></td>
@@ -287,14 +287,14 @@ microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_aristoffian</span></code>(iter)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_coordinates</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_iter_coordinates" title="msm_we.msm_we.modelWE.get_iter_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_coordinates</span></code></a>()</p></td>
+<td><p>Updates state with the coordinates from the last iteration (or whichever iteration is in <cite>self.n_iter</cite>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_coordinates0</span></code>()</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_iter_data" title="msm_we.msm_we.modelWE.get_iter_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_data</span></code></a>(n_iter)</p></td>
-<td><p>Find the data corresponding to an iteration and update the object’s fields with it.</p></td>
+<td><p>Update state with the data (including pcoord but not including coords) corresponding to an iteration.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_iter_fluxMatrix</span></code>(n_iter)</p></td>
 <td><p></p></td>
@@ -323,14 +323,14 @@ microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_seg_histories" title="msm_we.msm_we.modelWE.get_seg_histories"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_seg_histories</span></code></a>(n_hist)</p></td>
 <td><p><strong>TODO: What does this do exactly?</strong></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_steady_state_algebraic</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_steady_state_algebraic" title="msm_we.msm_we.modelWE.get_steady_state_algebraic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_steady_state_algebraic</span></code></a>()</p></td>
+<td><p>Compute the steady-state distribution as the eigenvectors of the transition matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_steady_state_matrixpowers</span></code>(conv)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_steady_state_target_flux</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.get_steady_state_target_flux" title="msm_we.msm_we.modelWE.get_steady_state_target_flux"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_steady_state_target_flux</span></code></a>()</p></td>
+<td><p>Get the total flux into the target state(s).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_traj_coordinates</span></code>(from_iter, traj_length)</p></td>
 <td><p></p></td>
@@ -356,11 +356,11 @@ microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.is_WE_target" title="msm_we.msm_we.modelWE.is_WE_target"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_WE_target</span></code></a>(pcoords)</p></td>
 <td><p>Checks if the input progress coordinates are in the target state.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_clusters</span></code>(clusterFile)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.load_clusters" title="msm_we.msm_we.modelWE.load_clusters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_clusters</span></code></a>(clusterFile)</p></td>
+<td><p>Load clusters from a file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">organize_fluxMatrix</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.organize_fluxMatrix" title="msm_we.msm_we.modelWE.organize_fluxMatrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">organize_fluxMatrix</span></code></a>()</p></td>
+<td><p>Do some cleaning on the flux matrix, and update state with the cleaned flux matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_committor</span></code>()</p></td>
 <td><p></p></td>

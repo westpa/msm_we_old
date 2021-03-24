@@ -299,8 +299,33 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">transitionWeights</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">departureWeights</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">n_hist</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;int: Number of steps of history information to use when building transitions.&quot;&quot;&quot;</span></div>
+        <span class="sd">&quot;&quot;&quot;int: Number of steps of history information to use when building transitions.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusterFile</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">errorWeight</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fluxMatrixRaw</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">targetRMSD_centers</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="sd">&quot;&quot;&quot;array-like: List of RMSDs corresponding to each cluster.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fluxMatrix</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indBasis</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pSS</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lagtime</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">JtargetSS</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
 
 <div class="viewcode-block" id="modelWE.initialize"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">fileSpecifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">refPDBfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">initPDBfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">modelName</span><span class="p">:</span> <span class="nb">str</span>
@@ -425,15 +450,15 @@
 
 <div class="viewcode-block" id="modelWE.get_iter_data"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_iter_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_iter_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Find the data corresponding to an iteration and update the object&#39;s fields with it.</span>
+<span class="sd">        Update state with the data (including pcoord but not including coords) corresponding to an iteration.</span>
 
 <span class="sd">        Object fields updated with the information from the selected iteration:</span>
-<span class="sd">            - self.westList</span>
-<span class="sd">            - self.segindList</span>
-<span class="sd">            - self.weightList</span>
-<span class="sd">            - self.nSeg</span>
-<span class="sd">            - self.pcoord0List</span>
-<span class="sd">            - self.pcoord1List</span>
+<span class="sd">            - `self.westList`</span>
+<span class="sd">            - `self.segindList`</span>
+<span class="sd">            - `self.weightList`</span>
+<span class="sd">            - `self.nSeg`</span>
+<span class="sd">            - `self.pcoord0List`</span>
+<span class="sd">            - `self.pcoord1List`</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1174,7 +1199,24 @@
                     <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_iter_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># get iteration final coordinates</span>
+<div class="viewcode-block" id="modelWE.get_iter_coordinates"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_iter_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_iter_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates state with the coordinates from the last iteration (or whichever iteration is in `self.n_iter`)</span>
+
+<span class="sd">        Updates:</span>
+<span class="sd">            - `self.coordlist`</span>
+<span class="sd">            - `self.coordsExist`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Todo</span>
+<span class="sd">        ----</span>
+<span class="sd">        Take n_iter as a parameter instead of getting the attribute value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get iteration final coordinates</span>
         <span class="n">coordList</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">iS</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
@@ -1185,6 +1227,7 @@
                     <span class="n">dset</span> <span class="o">=</span> <span class="n">dataIn</span><span class="p">[</span><span class="n">dsetName</span><span class="p">]</span>
                     <span class="n">coord</span> <span class="o">=</span> <span class="n">dset</span><span class="p">[:]</span>
                 <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">westList</span><span class="p">[</span><span class="n">iS</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">westList</span><span class="p">[</span><span class="n">iS</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+                    <span class="c1">#TODO: Move this close() outside of the if/elif</span>
                     <span class="n">dataIn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                     <span class="n">westFile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileList</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">westList</span><span class="p">[</span><span class="n">iS</span><span class="p">]]</span>
                     <span class="n">dataIn</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">westFile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
@@ -1204,7 +1247,7 @@
                 <span class="p">)</span>
                 <span class="n">coordList</span><span class="p">[</span><span class="n">iS</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">coordsExist</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coordList</span> <span class="o">=</span> <span class="n">coordList</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coordList</span> <span class="o">=</span> <span class="n">coordList</span></div>
 
     <span class="k">def</span> <span class="nf">get_iter_coordinates0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># get iteration initial coordinates</span>
         <span class="n">coordList</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
@@ -1308,8 +1351,25 @@
         <span class="k">for</span> <span class="n">iS</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trajSet</span><span class="p">[</span><span class="n">iS</span><span class="p">]</span> <span class="o">=</span> <span class="n">traj_iters</span><span class="p">[</span><span class="n">iS</span><span class="p">,</span> <span class="n">last_index</span><span class="p">[</span><span class="n">iS</span><span class="p">]</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
 
-    <span class="k">def</span> <span class="nf">dimReduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># here we can put method to reduce dimensionalitya</span>
+<div class="viewcode-block" id="modelWE.dimReduce"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.dimReduce">[docs]</a>    <span class="k">def</span> <span class="nf">dimReduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dimensionality reduction using the scheme specified in initialization.</span>
+
+<span class="sd">        Updates:</span>
+<span class="sd">            - `self.coordinates`</span>
+<span class="sd">            - `self.ndim`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Todo</span>
+<span class="sd">        ----</span>
+<span class="sd">        Allow passing custom parameters to the dimensionality reduction schemes.</span>
+
+<span class="sd">        Add `else` clause that raises a `NotImplemented` exception</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">nC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordSet</span><span class="p">)</span>
         <span class="n">nC</span> <span class="o">=</span> <span class="n">nC</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;pca&quot;</span><span class="p">:</span>
@@ -1336,7 +1396,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordSet</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nC</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Coordinates</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span></div>
             <span class="c1"># self.coordinates.transform=self.processCoordinates</span>
 
     <span class="k">class</span> <span class="nc">Coordinates</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -1376,7 +1436,29 @@
             <span class="n">coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">coords</span>
 
-    <span class="k">def</span> <span class="nf">cluster_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">):</span>
+<div class="viewcode-block" id="modelWE.cluster_coordinates"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.cluster_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">cluster_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use k-means to cluster coordinates into `n_clusters` cluster centers, and saves the resulting cluster object</span>
+<span class="sd">        to a file.</span>
+
+<span class="sd">        Saved cluster file is named</span>
+<span class="sd">        &quot;&lt;`self.model_name`&gt;_clusters_s&lt;`self.first_iter`&gt;_e&lt;`self.last_iter`&gt;_nC&lt;`self.n_clusters`&gt;.h5&quot;</span>
+
+<span class="sd">        Updates:</span>
+<span class="sd">            - `self.n_clusters`</span>
+<span class="sd">            - `self.clusters`</span>
+<span class="sd">            - `self.clusterFile`</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_clusters: int</span>
+<span class="sd">            Number of cluster centers to use.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="n">n_clusters</span>
         <span class="n">nC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordSet</span><span class="p">)</span>
         <span class="n">nC</span> <span class="o">=</span> <span class="n">nC</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1407,11 +1489,27 @@
             <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">)</span>
             <span class="o">+</span> <span class="s2">&quot;.h5&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusterFile</span><span class="p">,</span> <span class="n">save_streaming_chain</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusterFile</span><span class="p">,</span> <span class="n">save_streaming_chain</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">load_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clusterFile</span><span class="p">):</span>
+<div class="viewcode-block" id="modelWE.load_clusters"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.load_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">load_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clusterFile</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load clusters from a file.</span>
+
+<span class="sd">        Updates:</span>
+<span class="sd">            - `self.clusters`</span>
+<span class="sd">            - `self.n_clusters`</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        clusterFile: str</span>
+<span class="sd">            Filename to load clusters from.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">pyemma</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">clusterFile</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">clustercenters</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">clustercenters</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">get_iter_fluxMatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">):</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;iteration &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_iter</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;: data </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1528,12 +1626,43 @@
             <span class="n">fluxMatrix</span><span class="p">[</span><span class="n">dT0</span><span class="p">,</span> <span class="n">dT1</span><span class="p">]</span> <span class="o">=</span> <span class="n">fluxMatrix</span><span class="p">[</span><span class="n">dT0</span><span class="p">,</span> <span class="n">dT1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">weightList</span><span class="p">[</span><span class="n">iP</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">fluxMatrix</span>
 
-    <span class="k">def</span> <span class="nf">get_fluxMatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_lag</span><span class="p">,</span> <span class="n">first_iter</span><span class="p">,</span> <span class="n">last_iter</span><span class="p">):</span>
+<div class="viewcode-block" id="modelWE.get_fluxMatrix"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_fluxMatrix">[docs]</a>    <span class="k">def</span> <span class="nf">get_fluxMatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_lag</span><span class="p">,</span> <span class="n">first_iter</span><span class="p">,</span> <span class="n">last_iter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the matrix of fluxes at a given lag time, for a range of iterations.</span>
+
+<span class="sd">        Checks if a file has been written named</span>
+<span class="sd">        &quot;&lt;`self.modelName`&gt;_s&lt;`first_iter`&gt;_e&lt;`last_iter`&gt;_lag&lt;`n_lag`&gt;_clust&lt;`self.n_clusters`&gt;.h5&quot;.</span>
+<span class="sd">        If this file exists, r</span>
+
+<span class="sd">        Updates:</span>
+<span class="sd">            - `self.n_lag`</span>
+<span class="sd">            - `self.errorWeight`</span>
+<span class="sd">            - `self.errorCount`</span>
+<span class="sd">            - `self.fluxMatrixRaw`</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_lag: int</span>
+<span class="sd">            Lag to use.</span>
+<span class="sd">        first_iter: int</span>
+<span class="sd">            First iteration to use.</span>
+<span class="sd">        last_iter: int</span>
+<span class="sd">            Last iteration to use.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">n_lag</span> <span class="o">=</span> <span class="n">n_lag</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">errorWeight</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># +2 because the basis and target states are the last two indices</span>
         <span class="n">fluxMatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span>
         <span class="n">nI</span> <span class="o">=</span> <span class="mi">0</span>
+
         <span class="n">fileName</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">modelName</span>
             <span class="o">+</span> <span class="s2">&quot;_s&quot;</span>
@@ -1546,29 +1675,50 @@
             <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fileName</span> <span class="o">+</span> <span class="s2">&quot;.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
         <span class="n">dsetName</span> <span class="o">=</span> <span class="s2">&quot;fluxMatrix&quot;</span>
+
+        <span class="c1"># FIXME: name this something descriptive or just use the &#39;in&#39; statement in the if/elif</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">dsetName</span> <span class="ow">in</span> <span class="n">f</span>
+        <span class="c1"># If this data file does not contain a fluxMatrix entry, create it</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Create the fluxMatrix dataset</span>
             <span class="n">dsetP</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">dsetName</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">fluxMatrix</span><span class="p">))</span>
             <span class="n">dsetP</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">fluxMatrix</span>
+            <span class="c1"># FIXME: Maybe just close this file after, I don&#39;t think it needs to be opened and closed this much</span>
             <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="c1"># Add up the flux matrices for each iteration to get the flux matrix.</span>
+            <span class="c1"># Then, save that matrix to the data file, along with the number of iterations used</span>
+            <span class="c1"># FIXME: Duplicated code</span>
             <span class="k">for</span> <span class="n">iS</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">first_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="n">fluxMatrixI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_fluxMatrix</span><span class="p">(</span><span class="n">iS</span><span class="p">)</span>
                 <span class="n">fluxMatrix</span> <span class="o">=</span> <span class="n">fluxMatrix</span> <span class="o">+</span> <span class="n">fluxMatrixI</span>
                 <span class="n">nI</span> <span class="o">=</span> <span class="n">nI</span> <span class="o">+</span> <span class="mi">1</span>
+
                 <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fileName</span> <span class="o">+</span> <span class="s2">&quot;.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
                 <span class="n">dsetP</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">dsetName</span><span class="p">]</span>
                 <span class="n">dsetP</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">fluxMatrix</span> <span class="o">/</span> <span class="n">nI</span>
                 <span class="n">dsetP</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;iter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iS</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;getting fluxMatrix iter: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">iS</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Normalize the flux matrix by the number of iterations that it was calculated with</span>
             <span class="n">fluxMatrix</span> <span class="o">=</span> <span class="n">fluxMatrix</span> <span class="o">/</span> <span class="n">nI</span>
+
+        <span class="c1"># If this datafile DOES contain a fluxMatrix entry...</span>
         <span class="k">elif</span> <span class="n">e</span><span class="p">:</span>
+
+            <span class="c1"># Load the existing fluxMatrix</span>
             <span class="n">dsetP</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">dsetName</span><span class="p">]</span>
             <span class="n">fluxMatrix</span> <span class="o">=</span> <span class="n">dsetP</span><span class="p">[:]</span>
             <span class="n">nIter</span> <span class="o">=</span> <span class="n">dsetP</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;iter&quot;</span><span class="p">]</span>
             <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="n">nI</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="c1"># If the flux matrix was calculated at an earlier iteration than the current/requested last iteration, then</span>
+            <span class="c1">#   recalculate it and update it.</span>
+            <span class="c1"># TODO: Check if first_iter changed too? That&#39;s not stored anywhere</span>
             <span class="k">if</span> <span class="n">nIter</span> <span class="o">&lt;</span> <span class="n">last_iter</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">iS</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nIter</span><span class="p">,</span> <span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                     <span class="n">fluxMatrixI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_fluxMatrix</span><span class="p">(</span><span class="n">iS</span><span class="p">)</span>
@@ -1581,28 +1731,54 @@
                     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;getting fluxMatrix iter: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">iS</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">fluxMatrix</span> <span class="o">=</span> <span class="n">fluxMatrix</span> <span class="o">/</span> <span class="n">nI</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fluxMatrixRaw</span> <span class="o">=</span> <span class="n">fluxMatrix</span>
 
-    <span class="k">def</span> <span class="nf">organize_fluxMatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># processes raw fluxMatrix</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1"># Update state with the new, updated, or loaded from file fluxMatrix.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fluxMatrixRaw</span> <span class="o">=</span> <span class="n">fluxMatrix</span></div>
+
+<div class="viewcode-block" id="modelWE.organize_fluxMatrix"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.organize_fluxMatrix">[docs]</a>    <span class="k">def</span> <span class="nf">organize_fluxMatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do some cleaning on the flux matrix, and update state with the cleaned flux matrix.</span>
+
+<span class="sd">        Namely:</span>
+<span class="sd">            - Remove bins with no connectivity</span>
+<span class="sd">            - Sort along p1 (?)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># processes raw fluxMatrix</span>
         <span class="n">nT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordSet</span><span class="p">)</span>
         <span class="n">nT</span> <span class="o">=</span> <span class="n">nT</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Discretize trajectories via clusters</span>
         <span class="n">dtraj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reduceCoordinates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordSet</span><span class="p">))</span>
+
+        <span class="c1"># Get the indices of the target and basis clusters</span>
         <span class="n">indTargetCluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># Target at -1</span>
         <span class="n">indBasisCluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span>  <span class="c1"># basis at -2</span>
         <span class="n">indBasisOrig</span> <span class="o">=</span> <span class="n">indBasisCluster</span>
+
+        <span class="c1"># ----- Unused code ------</span>
         <span class="c1"># targetRMSD=self.get_reference_rmsd(self.coordSet[:,:,:])</span>
         <span class="c1"># basisRMSD=self.get_basis_rmsd(self.coordSet[:,:,:])</span>
         <span class="c1"># indTarget=np.where(targetRMSD&lt;self.target_rmsd)</span>
         <span class="c1"># indBasis=np.where(basisRMSD&lt;self.basis_rmsd)</span>
         <span class="c1"># dtraj[indTarget]=indTargetCluster</span>
         <span class="c1"># dtraj[indBasis]=indBasisCluster</span>
+        <span class="c1"># ------------------------</span>
+
         <span class="n">indData</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">targetRMSD_centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
         <span class="c1"># targetRMSD_centers[indTargetCluster]=self.target_rmsd</span>
         <span class="n">targetRMSD_centers</span><span class="p">[</span><span class="n">indTargetCluster</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1</span>
         <span class="c1"># targetRMSD_centers[indBasisCluster]=self.get_reference_rmsd(self.basis_coords)</span>
         <span class="n">targetRMSD_centers</span><span class="p">[</span><span class="n">indBasisCluster</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_min</span>
+
+        <span class="c1"># Just initialize this to some positive nonzero value to kick off the while loop</span>
         <span class="n">nTraps</span> <span class="o">=</span> <span class="mi">1000</span>
         <span class="n">fluxMatrixTraps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluxMatrixRaw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">while</span> <span class="n">nTraps</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -1646,7 +1822,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">indTargets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">originalClusters</span> <span class="o">==</span> <span class="n">indTargetCluster</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">originalClusters</span> <span class="o">=</span> <span class="n">originalClusters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">binCenters</span> <span class="o">=</span> <span class="n">targetRMSD_centers</span><span class="p">[</span><span class="n">indp1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nBins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binCenters</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nBins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">binCenters</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">get_model_clusters</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1683,24 +1859,53 @@
                 <span class="n">skip</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_Tmatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="modelWE.get_Tmatrix"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_Tmatrix">[docs]</a>    <span class="k">def</span> <span class="nf">get_Tmatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the transition matrix from the flux matrix.</span>
+<span class="sd">        Corrects the &quot;target&quot; states to be true sink states.</span>
+
+<span class="sd">        Updates:</span>
+<span class="sd">            - `self.Tmatrix`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get a copy of the flux matrix</span>
         <span class="n">Mt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluxMatrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># Get the dimension of the flux matrix</span>
         <span class="n">nR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">Mt</span><span class="p">)</span>
+        <span class="c1"># Add up the total flux on each row, i.e. from each state</span>
         <span class="n">sM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Mt</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># For each state</span>
         <span class="k">for</span> <span class="n">iR</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nR</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="c1"># For positive definite flux, set the matrix elements based on normalized fluxes</span>
             <span class="k">if</span> <span class="n">sM</span><span class="p">[</span><span class="n">iR</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">Mt</span><span class="p">[</span><span class="n">iR</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">Mt</span><span class="p">[</span><span class="n">iR</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">sM</span><span class="p">[</span><span class="n">iR</span><span class="p">]</span>
+
+            <span class="c1"># If the flux is zero, then consider it all self-transition</span>
+            <span class="c1"># FIXME: this if can be an elif</span>
             <span class="k">if</span> <span class="n">sM</span><span class="p">[</span><span class="n">iR</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
                 <span class="n">Mt</span><span class="p">[</span><span class="n">iR</span><span class="p">,</span> <span class="n">iR</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="c1"># make steady state matrix #first sink</span>
+
+        <span class="c1"># Make the transition matrix a steady-state matrix</span>
+        <span class="c1"># Identify the bins corresponding to target states.</span>
         <span class="n">sinkBins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indTargets</span>  <span class="c1"># np.where(avBinPnoColor==0.0)</span>
+
+        <span class="c1"># Get the number of sink bins</span>
         <span class="n">nsB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">sinkBins</span><span class="p">)</span>
         <span class="n">nsB</span> <span class="o">=</span> <span class="n">nsB</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># TODO: The goal here is to correct for the transition probabilities out of the sink state. Not</span>
+        <span class="c1">#   sure I fully understand this implementation, but that&#39;s the goal.</span>
         <span class="n">sinkRates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nBins</span><span class="p">))</span>
         <span class="n">sinkRates</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indBasis</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">indBasis</span><span class="o">.</span><span class="n">size</span>
         <span class="n">Mss</span> <span class="o">=</span> <span class="n">Mt</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">Mss</span><span class="p">[</span><span class="n">sinkBins</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">sinkRates</span><span class="p">,</span> <span class="p">(</span><span class="n">nsB</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span> <span class="o">=</span> <span class="n">Mss</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span> <span class="o">=</span> <span class="n">Mss</span></div>
 
     <span class="k">def</span> <span class="nf">get_eqTmatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Mt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluxMatrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -1718,12 +1923,22 @@
                 <span class="n">Mt</span><span class="p">[</span><span class="n">iR</span><span class="p">,</span> <span class="n">iR</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span> <span class="o">=</span> <span class="n">Mt</span>
 
-    <span class="k">def</span> <span class="nf">get_steady_state_algebraic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="modelWE.get_steady_state_algebraic"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_steady_state_algebraic">[docs]</a>    <span class="k">def</span> <span class="nf">get_steady_state_algebraic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the steady-state distribution as the eigenvectors of the transition matrix.</span>
+
+<span class="sd">        Updates:</span>
+<span class="sd">            - `self.pSS`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span><span class="p">))</span>
         <span class="n">pSS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">v</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">w</span><span class="p">))])</span>
         <span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pSS</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span></div>
 
     <span class="k">def</span> <span class="nf">get_steady_state_matrixpowers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conv</span><span class="p">):</span>
         <span class="n">max_iters</span> <span class="o">=</span> <span class="mi">10000</span>
@@ -1743,13 +1958,30 @@
                 <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;N=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; dconv: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dconv</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">get_steady_state_target_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="modelWE.get_steady_state_target_flux"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_steady_state_target_flux">[docs]</a>    <span class="k">def</span> <span class="nf">get_steady_state_target_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the total flux into the target state(s).</span>
+
+<span class="sd">        Updates:</span>
+<span class="sd">            - `self.lagtime`</span>
+<span class="sd">            - `self.JtargetSS`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">Mss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span>
         <span class="n">pSS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pSS</span><span class="p">))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">lagtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lag</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Get a list of all the states that AREN&#39;T targets, since we want to sum up</span>
         <span class="n">nTargets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indTargets</span><span class="o">.</span><span class="n">size</span>
         <span class="n">indNotTargets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nBins</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">indTargets</span><span class="p">)</span>
+
         <span class="n">Jt</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="c1"># Add up the total flux into each of the targets</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nTargets</span><span class="p">):</span>
             <span class="n">jj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indTargets</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
             <span class="n">Jt</span> <span class="o">=</span> <span class="n">Jt</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
@@ -1760,7 +1992,7 @@
                     <span class="p">),</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">JtargetSS</span> <span class="o">=</span> <span class="n">Jt</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lagtime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">JtargetSS</span> <span class="o">=</span> <span class="n">Jt</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lagtime</span></div>
 
     <span class="k">def</span> <span class="nf">evolve_probability</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">nEvolve</span><span class="p">,</span> <span class="n">nStore</span>

@@ -348,6 +348,17 @@ microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt id="msm_we.msm_we.modelWE.targetRMSD_centers">
+<code class="sig-name descname"><span class="pre">targetRMSD_centers</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.targetRMSD_centers" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of RMSDs corresponding to each cluster.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array-like</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="msm_we.msm_we.modelWE.initialize">
 <code class="sig-name descname"><span class="pre">initialize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileSpecifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refPDBfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initPDBfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modelName</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.initialize" title="Permalink to this definition">¶</a></dt>
@@ -427,15 +438,15 @@ function signature.</p>
 <dl class="py method">
 <dt id="msm_we.msm_we.modelWE.get_iter_data">
 <code class="sig-name descname"><span class="pre">get_iter_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_iter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_iter_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_iter_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the data corresponding to an iteration and update the object’s fields with it.</p>
+<dd><p>Update state with the data (including pcoord but not including coords) corresponding to an iteration.</p>
 <dl class="simple">
 <dt>Object fields updated with the information from the selected iteration:</dt><dd><ul class="simple">
-<li><p>self.westList</p></li>
-<li><p>self.segindList</p></li>
-<li><p>self.weightList</p></li>
-<li><p>self.nSeg</p></li>
-<li><p>self.pcoord0List</p></li>
-<li><p>self.pcoord1List</p></li>
+<li><p><cite>self.westList</cite></p></li>
+<li><p><cite>self.segindList</cite></p></li>
+<li><p><cite>self.weightList</cite></p></li>
+<li><p><cite>self.nSeg</cite></p></li>
+<li><p><cite>self.pcoord0List</cite></p></li>
+<li><p><cite>self.pcoord1List</cite></p></li>
 </ul>
 </dd>
 </dl>
@@ -625,6 +636,219 @@ Seems like some of this iteration can be removed/optimized.</p>
 <p class="admonition-title">Todo</p>
 <p>Generalize to different filetypes. This appears to be AMBER specific and relies on loading rst7 files</p>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_iter_coordinates">
+<code class="sig-name descname"><span class="pre">get_iter_coordinates</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_iter_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_iter_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates state with the coordinates from the last iteration (or whichever iteration is in <cite>self.n_iter</cite>)</p>
+<dl class="simple">
+<dt>Updates:</dt><dd><ul class="simple">
+<li><p><cite>self.coordlist</cite></p></li>
+<li><p><cite>self.coordsExist</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id8">
+<p class="admonition-title">Todo</p>
+<p>Take n_iter as a parameter instead of getting the attribute value</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.dimReduce">
+<code class="sig-name descname"><span class="pre">dimReduce</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.dimReduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.dimReduce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dimensionality reduction using the scheme specified in initialization.</p>
+<dl class="simple">
+<dt>Updates:</dt><dd><ul class="simple">
+<li><p><cite>self.coordinates</cite></p></li>
+<li><p><cite>self.ndim</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id9">
+<p class="admonition-title">Todo</p>
+<p>Allow passing custom parameters to the dimensionality reduction schemes.</p>
+<p>Add <cite>else</cite> clause that raises a <cite>NotImplemented</cite> exception</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.cluster_coordinates">
+<code class="sig-name descname"><span class="pre">cluster_coordinates</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.cluster_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.cluster_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use k-means to cluster coordinates into <cite>n_clusters</cite> cluster centers, and saves the resulting cluster object
+to a file.</p>
+<p>Saved cluster file is named
+“&lt;<cite>self.model_name</cite>&gt;_clusters_s&lt;<cite>self.first_iter</cite>&gt;_e&lt;<cite>self.last_iter</cite>&gt;_nC&lt;<cite>self.n_clusters</cite>&gt;.h5”</p>
+<dl class="simple">
+<dt>Updates:</dt><dd><ul class="simple">
+<li><p><cite>self.n_clusters</cite></p></li>
+<li><p><cite>self.clusters</cite></p></li>
+<li><p><cite>self.clusterFile</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_clusters</strong> (<em>int</em>) – Number of cluster centers to use.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.load_clusters">
+<code class="sig-name descname"><span class="pre">load_clusters</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clusterFile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.load_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.load_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load clusters from a file.</p>
+<dl class="simple">
+<dt>Updates:</dt><dd><ul class="simple">
+<li><p><cite>self.clusters</cite></p></li>
+<li><p><cite>self.n_clusters</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>clusterFile</strong> (<em>str</em>) – Filename to load clusters from.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_fluxMatrix">
+<code class="sig-name descname"><span class="pre">get_fluxMatrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_lag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_iter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_iter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_fluxMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_fluxMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the matrix of fluxes at a given lag time, for a range of iterations.</p>
+<p>Checks if a file has been written named
+“&lt;<cite>self.modelName</cite>&gt;_s&lt;<cite>first_iter</cite>&gt;_e&lt;<cite>last_iter</cite>&gt;_lag&lt;<cite>n_lag</cite>&gt;_clust&lt;<cite>self.n_clusters</cite>&gt;.h5”.
+If this file exists, r</p>
+<dl class="simple">
+<dt>Updates:</dt><dd><ul class="simple">
+<li><p><cite>self.n_lag</cite></p></li>
+<li><p><cite>self.errorWeight</cite></p></li>
+<li><p><cite>self.errorCount</cite></p></li>
+<li><p><cite>self.fluxMatrixRaw</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_lag</strong> (<em>int</em>) – Lag to use.</p></li>
+<li><p><strong>first_iter</strong> (<em>int</em>) – First iteration to use.</p></li>
+<li><p><strong>last_iter</strong> (<em>int</em>) – Last iteration to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.organize_fluxMatrix">
+<code class="sig-name descname"><span class="pre">organize_fluxMatrix</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.organize_fluxMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.organize_fluxMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do some cleaning on the flux matrix, and update state with the cleaned flux matrix.</p>
+<dl class="simple">
+<dt>Namely:</dt><dd><ul class="simple">
+<li><p>Remove bins with no connectivity</p></li>
+<li><p>Sort along p1 (?)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_Tmatrix">
+<code class="sig-name descname"><span class="pre">get_Tmatrix</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_Tmatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_Tmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the transition matrix from the flux matrix.
+Corrects the “target” states to be true sink states.</p>
+<dl class="simple">
+<dt>Updates:</dt><dd><ul class="simple">
+<li><p><cite>self.Tmatrix</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_steady_state_algebraic">
+<code class="sig-name descname"><span class="pre">get_steady_state_algebraic</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_steady_state_algebraic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_steady_state_algebraic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the steady-state distribution as the eigenvectors of the transition matrix.</p>
+<dl class="simple">
+<dt>Updates:</dt><dd><ul class="simple">
+<li><p><cite>self.pSS</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="msm_we.msm_we.modelWE.get_steady_state_target_flux">
+<code class="sig-name descname"><span class="pre">get_steady_state_target_flux</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_steady_state_target_flux"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_steady_state_target_flux" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the total flux into the target state(s).</p>
+<dl class="simple">
+<dt>Updates:</dt><dd><ul class="simple">
+<li><p><cite>self.lagtime</cite></p></li>
+<li><p><cite>self.JtargetSS</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
