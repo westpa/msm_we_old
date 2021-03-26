@@ -194,16 +194,21 @@ basis and target definitions from progress coordinates.</p>
 </div>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
-<dl class="simple">
-<dt>Stateless refactor</dt><dd><p>In general, this class’s methods generally handle data by holding state in the object. I think in general this
-would benefit from a refactor to be more stateless, rather than shifting things in and out of the object’s fields.</p>
+<dl>
+<dt>Refactor</dt><dd><p>In general, this class’s methods generally handle data by holding state in the object.
+The functions that update state with the result of a calculation, though, tend to update a lot of state on the way.
+The state being updated along the way is usually “helper” quantities (an example would be the number of bins
+or number of walkers, which is computed “along the way” in a number of functions, and the object state updated.)</p>
+<p>I think it would be prudent to refactor these in such a way that these are updated in as few places as possible –
+one example of this might be setting them as properties, and then updating the value in state as part of that
+accessor if necessary.</p>
 </dd>
 </dl>
 </div>
 <p class="rubric">References</p>
 <p>Copperman and Zuckerman,
 <em>Accelerated estimation of long-timescale kinetics by combining weighted ensemble simulation with Markov model
-microstates using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
+microstategs using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <dl class="py attribute">
 <dt id="msm_we.msm_we.modelWE.modelName">
 <code class="sig-name descname"><span class="pre">modelName</span></code><a class="headerlink" href="#msm_we.msm_we.modelWE.modelName" title="Permalink to this definition">¶</a></dt>

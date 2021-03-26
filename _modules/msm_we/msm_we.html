@@ -209,16 +209,22 @@
 
 <span class="sd">    Todo</span>
 <span class="sd">    ----</span>
-<span class="sd">    Stateless refactor</span>
-<span class="sd">        In general, this class&#39;s methods generally handle data by holding state in the object. I think in general this</span>
-<span class="sd">        would benefit from a refactor to be more stateless, rather than shifting things in and out of the object&#39;s fields.</span>
+<span class="sd">    Refactor</span>
+<span class="sd">        In general, this class&#39;s methods generally handle data by holding state in the object.</span>
+<span class="sd">        The functions that update state with the result of a calculation, though, tend to update a lot of state on the way.</span>
+<span class="sd">        The state being updated along the way is usually &quot;helper&quot; quantities (an example would be the number of bins</span>
+<span class="sd">        or number of walkers, which is computed &quot;along the way&quot; in a number of functions, and the object state updated.)</span>
+
+<span class="sd">        I think it would be prudent to refactor these in such a way that these are updated in as few places as possible --</span>
+<span class="sd">        one example of this might be setting them as properties, and then updating the value in state as part of that</span>
+<span class="sd">        accessor if necessary.</span>
 
 
 <span class="sd">    References</span>
 <span class="sd">    --------</span>
 <span class="sd">    Copperman and Zuckerman,</span>
 <span class="sd">    *Accelerated estimation of long-timescale kinetics by combining weighted ensemble simulation with Markov model</span>
-<span class="sd">    microstates using non-Markovian theory*, **arXiv** (2020).</span>
+<span class="sd">    microstategs using non-Markovian theory*, **arXiv** (2020).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
