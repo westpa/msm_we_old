@@ -187,83 +187,100 @@
 This functionality will likely eventually be rolled into the main package.</p>
 </div></blockquote>
 </li>
-<li><p>Define <code class="code docutils literal notranslate"><span class="pre">processCoordinates(self,</span> <span class="pre">coords)</span></code> and <code class="code docutils literal notranslate"><span class="pre">reduceCoordinates(self,</span> <span class="pre">coords)</span></code> functions.</p>
+<li><p>Define the <code class="code docutils literal notranslate"><span class="pre">processCoordinates(self,</span> <span class="pre">coords)</span></code> function and monkey-patch it in.</p>
 <blockquote>
-<div><p><code class="code docutils literal notranslate"><span class="pre">processCoordinates(self,</span> <span class="pre">coords)</span></code> is responsible for featurization. It should take in an array of all coordinates,
+<div><p>This function is responsible for featurization. It should take in an array of all coordinates,
 and produce an array of feature-coordinates.</p>
-<p><code class="code docutils literal notranslate"><span class="pre">reduceCoordinates(self,</span> <span class="pre">coords)</span></code> handles running the dimensionality reduction. <code class="code docutils literal notranslate"><span class="pre">msm_we.dimReduce()</span></code>
-defines the actual coordinate transformer object, in <code class="code docutils literal notranslate"><span class="pre">msm_we.coordinates</span></code>. However, <code class="code docutils literal notranslate"><span class="pre">reduceCoordinates()</span></code>
-actually runs that transformation on a set of input data.</p>
-<p>An example of how this is currently done, to read a couple functions from a Python file with path
-<code class="code docutils literal notranslate"><span class="pre">override_file</span></code> and monkey-patch them in:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We monkey-patch at the module level rather than just override the function in the instanced object</span>
-<span class="c1">#   so that the functions retain access to self.</span>
-<span class="n">msm_we</span><span class="o">.</span><span class="n">modelWE</span><span class="o">.</span><span class="n">processCoordinates</span> <span class="o">=</span> <span class="n">user_overrides</span><span class="o">.</span><span class="n">processCoordinates</span>
-<span class="n">msm_we</span><span class="o">.</span><span class="n">modelWE</span><span class="o">.</span><span class="n">reduceCoordinates</span> <span class="o">=</span> <span class="n">user_overrides</span><span class="o">.</span><span class="n">reduceCoordinates</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># A trivial example processCoordinates</span>
+<span class="k">def</span> <span class="nf">processCoordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">coords</span>
+
+<span class="c1"># Monkey-patch, i.e. replace the placeholder processCoordinates</span>
+<span class="c1">#   in msm_we.modelWE with your function</span>
+<span class="n">msm_we</span><span class="o">.</span><span class="n">modelWE</span><span class="o">.</span><span class="n">processCoordinates</span> <span class="o">=</span> <span class="n">processCoordinates</span>
+</pre></div>
+</div>
+<p>It’s important to do this monkey-patching at the module level, i.e. on <code class="code docutils literal notranslate"><span class="pre">msm_we.modelWE</span></code>, rather
+than on an instance of a <code class="code docutils literal notranslate"><span class="pre">msm_we.modelWE</span></code> object.</p>
+</div></blockquote>
+</li>
+<li><p>Create the model object.</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">msm_we</span><span class="o">.</span><span class="n">modelWE</span><span class="p">()</span>
 </pre></div>
 </div>
 </div></blockquote>
 </li>
-<li><p>Create the model object.</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">msm_we</span><span class="o">.</span><span class="n">modelWE</span><span class="p">()</span>
+<li><p>Initialize the model.</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">h5_glob</span><span class="p">,</span> <span class="n">reference_structure_file</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="5">
-<li><p>Initialize the model.</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">h5_glob</span><span class="p">,</span> <span class="n">reference_structure_file</span><span class="p">,</span> <span class="n">basis_structure_file</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+<p><code class="code docutils literal notranslate"><span class="pre">h5_glob</span></code> is a list of paths to your WESTPA h5 files.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">reference_structure_file</span></code> is a file containing a topology describing your system.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">model_name</span></code> is what it sounds like, and is used to label various output files.</p>
+</div></blockquote>
+</li>
+<li><p>Load all coords and pcoords up to the last iteration you want to use for analysis with</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span>model.get_coordSet(last_iter)`.
 </pre></div>
 </div>
-<ol class="arabic simple" start="6">
-<li><p>Load all coords and pcoords into  <code class="code docutils literal notranslate"><span class="pre">model.all_coords</span></code> and <code class="code docutils literal notranslate"><span class="pre">model.pcoordSet</span></code> respectively.</p></li>
-<li><p>Prepare dimensionality reduction transformer by running</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">dimReduce</span><span class="p">()</span>
+</div></blockquote>
+</li>
+<li><p>Prepare dimensionality reduction transformer by running</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">dimReduce</span><span class="p">()</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="8">
-<li><p>Do clustering with</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">cluster_coordinates</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">)</span>
+</div></blockquote>
+</li>
+<li><p>Do clustering with</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">cluster_coordinates</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">)</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="9">
-<li><p>Create the flux matrix with</p></li>
-</ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_fluxMatrix</span><span class="p">(</span><span class="n">lag</span><span class="p">,</span> <span class="n">first_iter</span><span class="p">,</span> <span class="n">last_iter</span><span class="p">)</span>
+</div></blockquote>
+</li>
+<li><p>Create the flux matrix with</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_fluxMatrix</span><span class="p">(</span><span class="n">lag</span><span class="p">,</span> <span class="n">first_iter</span><span class="p">,</span> <span class="n">last_iter</span><span class="p">)</span>
 </pre></div>
 </div>
 <ol class="loweralpha simple">
-<li><p>(Optionally) Clean disconnected states and sort the flux matrix with <code class="code docutils literal notranslate"><span class="pre">model.organize_fluxMatrix</span></code></p></li>
+<li><p>Clean disconnected states and sort the flux matrix with</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">organize_fluxMatrix</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
 </ol>
 </div>
 <div class="section" id="analysis">
 <h2>Analysis<a class="headerlink" href="#analysis" title="Permalink to this headline">¶</a></h2>
-<ol class="arabic simple" start="10">
-<li><p>Normalize the flux matrix to produce a transition matrix with</p></li>
-</ol>
+<ol class="arabic" start="10">
+<li><p>Normalize the flux matrix to produce a transition matrix with</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_Tmatrix</span><span class="p">()</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="11">
-<li><p>Obtain steady-state distribution with</p></li>
-</ol>
+</li>
+<li><p>Obtain steady-state distribution with</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_steady_state_algebraic</span><span class="p">()</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="12">
-<li><p>Update cluster structures</p></li>
-</ol>
+</li>
+<li><p>Update cluster structures</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">update_cluster_structures</span><span class="p">()</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="13">
-<li><p>Obtain steady-state target flux with</p></li>
-</ol>
+</li>
+<li><p>Obtain steady-state target flux with</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_steady_state_target_flux</span><span class="p">()</span>
 </pre></div>
 </div>
+</li>
+</ol>
 </div>
 </div>
 
