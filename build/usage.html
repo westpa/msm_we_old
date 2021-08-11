@@ -221,9 +221,29 @@ than on an instance of a <code class="code docutils literal notranslate"><span c
 <p><code class="code docutils literal notranslate"><span class="pre">model_name</span></code> is what it sounds like, and is used to label various output files.</p>
 </div></blockquote>
 </li>
+</ol>
+<ol class="arabic" start="5">
+<li><p>Manually set the following parameters.</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">WEtargetp1_bounds</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1">#lower bound of the target state in progress coordinate,</span>
+    <span class="c1">#upper bound of the target state in progress coordinate,</span>
+<span class="p">]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">WEbasisp1_bounds</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1">#lower bound of the basis state in progress coordinate,</span>
+    <span class="c1">#upper bound of the basis state in progress coordinate,</span>
+<span class="p">]</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">pcoord_ndim0</span> <span class="o">=</span> <span class="c1"># Number of pcoord dimensions</span>
+<span class="n">model</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">=</span> <span class="c1"># Dimensionality reduction method. Must be &quot;pca&quot;, &quot;vamp&quot;, or &quot;none&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
 <li><p>Load all coords and pcoords up to the last iteration you want to use for analysis with</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span>model.get_coordSet(last_iter)`.
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_coordSet</span><span class="p">(</span><span class="n">last_iter</span><span class="p">)</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -250,7 +270,7 @@ than on an instance of a <code class="code docutils literal notranslate"><span c
 <ol class="loweralpha simple">
 <li><p>Clean disconnected states and sort the flux matrix with</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">organize_fluxMatrix</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">organize_fluxMatrix</span><span class="p">()</span>
 </pre></div>
 </div>
 </div></blockquote>
