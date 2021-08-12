@@ -195,12 +195,10 @@
 <ul class="simple">
 <li><p>Provide option for user to override <code class="code docutils literal notranslate"><span class="pre">dimReduce()</span></code> in case they want to do something other than PCA/VAMP</p></li>
 <li><p>Add TICA option to <code class="code docutils literal notranslate"><span class="pre">dimReduce()</span></code></p></li>
-<li><dl class="simple">
-<dt>Add monkey-patching directly into <code class="code docutils literal notranslate"><span class="pre">msm_we</span></code> code. I.e., add a function like <code class="code docutils literal notranslate"><span class="pre">register_featurization(func)</span></code></dt><dd><p>which takes the featurization function as input and overloads <code class="code docutils literal notranslate"><span class="pre">msm_we.processCoordinates()</span></code> with it.
-Right now, this has to be done manually.</p>
-</dd>
-</dl>
-</li>
+<li><p>Add monkey-patching directly into <code class="code docutils literal notranslate"><span class="pre">msm_we</span></code> code.
+I.e., add a function like <code class="code docutils literal notranslate"><span class="pre">register_featurization(func)</span></code> which takes the featurization function as input and
+overloads <code class="code docutils literal notranslate"><span class="pre">msm_we.processCoordinates()</span></code> with it.
+Right now, this has to be done manually.</p></li>
 </ul>
 </div>
 <div class="section" id="credits">

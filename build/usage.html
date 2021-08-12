@@ -215,32 +215,17 @@ than on an instance of a <code class="code docutils literal notranslate"><span c
 </li>
 <li><p>Initialize the model.</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">h5_glob</span><span class="p">,</span> <span class="n">reference_structure_file</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">h5_glob</span><span class="p">,</span> <span class="n">reference_structure_file</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span>
+                <span class="n">basis_pcoord1_bounds</span><span class="p">,</span> <span class="n">target_pcoord1_bounds</span><span class="p">,</span>
+                <span class="n">dim_reduce_method</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><code class="code docutils literal notranslate"><span class="pre">h5_glob</span></code> is a list of paths to your WESTPA h5 files.</p>
 <p><code class="code docutils literal notranslate"><span class="pre">reference_structure_file</span></code> is a file containing a topology describing your system.</p>
 <p><code class="code docutils literal notranslate"><span class="pre">model_name</span></code> is what it sounds like, and is used to label various output files.</p>
-</div></blockquote>
-</li>
-</ol>
-<ol class="arabic" start="5">
-<li><p>Manually set the following parameters.</p>
-<blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">WEtargetp1_bounds</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="c1">#lower bound of the target state in progress coordinate,</span>
-    <span class="c1">#upper bound of the target state in progress coordinate,</span>
-<span class="p">]</span>
-
-<span class="n">model</span><span class="o">.</span><span class="n">WEbasisp1_bounds</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="c1">#lower bound of the basis state in progress coordinate,</span>
-    <span class="c1">#upper bound of the basis state in progress coordinate,</span>
-<span class="p">]</span>
-
-<span class="n">model</span><span class="o">.</span><span class="n">pcoord_ndim0</span> <span class="o">=</span> <span class="c1"># Number of pcoord dimensions</span>
-<span class="n">model</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">=</span> <span class="c1"># Dimensionality reduction method. Must be &quot;pca&quot;, &quot;vamp&quot;, or &quot;none&quot;</span>
-</pre></div>
-</div>
+<p><code class="code docutils literal notranslate"><span class="pre">basis_pcoord1_bounds</span></code> is a list of [lower bound, upper bound]  of the basis in pcoord 1 space</p>
+<p><code class="code docutils literal notranslate"><span class="pre">target_pcoord1_bounds</span></code> is a list of [lower bound, upper bound]  of the target in pcoord 1 space</p>
+<p><code class="code docutils literal notranslate"><span class="pre">dim_reduce_method</span></code> is the dimensionality reduction method (“pca”, “vamp”, or “none”)</p>
 </div></blockquote>
 </li>
 <li><p>Load all coords and pcoords up to the last iteration you want to use for analysis with</p>
