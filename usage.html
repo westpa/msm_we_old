@@ -172,8 +172,8 @@
             
   <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<p>To use msm_we in a project:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">msm_we</span>
+<p>To use <code class="code docutils literal notranslate"><span class="pre">msm_we</span></code> in a project:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">msm_we</span> <span class="kn">import</span> <span class="n">msm_we</span>
 </pre></div>
 </div>
 <p>The basic workflow of this module is as follows.</p>
@@ -245,7 +245,8 @@ than on an instance of a <code class="code docutils literal notranslate"><span c
 </li>
 <li><p>Load all coords and pcoords up to the last iteration you want to use for analysis with</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_coordSet</span><span class="p">(</span><span class="n">last_iter</span><span class="p">)</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_iterations</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">get_coordSet</span><span class="p">(</span><span class="n">last_iter</span><span class="p">)</span>
 </pre></div>
 </div>
 </div></blockquote>
