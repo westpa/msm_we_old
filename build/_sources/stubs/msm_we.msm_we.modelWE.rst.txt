@@ -38,7 +38,6 @@
       ~modelWE.get_initial_khbins_equalAlloc
       ~modelWE.get_iter_aristoffian
       ~modelWE.get_iter_coordinates
-      ~modelWE.get_iter_coordinates0
       ~modelWE.get_iter_fluxMatrix
       ~modelWE.get_iter_pcoord1D_fluxMatrix_lag0
       ~modelWE.get_iterations
@@ -61,6 +60,8 @@
       ~modelWE.is_WE_basis
       ~modelWE.is_WE_target
       ~modelWE.load_clusters
+      ~modelWE.load_iter_coordinates
+      ~modelWE.load_iter_coordinates0
       ~modelWE.load_iter_data
       ~modelWE.organize_fluxMatrix
       ~modelWE.plot_committor

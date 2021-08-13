@@ -698,7 +698,18 @@ This is left in mostly as an example.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="msm_we.msm_we.modelWE.get_iter_coordinates">
-<span class="sig-name descname"><span class="pre">get_iter_coordinates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_iter_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_iter_coordinates" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_iter_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_iter_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_iter_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the valid coordinates for a certain iteration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>iteration</strong> (<em>int</em>) – The iteration to return coordinates for</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.msm_we.modelWE.load_iter_coordinates">
+<span class="sig-name descname"><span class="pre">load_iter_coordinates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.load_iter_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.load_iter_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates state with the coordinates from the last iteration (or whichever iteration is in <cite>self.n_iter</cite>)</p>
 <dl class="simple">
 <dt>Updates:</dt><dd><ul class="simple">
@@ -719,6 +730,39 @@ This is left in mostly as an example.</p>
 <p class="admonition-title">Todo</p>
 <p>Take n_iter as a parameter instead of getting the attribute value</p>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.msm_we.modelWE.get_coordinates">
+<span class="sig-name descname"><span class="pre">get_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">first_iter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_iter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unused</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>first_iter</strong> – </p></li>
+<li><p><strong>last_iter</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.msm_we.modelWE.get_coordSet">
+<span class="sig-name descname"><span class="pre">get_coordSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">last_iter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_coordSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_coordSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads all coordinates and progress coordinates into memory for later usage.</p>
+<div class="admonition-todo admonition" id="id8">
+<p class="admonition-title">Todo</p>
+<p>I want to avoid loading full coordinates into memory as much as possible.
+That means trying to replace usage of all_coords here.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>last_iter</strong> – </p></li>
+<li><p><strong>streaming</strong> – </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -743,7 +787,7 @@ This is left in mostly as an example.</p>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
-<div class="admonition-todo admonition" id="id8">
+<div class="admonition-todo admonition" id="id9">
 <p class="admonition-title">Todo</p>
 <p>Allow passing custom parameters to the dimensionality reduction schemes.</p>
 <p>Add <cite>else</cite> clause that raises a <cite>NotImplemented</cite> exception</p>
@@ -944,7 +988,7 @@ Otherwise, write it.</p>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
-<div class="admonition-todo admonition" id="id9">
+<div class="admonition-todo admonition" id="id10">
 <p class="admonition-title">Todo</p>
 <p>Need to update self.cluster_structures with the new, reduced set of clusters</p>
 </div>
