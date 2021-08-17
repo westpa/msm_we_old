@@ -207,31 +207,44 @@ Seems like some of this iteration can be removed/optimized.</p>
 <p class="todo-source">(The <a class="reference internal" href="api.html#id5"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.load_iter_data, line 17.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
+<p>This function is pretty slow, and profiling says it’s because of coords = dset[:], so it must be something
+to do with how I’m reading my HDF5 files. Maybe that’s just my HDF5 file, or maybe I’m accessing it in some
+really inefficient way in here that I’m not seeing.  Surprisingly, it doesn’t seem to be the constant file
+opening/closing.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="api.html#id6"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.get_transition_data_lag0, line 12.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
 <p>Generalize to different filetypes. This appears to be AMBER specific and relies on loading rst7 files</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="api.html#id6"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.collect_iter_coordinates, line 9.)</p>
+<p class="todo-source">(The <a class="reference internal" href="api.html#id7"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.collect_iter_coordinates, line 9.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Take n_iter as a parameter instead of getting the attribute value</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="api.html#id7"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.load_iter_coordinates, line 10.)</p>
+<p class="todo-source">(The <a class="reference internal" href="api.html#id8"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.load_iter_coordinates, line 10.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>I want to avoid loading full coordinates into memory as much as possible.
 That means trying to replace usage of all_coords here.</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="api.html#id8"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.get_coordSet, line 3.)</p>
+<p class="todo-source">(The <a class="reference internal" href="api.html#id9"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.get_coordSet, line 3.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Allow passing custom parameters to the dimensionality reduction schemes.</p>
 <p>Add <cite>else</cite> clause that raises a <cite>NotImplemented</cite> exception</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="api.html#id9"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.dimReduce, line 15.)</p>
+<p class="todo-source">(The <a class="reference internal" href="api.html#id10"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.dimReduce, line 15.)</p>
+<div class="admonition-todo admonition">
+<p class="admonition-title">Todo</p>
+<p>This function is slow because of the call to get_transition_data_lag0(). See that function for more info.</p>
+</div>
+<p class="todo-source">(The <a class="reference internal" href="api.html#id11"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.get_iter_fluxMatrix, line 8.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <p>Need to update self.cluster_structures with the new, reduced set of clusters</p>
 </div>
-<p class="todo-source">(The <a class="reference internal" href="api.html#id10"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.organize_fluxMatrix, line 11.)</p>
+<p class="todo-source">(The <a class="reference internal" href="api.html#id12"><em>original entry</em></a> is located in /home/runner/work/msm_we/msm_we/msm_we/msm_we.py:docstring of msm_we.msm_we.modelWE.organize_fluxMatrix, line 11.)</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">Todo</p>
 <dl>
