@@ -2013,6 +2013,7 @@
 
 <span class="sd">        streaming: boolean</span>
 <span class="sd">            Whether to stream k-means clustering, or load all from memory.</span>
+<span class="sd">            Not supported for vamp dimensionality reduction.</span>
 
 <span class="sd">        **_cluster_args:</span>
 <span class="sd">            Keyword arguments that will be passed directly to cluster_kmeans</span>
@@ -2043,35 +2044,62 @@
         <span class="p">}</span>
         <span class="n">cluster_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_cluster_args</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">streaming</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">streaming</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;vamp&quot;</span><span class="p">:</span>
             <span class="n">cluster_model</span> <span class="o">=</span> <span class="n">mini_kmeans</span><span class="p">(</span><span class="o">**</span><span class="n">cluster_args</span><span class="p">)</span>
             <span class="c1"># TODO: Any mini_batch_kmeans specific arguments?</span>
 
-        <span class="k">elif</span> <span class="n">streaming</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">streaming</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;vamp&quot;</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Streaming clustering is not supported for dimReduceMethod &#39;none&#39;. Using standard k-means.&quot;</span>
             <span class="p">)</span>
             <span class="n">cluster_model</span> <span class="o">=</span> <span class="n">kmeans</span><span class="p">(</span><span class="o">**</span><span class="n">cluster_args</span><span class="p">)</span>
+            <span class="n">streaming</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cluster_model</span> <span class="o">=</span> <span class="n">kmeans</span><span class="p">(</span><span class="o">**</span><span class="n">cluster_args</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
 
-            <span class="n">_data</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="p">]</span>
-            <span class="n">stacked_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">_data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">streaming</span><span class="p">:</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">stacked_data</span><span class="p">)</span>
+                <span class="n">_data</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="n">stacked_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">_data</span><span class="p">)</span>
 
-            <span class="c1"># Else here is a little sketchy, but fractional nAtoms is useful for some debugging hacks.</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">stacked_data</span><span class="p">)</span>
+
+                <span class="c1"># Else here is a little sketchy, but fractional nAtoms is useful for some debugging hacks.</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">stacked_data</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">cluster_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">iter_trajs</span><span class="p">)</span> <span class="k">for</span> <span class="n">iter_trajs</span> <span class="ow">in</span> <span class="n">_data</span>
+                <span class="p">]</span>
+
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">stacked_data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[</span><span class="n">cluster_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">iter_trajs</span><span class="p">)</span> <span class="k">for</span> <span class="n">iter_trajs</span> <span class="ow">in</span> <span class="n">_data</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                        <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># This better pass, but just be sure.</span>
+                    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">cluster_model</span><span class="p">)</span> <span class="ow">is</span> <span class="n">mini_kmeans</span>
+
+                    <span class="n">cluster_model</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span>
+
+                <span class="c1"># Now compute dtrajs from the final model</span>
+                <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                        <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cluster_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">))</span>
 
         <span class="c1"># Right now, this doesn&#39;t do anything differently, and is just a placeholder.</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;pca&quot;</span> <span class="ow">and</span> <span class="n">streaming</span><span class="p">:</span>

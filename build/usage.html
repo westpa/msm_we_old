@@ -98,6 +98,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation/Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#model-building-and-preparation">Model building and preparation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#analysis">Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#streaming">Streaming</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="code_todos.html">TODOs</a></li>
@@ -299,6 +300,14 @@ than on an instance of a <code class="code docutils literal notranslate"><span c
 </div>
 </li>
 </ol>
+</div>
+<div class="section" id="streaming">
+<h2>Streaming<a class="headerlink" href="#streaming" title="Permalink to this headline">¶</a></h2>
+<p><code class="code docutils literal notranslate"><span class="pre">msm_we</span></code> supports streaming dimensionality reduction and clustering when dimensionality reduction is
+done through PCA or not done.</p>
+<p>Streaming dimensionality reduction is automatically done for PCA.</p>
+<p>To use streaming clustering, pass <code class="code docutils literal notranslate"><span class="pre">streaming=True</span></code> to <code class="code docutils literal notranslate"><span class="pre">cluster_coordinates()</span></code>.</p>
+<p>Streaming is not supported for VAMP, because I don’t know of a streaming implementation of VAMP dimensionality reduction.</p>
 </div>
 </div>
 
