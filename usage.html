@@ -225,7 +225,7 @@ than on an instance of a <code class="code docutils literal notranslate"><span c
 <blockquote>
 <div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">h5_glob</span><span class="p">,</span> <span class="n">reference_structure_file</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span>
                 <span class="n">basis_pcoord1_bounds</span><span class="p">,</span> <span class="n">target_pcoord1_bounds</span><span class="p">,</span>
-                <span class="n">dim_reduce_method</span><span class="p">)</span>
+                <span class="n">dim_reduce_method</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><code class="code docutils literal notranslate"><span class="pre">h5_glob</span></code> is a list of paths to your WESTPA h5 files.</p>
@@ -234,6 +234,7 @@ than on an instance of a <code class="code docutils literal notranslate"><span c
 <p><code class="code docutils literal notranslate"><span class="pre">basis_pcoord1_bounds</span></code> is a list of [lower bound, upper bound]  of the basis in pcoord 1 space</p>
 <p><code class="code docutils literal notranslate"><span class="pre">target_pcoord1_bounds</span></code> is a list of [lower bound, upper bound]  of the target in pcoord 1 space</p>
 <p><code class="code docutils literal notranslate"><span class="pre">dim_reduce_method</span></code> is the dimensionality reduction method (“pca”, “vamp”, or “none”)</p>
+<p><code class="code docutils literal notranslate"><span class="pre">tau</span></code> is the resampling time, or the length of one WE iteration in physical units.</p>
 </div></blockquote>
 </li>
 <li><p>Load all coords and pcoords up to the last iteration you want to use for analysis with</p>

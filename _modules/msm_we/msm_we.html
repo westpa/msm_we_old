@@ -173,6 +173,8 @@
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
 <span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">IncrementalPCA</span> <span class="k">as</span> <span class="n">iPCA</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span> <span class="k">as</span> <span class="n">kmeans</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">MiniBatchKMeans</span> <span class="k">as</span> <span class="n">mini_kmeans</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">rich.logging</span> <span class="kn">import</span> <span class="n">RichHandler</span>
@@ -249,8 +251,6 @@
         <span class="sd">&quot;&quot;&quot;int: Number of files in :code:`fileList`</span>
 
 <span class="sd">        **TODO**: Deprecate this, this could just be a property&quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_seed</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">n_lag</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span> <span class="o">=</span> <span class="kc">None</span>
@@ -365,6 +365,7 @@
         <span class="n">basis_pcoord_bounds</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">target_pcoord_bounds</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dim_reduce_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
+        <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the model-builder.</span>
@@ -388,6 +389,9 @@
 
 <span class="sd">        dim_reduce_method: str</span>
 <span class="sd">            Dimensionality reduction method. &quot;pca&quot;, &quot;vamp&quot;, or &quot;none&quot;.</span>
+
+<span class="sd">        tau: float</span>
+<span class="sd">            Resampling time (i.e. time of 1 WE iteration). Used to map fluxes to physical times.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -436,7 +440,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_len</span> <span class="o">=</span> <span class="mi">2</span>
         <span class="c1"># self.pcoord_len = 50</span>
-        <span class="n">tau</span> <span class="o">=</span> <span class="mf">10.0e-12</span>
+
+        <span class="k">if</span> <span class="n">tau</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No tau provided, defaulting to 1.&quot;</span><span class="p">)</span>
+            <span class="n">tau</span> <span class="o">=</span> <span class="mf">1.0</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span>
 
         <span class="c1"># This is really only used for nAtoms</span>
@@ -1914,9 +1922,7 @@
 
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Clusters have not been computed!&quot;</span>
 
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Dtrajs len: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">dtrajs</span><span class="p">)</span><span class="si">}</span><span class="s2">, [0] shape: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">dtrajs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dtrajs len: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="p">)</span><span class="si">}</span><span class="s2">, [0] shape: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">cluster_structures</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">cluster_structure_weights</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -1956,7 +1962,7 @@
 
                 <span class="c1"># log.debug(f&quot;Iteration {iteration}, segment {_seg}, segs in iter {segs_in_iter}&quot;)</span>
                 <span class="c1"># iteration-1 because dtrajs has n_iterations-1 elements</span>
-                <span class="n">cluster_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">dtrajs</span><span class="p">[</span><span class="n">iteration</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">_seg</span><span class="p">]</span>
+                <span class="n">cluster_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="p">[</span><span class="n">iteration</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">_seg</span><span class="p">]</span>
 
                 <span class="k">if</span> <span class="n">cluster_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">removed_clusters</span><span class="p">:</span>
                     <span class="c1"># log.debug(f&quot;Skipping cluster {cluster_idx}&quot;)</span>
@@ -2016,70 +2022,84 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Doing clustering&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Doing clustering on </span><span class="si">{</span><span class="n">n_clusters</span><span class="si">}</span><span class="s2"> clusters&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="n">n_clusters</span>
-        <span class="n">streaming</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># streaming = False</span>
 
-        <span class="n">cluster_func</span> <span class="o">=</span> <span class="n">coor</span><span class="o">.</span><span class="n">cluster_kmeans</span>
+        <span class="k">if</span> <span class="s2">&quot;metric&quot;</span> <span class="ow">in</span> <span class="n">_cluster_args</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;k&quot;</span> <span class="ow">in</span> <span class="n">_cluster_args</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;You&#39;re passing pyemma-style arguments to k-means. K-means now uses sklearn, please update&quot;</span>
+                <span class="s2">&quot;your code accordingly.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;PyEmma style arguments passed to kmeans, which is now based on sklearn&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># Set some default arguments, and overwrite them with the user&#39;s choices if provided</span>
         <span class="n">cluster_args</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">n_clusters</span><span class="p">,</span>
-            <span class="s2">&quot;fixed_seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_seed</span><span class="p">,</span>
-            <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;n_clusters&quot;</span><span class="p">:</span> <span class="n">n_clusters</span><span class="p">,</span>
             <span class="s2">&quot;max_iter&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
         <span class="p">}</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">cluster_args</span><span class="p">[</span><span class="s2">&quot;metric&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;minRMSD&quot;</span>
-
-        <span class="k">if</span> <span class="n">streaming</span><span class="p">:</span>
-            <span class="n">cluster_func</span> <span class="o">=</span> <span class="n">coor</span><span class="o">.</span><span class="n">cluster_mini_batch_kmeans</span>
-            <span class="c1"># Update some of the arguments to mini_batch_kmeans</span>
-            <span class="k">pass</span>
-
         <span class="n">cluster_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_cluster_args</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">streaming</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="n">cluster_model</span> <span class="o">=</span> <span class="n">mini_kmeans</span><span class="p">(</span><span class="o">**</span><span class="n">cluster_args</span><span class="p">)</span>
+            <span class="c1"># TODO: Any mini_batch_kmeans specific arguments?</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_func</span><span class="p">(</span>
-                    <span class="p">[</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                            <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span>
-                        <span class="p">)</span>
-                        <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="p">],</span>
-                    <span class="o">**</span><span class="n">cluster_args</span><span class="p">,</span>
-                <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">streaming</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Streaming clustering is not supported for dimReduceMethod &#39;none&#39;. Using standard k-means.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">cluster_model</span> <span class="o">=</span> <span class="n">kmeans</span><span class="p">(</span><span class="o">**</span><span class="n">cluster_args</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cluster_model</span> <span class="o">=</span> <span class="n">kmeans</span><span class="p">(</span><span class="o">**</span><span class="n">cluster_args</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+
+            <span class="n">_data</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">stacked_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">_data</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">stacked_data</span><span class="p">)</span>
 
             <span class="c1"># Else here is a little sketchy, but fractional nAtoms is useful for some debugging hacks.</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_func</span><span class="p">(</span>
-                    <span class="p">[</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-                            <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span>
-                        <span class="p">)</span>
-                        <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="p">],</span>
-                    <span class="o">**</span><span class="n">cluster_args</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">stacked_data</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[</span><span class="n">cluster_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">iter_trajs</span><span class="p">)</span> <span class="k">for</span> <span class="n">iter_trajs</span> <span class="ow">in</span> <span class="n">_data</span><span class="p">]</span>
 
         <span class="c1"># Right now, this doesn&#39;t do anything differently, and is just a placeholder.</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;pca&quot;</span> <span class="ow">and</span> <span class="n">streaming</span><span class="p">:</span>
 
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;PCA + streaming clustering is not yet supported&quot;</span><span class="p">)</span>
-            <span class="n">transformed_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># raise NotImplementedError(&quot;PCA + streaming clustering is not yet supported&quot;)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
-                <span class="n">transformed_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">))</span>
+                <span class="n">transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
                 <span class="p">)</span>
 
-                <span class="c1"># Do partial clustering based on this iteration here</span>
-                <span class="k">pass</span>
+                <span class="c1"># This better pass, but just be sure.</span>
+                <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">cluster_model</span><span class="p">)</span> <span class="ow">is</span> <span class="n">mini_kmeans</span>
+
+                <span class="n">cluster_model</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">transformed_coords</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span>
+
+            <span class="c1"># Now compute dtrajs from the final model</span>
+            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
+                <span class="n">transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cluster_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">transformed_coords</span><span class="p">))</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;vamp&quot;</span> <span class="ow">and</span> <span class="n">streaming</span><span class="p">:</span>
 
@@ -2100,11 +2120,22 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">))</span>
                     <span class="p">)</span>
 
+                <span class="n">stacked_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">transformed_data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">stacked_data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">cluster_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">iter_trajs</span><span class="p">)</span> <span class="k">for</span> <span class="n">iter_trajs</span> <span class="ow">in</span> <span class="n">transformed_data</span>
+                <span class="p">]</span>
+
             <span class="c1"># TODO: Make sure this is returned in the shape (iteration, ...)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;vamp&quot;</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Clustering VAMP-reduced data still very experimental!&quot;</span><span class="p">)</span>
+
                 <span class="n">transformed_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">get_output</span><span class="p">()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_func</span><span class="p">(</span><span class="n">transformed_data</span><span class="p">,</span> <span class="o">**</span><span class="n">cluster_args</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">transformed_data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">cluster_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">iter_trajs</span><span class="p">)</span> <span class="k">for</span> <span class="n">iter_trajs</span> <span class="ow">in</span> <span class="n">transformed_data</span>
+                <span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">clusterFile</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">modelName</span>
@@ -2117,7 +2148,8 @@
             <span class="o">+</span> <span class="s2">&quot;.h5&quot;</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">dtrajs</span>
+        <span class="c1"># self.dtrajs = self.clusters.dtrajs</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Clustering completed.&quot;</span><span class="p">)</span></div>
         <span class="c1"># log.debug(f&quot;Dtrajs: {self.clusters.dtrajs}&quot;)</span>
@@ -2205,8 +2237,8 @@
         <span class="p">)</span>
         <span class="n">reduced_final</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduceCoordinates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordPairList</span><span class="p">[</span><span class="n">good_coords</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">])</span>
 
-        <span class="n">start_cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">reduced_initial</span><span class="p">)</span>
-        <span class="n">end_cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">reduced_final</span><span class="p">)</span>
+        <span class="n">start_cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">reduced_initial</span><span class="p">)</span>
+        <span class="n">end_cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">reduced_final</span><span class="p">)</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cluster 0 shape: </span><span class="si">{</span><span class="n">start_cluster</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -2542,8 +2574,6 @@
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cleaning flux matrix&quot;</span><span class="p">)</span>
 
         <span class="c1"># Discretize trajectories via clusters</span>
-        <span class="n">dtrajs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span>
-
         <span class="c1"># Get the indices of the target and basis clusters</span>
         <span class="n">target_cluster_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># Target at -1</span>
         <span class="n">basis_cluster_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span>  <span class="c1"># basis at -2</span>
@@ -2566,7 +2596,7 @@
             <span class="k">for</span> <span class="n">cluster_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">):</span>
                 <span class="c1"># Get the indices of the dtraj points in this cluster</span>
                 <span class="n">idx_traj_in_cluster</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dtraj</span> <span class="o">==</span> <span class="n">cluster_index</span><span class="p">)</span> <span class="k">for</span> <span class="n">dtraj</span> <span class="ow">in</span> <span class="n">dtrajs</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dtraj</span> <span class="o">==</span> <span class="n">cluster_index</span><span class="p">)</span> <span class="k">for</span> <span class="n">dtraj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span>
                 <span class="p">]</span>
 
                 <span class="c1"># Get the pcoord points that correspond to these dtraj points</span>
