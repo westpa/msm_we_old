@@ -851,6 +851,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">reference_coord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">topology</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="k">return</span>
+            
+            <span class="k">elif</span> <span class="n">topology</span><span class="p">[</span><span class="o">-</span><span class="mi">6</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;prmtop&quot;</span><span class="p">:</span>
+                <span class="n">struct</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">load_prmtop</span><span class="p">(</span><span class="n">topology</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reference_structure</span> <span class="o">=</span> <span class="n">struct</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">n_atoms</span>
+                <span class="k">return</span>
 
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">topology</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;pdb&quot;</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
