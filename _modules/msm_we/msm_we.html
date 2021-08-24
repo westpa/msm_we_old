@@ -663,7 +663,7 @@
 
         <span class="n">n_segs</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="c1"># Iterate through each file index, trying to find a file that contains the iteration of interest</span>
+        <span class="c1"># Iterate through each file index, trying to find files that contains the iteration of interest</span>
         <span class="c1"># TODO: Can replace this with `for if, fileName in enumerate(self.\\)`</span>
         <span class="k">for</span> <span class="n">file_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_data_files</span><span class="p">):</span>
             <span class="n">fileName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileList</span><span class="p">[</span><span class="n">file_idx</span><span class="p">]</span>
@@ -674,7 +674,15 @@
 
                 <span class="c1"># Check if the dataset</span>
                 <span class="n">dataset_exists</span> <span class="o">=</span> <span class="n">dsetName</span> <span class="ow">in</span> <span class="n">dataIn</span>
-                <span class="k">if</span> <span class="n">dataset_exists</span><span class="p">:</span>
+
+                <span class="c1"># Check to make sure this isn&#39;t the last iteration -- last iterations have incomplete data</span>
+                <span class="n">is_not_last_iteration</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;/iterations/iter_</span><span class="si">%08d</span><span class="s2">/seg_index&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">in</span> <span class="n">dataIn</span>
+                <span class="p">)</span>
+
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;From file </span><span class="si">{</span><span class="n">fileName</span><span class="si">}</span><span class="s2">, loading iteration </span><span class="si">{</span><span class="n">n_iter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">dataset_exists</span> <span class="ow">and</span> <span class="n">is_not_last_iteration</span><span class="p">:</span>
 
                     <span class="n">dset</span> <span class="o">=</span> <span class="n">dataIn</span><span class="p">[</span><span class="n">dsetName</span><span class="p">]</span>
                     <span class="n">newSet</span> <span class="o">=</span> <span class="n">dset</span><span class="p">[:]</span>
@@ -756,8 +764,13 @@
                     <span class="n">dsetName</span> <span class="o">=</span> <span class="s2">&quot;/iterations/iter_</span><span class="si">%08d</span><span class="s2">/seg_index&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_iter</span><span class="p">)</span>
                     <span class="n">dataset_exists</span> <span class="o">=</span> <span class="n">dsetName</span> <span class="ow">in</span> <span class="n">dataIn</span>
 
-                    <span class="c1"># If this file does contain the iteration of interest</span>
-                    <span class="k">if</span> <span class="n">dataset_exists</span><span class="p">:</span>
+                    <span class="n">is_not_last_iteration</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="s2">&quot;/iterations/iter_</span><span class="si">%08d</span><span class="s2">/seg_index&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">in</span> <span class="n">dataIn</span>
+                    <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">dataset_exists</span> <span class="ow">and</span> <span class="n">is_not_last_iteration</span><span class="p">:</span>
+                        <span class="c1"># If this file does contain the iteration of interest</span>
+                        <span class="c1"># if dataset_exists:</span>
                         <span class="n">dset</span> <span class="o">=</span> <span class="n">dataIn</span><span class="p">[</span><span class="n">dsetName</span><span class="p">]</span>
                         <span class="n">newSet</span> <span class="o">=</span> <span class="n">dset</span><span class="p">[:]</span>
                         <span class="n">nS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">newSet</span><span class="p">)</span>
@@ -1572,6 +1585,23 @@
                     <span class="n">coord</span> <span class="o">=</span> <span class="n">dset</span><span class="p">[:]</span>
                 <span class="n">cur_iter_coords</span><span class="p">[</span><span class="n">iS</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">segindList</span><span class="p">[</span><span class="n">iS</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
 
+            <span class="c1"># KeyError is thrown if coordinates don&#39;t exist for this segment at this iteration</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">westFile</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;No coordinates for segment </span><span class="si">{</span><span class="n">iS</span><span class="si">}</span><span class="s2">, at iteration </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Tried to reference </span><span class="si">{</span><span class="n">dsetName</span><span class="si">}</span><span class="s2"> thinking there were </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;From segindlist: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segindList</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Segment with total index </span><span class="si">{</span><span class="n">iS</span><span class="si">}</span><span class="s2"> has index </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segindList</span><span class="p">[</span><span class="n">iS</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;segindlist: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segindList</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">cur_iter_coords</span><span class="p">[</span><span class="n">iS</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+
             <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="s2">&quot;error getting coordinates from &quot;</span>
@@ -1635,9 +1665,11 @@
                 <span class="n">coordSet</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coordSet</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_iter_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_coords</span> <span class="o">=</span> <span class="n">coordSet</span></div>
 
-<div class="viewcode-block" id="modelWE.get_coordSet"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_coordSet">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordSet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last_iter</span><span class="p">):</span>
+<div class="viewcode-block" id="modelWE.get_coordSet"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_coordSet">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordSet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last_iter</span><span class="p">,</span> <span class="n">streaming</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads all coordinates and progress coordinates into memory for later usage.</span>
+
+<span class="sd">        If streaming, then this only loads pcoords</span>
 
 <span class="sd">        Todo</span>
 <span class="sd">        ----</span>
@@ -1653,12 +1685,13 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;pca&quot;</span><span class="p">:</span>
-            <span class="n">streaming</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">streaming</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;vamp&quot;</span><span class="p">:</span>
             <span class="n">streaming</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">streaming</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">streaming</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="n">total_segments</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numSegments</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CoordSet loading up to </span><span class="si">{</span><span class="n">last_iter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">total_segments</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numSegments</span><span class="p">[:</span><span class="n">last_iter</span><span class="p">]))</span>
 
         <span class="n">coordSet</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">total_segments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
         <span class="n">pcoordSet</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">total_segments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
@@ -1937,9 +1970,10 @@
         <span class="n">all_seg_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numSegments</span><span class="p">)),</span> <span class="n">fill_value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">total_num_iterations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numSegments</span><span class="p">)</span>
+        <span class="c1"># total_num_iterations = len(self.numSegments)</span>
+        <span class="n">total_num_iterations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span>
         <span class="c1"># Don&#39;t include the last iteration, where dynamics didn&#39;t run</span>
-        <span class="k">for</span> <span class="n">_iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_num_iterations</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">iter_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_weights</span><span class="p">[</span><span class="n">_iter</span><span class="p">]</span>
 
             <span class="c1"># This is an array, not a dict, so index by... well, index, and not iter_number</span>
@@ -1959,16 +1993,25 @@
         <span class="c1"># Assign each segment to a cluster by iterating over coords</span>
         <span class="c1"># Track the &quot;absolute&quot; segment index because all_seg_weights is a flat list</span>
         <span class="n">seg_idx</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_num_iterations</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
 
             <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
-            <span class="n">segs_in_iter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">segs_in_iter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numSegments</span><span class="p">[</span><span class="n">iteration</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
 
             <span class="k">for</span> <span class="n">_seg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">segs_in_iter</span><span class="p">):</span>
 
                 <span class="c1"># log.debug(f&quot;Iteration {iteration}, segment {_seg}, segs in iter {segs_in_iter}&quot;)</span>
                 <span class="c1"># iteration-1 because dtrajs has n_iterations-1 elements</span>
-                <span class="n">cluster_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="p">[</span><span class="n">iteration</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">_seg</span><span class="p">]</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">cluster_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="p">[</span><span class="n">iteration</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">_seg</span><span class="p">]</span>
+
+                <span class="c1"># This *should* trip if there was no data for this segments</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Tried to get dtraj for seg </span><span class="si">{</span><span class="n">_seg</span><span class="si">}</span><span class="s2"> at iteration </span><span class="si">{</span><span class="n">iteration</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
 
                 <span class="k">if</span> <span class="n">cluster_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">removed_clusters</span><span class="p">:</span>
                     <span class="c1"># log.debug(f&quot;Skipping cluster {cluster_idx}&quot;)</span>
@@ -2070,7 +2113,7 @@
 
                 <span class="n">_data</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">)</span>
                 <span class="p">]</span>
                 <span class="n">stacked_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">_data</span><span class="p">)</span>
 
@@ -2088,7 +2131,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[]</span>
 
-                <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">):</span>
                     <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                         <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span>
                     <span class="p">)</span>
@@ -2101,7 +2144,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span>
 
                 <span class="c1"># Now compute dtrajs from the final model</span>
-                <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">):</span>
                     <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                         <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span>
                     <span class="p">)</span>
@@ -2113,7 +2156,7 @@
             <span class="c1"># raise NotImplementedError(&quot;PCA + streaming clustering is not yet supported&quot;)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">):</span>
                 <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
                 <span class="n">transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
@@ -2127,7 +2170,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span>
 
             <span class="c1"># Now compute dtrajs from the final model</span>
-            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">):</span>
                 <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
                 <span class="n">transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
@@ -2148,11 +2191,12 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;pca&quot;</span><span class="p">:</span>
                 <span class="n">transformed_data</span> <span class="o">=</span> <span class="p">[]</span>
 
-                <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">):</span>
                     <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
                     <span class="n">transformed_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">))</span>
                     <span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Appended trajs for iter </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                 <span class="n">stacked_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">transformed_data</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">stacked_data</span><span class="p">)</span>
@@ -2653,9 +2697,15 @@
                 <span class="k">elif</span> <span class="n">n_in_cluster</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># cluster_pcoord_centers[iC]=np.mean(self.get_reference_rmsd(self.coordSet[idx_traj_in_cluster[0],:,:]))</span>
                     <span class="c1"># The coordinate of this cluster center is the average pcoord of all points in it</span>
-                    <span class="n">cluster_pcoord_centers</span><span class="p">[</span><span class="n">cluster_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">pcoordSet</span><span class="p">[</span><span class="n">pcoord_indices</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-                    <span class="p">)</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">cluster_pcoord_centers</span><span class="p">[</span><span class="n">cluster_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">pcoordSet</span><span class="p">[</span><span class="n">pcoord_indices</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                        <span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Offset is </span><span class="si">{</span><span class="n">offset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">pcoord_indices</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="n">e</span>
 
                 <span class="c1"># Get the total flux along the row and col of this index</span>
                 <span class="n">net_flux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">fluxMatrixTraps</span><span class="p">[:,</span> <span class="n">cluster_index</span><span class="p">])</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
@@ -2913,12 +2963,46 @@
         <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pSS</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;Steady-state distribution sums to 0!&quot;</span>
         <span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pSS</span><span class="p">)</span>
 
-        <span class="c1"># Remove values that are below machine precision</span>
-        <span class="n">pSS_eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">pSS</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
-        <span class="n">pSS</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pSS</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">pSS_eps</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="c1"># # Remove values that are below machine precision</span>
+        <span class="c1"># pSS_eps = np.finfo(pSS.dtype).eps</span>
+        <span class="c1"># pSS[np.abs(pSS) &lt; pSS_eps] = 0.0</span>
+        <span class="c1">#</span>
+        <span class="c1"># # Normalize after removing these very small values</span>
+        <span class="c1"># pSS = pSS / np.sum(pSS)</span>
 
-        <span class="c1"># Normalize after removing these very small values</span>
-        <span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pSS</span><span class="p">)</span>
+        <span class="c1"># The numpy eigensolver is iterative, and approximate. Given that data from WE often spans many orders of</span>
+        <span class="c1">#   magnitude, we&#39;ll sometimes run into situations where our populations span more than machine precision.</span>
+        <span class="c1">#   This causes hiccups in the eigensolver. However, we can&#39;t just zero these out (as attempted above),</span>
+        <span class="c1">#   because these values are often important.</span>
+        <span class="c1"># So, if there are any negative elements, try to correct the NP eigensolver result using the matrix method</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pSS</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;Negative elements in pSS after normalization, attempting to correct with matrix power method.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">max_iters</span> <span class="o">=</span> <span class="mi">1000</span>
+            <span class="n">pSS_last</span> <span class="o">=</span> <span class="n">pSS</span>
+            <span class="n">_tmatrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">N</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iters</span><span class="p">):</span>
+
+                <span class="n">pSS_new</span> <span class="o">=</span> <span class="n">_tmatrix</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">pSS_last</span>
+                <span class="n">num_negative_elements</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pSS_new</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">num_negative_elements</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Reached convergence to semidefinite pSS in </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2"> iterations&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="n">pSS_last</span> <span class="o">=</span> <span class="n">pSS_new</span>
+                <span class="n">_tmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span><span class="p">,</span> <span class="n">_tmatrix</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">N</span> <span class="o">==</span> <span class="n">max_iters</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Power method did NOT converge. Some negative values remain. This is weird, and you&quot;</span>
+                    <span class="s2">&quot; should try to figure out why this is happening.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS_new</span>
 
         <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
             <span class="n">pSS</span> <span class="o">&gt;=</span> <span class="mi">0</span>
