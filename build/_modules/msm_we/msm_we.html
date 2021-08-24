@@ -2968,7 +2968,33 @@
                 <span class="n">Mt</span><span class="p">[</span><span class="n">iR</span><span class="p">,</span> <span class="n">iR</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span> <span class="o">=</span> <span class="n">Mt</span>
 
-    <span class="k">def</span> <span class="nf">get_steady_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flux_fractional_convergence</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<div class="viewcode-block" id="modelWE.get_steady_state"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_steady_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_steady_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flux_fractional_convergence</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;</span>
+<span class="sd">        Get the steady-state distribution for the transition matrix.</span>
+<span class="sd">        Uses scipy eigensolver to obtain an initial guess, then refines that using inverse iteration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        flux_fractional_convergence: (optional, default=1e-4) float</span>
+<span class="sd">            Convergence of the</span>
+
+<span class="sd">        max_iters: (optional, default=100) int</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Transition matrices generated from WE data may have entries spanning many orders of magnitude, and may have</span>
+<span class="sd">        extremely high condition numbers.</span>
+<span class="sd">        Furthermore, the smallest entries may be those near the target state, which are also the most important</span>
+<span class="sd">        for computing target fluxes, meaning values near machine precision can&#39;t just be truncated.</span>
+<span class="sd">        All this means that floating-point error may substantially affect the results of eigensolvers, and may produce</span>
+<span class="sd">        bad/negative/inaccurate values for small probability bins.</span>
+
+<span class="sd">        In order to obtain better estimates, sparse matrices are used to reduce the number of floating point operations</span>
+<span class="sd">        being performed.</span>
+<span class="sd">        A stationary distribution is first estimated using scipy&#39;s eigensolver for sparse matrices.</span>
+<span class="sd">        This is then used as an initial guess for the inverse iteration method, to further refine it.</span>
+<span class="sd">        Convergence of the inverse iteration is determined using change in the flux estimate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Cast the matrix to a sparse matrix, to reduce floating point operations</span>
         <span class="n">sparse_mat</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span><span class="p">)</span>
@@ -3014,13 +3040,23 @@
             <span class="p">)</span>
             <span class="n">last_flux</span> <span class="o">=</span> <span class="n">new_flux</span>
 
+            <span class="c1"># Set the convergence criterion after one iteration, in case the original result is really junk</span>
+            <span class="k">if</span> <span class="n">N</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">flux_convergence_criterion</span> <span class="o">=</span> <span class="n">last_flux</span> <span class="o">*</span> <span class="n">flux_fractional_convergence</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Flux convergence is at </span><span class="si">{</span><span class="n">flux_convergence_criterion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
             <span class="k">if</span> <span class="n">flux_change</span> <span class="o">&lt;</span> <span class="n">flux_convergence_criterion</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Fluxes converged to </span><span class="si">{</span><span class="n">last_flux</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> after </span><span class="si">{</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2"> iterations of inverse iteration.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Flux converged to </span><span class="si">{</span><span class="n">last_flux</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> after </span><span class="si">{</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2"> iterations of inverse iteration.&quot;</span>
                 <span class="p">)</span>
                 <span class="k">break</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">pSS</span> <span class="o">=</span> <span class="n">last_pSS</span>
+            <span class="k">elif</span> <span class="n">N</span> <span class="o">==</span> <span class="n">max_iters</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">last_flux</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Flux is nonzero and did not converge!&quot;</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DONE&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pSS</span> <span class="o">=</span> <span class="n">last_pSS</span></div>
 
 <div class="viewcode-block" id="modelWE.get_steady_state_algebraic"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_steady_state_algebraic">[docs]</a>    <span class="k">def</span> <span class="nf">get_steady_state_algebraic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

@@ -1062,6 +1062,34 @@ Corrects the “target” states to be true sink states.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="msm_we.msm_we.modelWE.get_steady_state">
+<span class="sig-name descname"><span class="pre">get_steady_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flux_fractional_convergence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_steady_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_steady_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>”
+Get the steady-state distribution for the transition matrix.
+Uses scipy eigensolver to obtain an initial guess, then refines that using inverse iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flux_fractional_convergence</strong> (<em>(</em><em>optional</em><em>, </em><em>default=1e-4</em><em>) </em><em>float</em>) – Convergence of the</p></li>
+<li><p><strong>max_iters</strong> (<em>(</em><em>optional</em><em>, </em><em>default=100</em><em>) </em><em>int</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Transition matrices generated from WE data may have entries spanning many orders of magnitude, and may have
+extremely high condition numbers.
+Furthermore, the smallest entries may be those near the target state, which are also the most important
+for computing target fluxes, meaning values near machine precision can’t just be truncated.
+All this means that floating-point error may substantially affect the results of eigensolvers, and may produce
+bad/negative/inaccurate values for small probability bins.</p>
+<p>In order to obtain better estimates, sparse matrices are used to reduce the number of floating point operations
+being performed.
+A stationary distribution is first estimated using scipy’s eigensolver for sparse matrices.
+This is then used as an initial guess for the inverse iteration method, to further refine it.
+Convergence of the inverse iteration is determined using change in the flux estimate.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="msm_we.msm_we.modelWE.get_steady_state_algebraic">
 <span class="sig-name descname"><span class="pre">get_steady_state_algebraic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_steady_state_algebraic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_steady_state_algebraic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the steady-state distribution as the eigenvectors of the transition matrix.</p>
