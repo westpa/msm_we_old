@@ -172,6 +172,7 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sparse</span>
 <span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">IncrementalPCA</span> <span class="k">as</span> <span class="n">iPCA</span>
 <span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span> <span class="k">as</span> <span class="n">kmeans</span>
 <span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">MiniBatchKMeans</span> <span class="k">as</span> <span class="n">mini_kmeans</span>
@@ -193,6 +194,38 @@
 <span class="kn">import</span> <span class="nn">pyemma.coordinates</span> <span class="k">as</span> <span class="nn">coor</span>
 <span class="kn">import</span> <span class="nn">pyemma.coordinates.clustering</span> <span class="k">as</span> <span class="nn">clustering</span>
 <span class="kn">import</span> <span class="nn">pyemma</span>
+
+
+<div class="viewcode-block" id="inverse_iteration"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.inverse_iteration">[docs]</a><span class="k">def</span> <span class="nf">inverse_iteration</span><span class="p">(</span><span class="n">guess</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Do one iteration of inverse iteration.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    guess: array-like  (N elements)</span>
+<span class="sd">        Vector of weights to be used as the initial guess.</span>
+
+<span class="sd">    matrix: array-like (NxN elements)</span>
+<span class="sd">        Transition matrix to use for inverse iteration.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    The new vector of weights after one iteration of inverse iteration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Looking for eigenvector corresponding to eigenvalue 1</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">identity</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">guess</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Inverse</span>
+    <span class="n">inverse</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">identity</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">inverse</span> <span class="o">@</span> <span class="n">guess</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+    <span class="c1"># Normalize</span>
+    <span class="n">result</span> <span class="o">/=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
 
 
 <div class="viewcode-block" id="modelWE"><a class="viewcode-back" href="../../stubs/msm_we.msm_we.modelWE.html#msm_we.msm_we.modelWE">[docs]</a><span class="k">class</span> <span class="nc">modelWE</span><span class="p">:</span>
@@ -864,7 +897,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">reference_coord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">topology</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="k">return</span>
-            
+
             <span class="k">elif</span> <span class="n">topology</span><span class="p">[</span><span class="o">-</span><span class="mi">6</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;prmtop&quot;</span><span class="p">:</span>
                 <span class="n">struct</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">load_prmtop</span><span class="p">(</span><span class="n">topology</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">reference_structure</span> <span class="o">=</span> <span class="n">struct</span>
@@ -2935,6 +2968,60 @@
                 <span class="n">Mt</span><span class="p">[</span><span class="n">iR</span><span class="p">,</span> <span class="n">iR</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span> <span class="o">=</span> <span class="n">Mt</span>
 
+    <span class="k">def</span> <span class="nf">get_steady_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flux_fractional_convergence</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+
+        <span class="c1"># Cast the matrix to a sparse matrix, to reduce floating point operations</span>
+        <span class="n">sparse_mat</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span><span class="p">)</span>
+
+        <span class="c1"># ## First, get the scipy solver result</span>
+        <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigs</span><span class="p">(</span>
+            <span class="n">sparse_mat</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;LR&quot;</span>
+        <span class="p">)</span>
+        <span class="n">max_eigval_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">))</span>
+        <span class="n">algebraic_pss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">eigenvectors</span><span class="p">[:,</span> <span class="n">max_eigval_index</span><span class="p">])</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+        <span class="c1"># and normalize it</span>
+        <span class="n">algebraic_pss</span> <span class="o">/=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">algebraic_pss</span><span class="p">)</span>
+
+        <span class="c1"># Get an initial flux estimate using that</span>
+        <span class="c1"># Call with _set=False so you don&#39;t actually update self.JtargetSS</span>
+        <span class="n">last_flux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_steady_state_target_flux</span><span class="p">(</span><span class="n">pSS</span><span class="o">=</span><span class="n">algebraic_pss</span><span class="p">,</span> <span class="n">_set</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># ## Next, use that as an initial guess  for inverse iteration</span>
+
+        <span class="c1"># Call it converged when the flux estimate stops changing by this much</span>
+        <span class="n">flux_convergence_criterion</span> <span class="o">=</span> <span class="n">last_flux</span> <span class="o">*</span> <span class="n">flux_fractional_convergence</span>
+
+        <span class="n">last_pSS</span> <span class="o">=</span> <span class="n">algebraic_pss</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial flux: </span><span class="si">{</span><span class="n">last_flux</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">N</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iters</span><span class="p">):</span>
+
+            <span class="n">iterated</span> <span class="o">=</span> <span class="n">inverse_iteration</span><span class="p">(</span><span class="n">matrix</span><span class="o">=</span><span class="n">sparse_mat</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">last_pSS</span><span class="p">)</span>
+
+            <span class="c1"># Compute change in pSS</span>
+            <span class="n">pSS_change</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">iterated</span> <span class="o">-</span> <span class="n">last_pSS</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> Change in SS: </span><span class="si">{</span><span class="n">pSS_change</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">last_pSS</span> <span class="o">=</span> <span class="n">iterated</span>
+
+            <span class="c1"># Compute change in target flux with the new pSS</span>
+            <span class="n">new_flux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_steady_state_target_flux</span><span class="p">(</span><span class="n">pSS</span><span class="o">=</span><span class="n">last_pSS</span><span class="p">,</span> <span class="n">_set</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">flux_change</span> <span class="o">=</span> <span class="n">new_flux</span> <span class="o">-</span> <span class="n">last_flux</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> Change in flux estimate: </span><span class="si">{</span><span class="n">flux_change</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> (</span><span class="si">{</span><span class="n">new_flux</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> raw)&quot;</span>
+            <span class="p">)</span>
+            <span class="n">last_flux</span> <span class="o">=</span> <span class="n">new_flux</span>
+
+            <span class="k">if</span> <span class="n">flux_change</span> <span class="o">&lt;</span> <span class="n">flux_convergence_criterion</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Fluxes converged to </span><span class="si">{</span><span class="n">last_flux</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> after </span><span class="si">{</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2"> iterations of inverse iteration.&quot;</span>
+                <span class="p">)</span>
+                <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pSS</span> <span class="o">=</span> <span class="n">last_pSS</span>
+
 <div class="viewcode-block" id="modelWE.get_steady_state_algebraic"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_steady_state_algebraic">[docs]</a>    <span class="k">def</span> <span class="nf">get_steady_state_algebraic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the steady-state distribution as the eigenvectors of the transition matrix.</span>
@@ -2947,28 +3034,21 @@
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;get_steady_state_algebraic() will be deprecated soon. Use get_steady_state() instead, which has&quot;</span>
+            <span class="s2">&quot; a more robust eigensolver.&quot;</span>
+        <span class="p">)</span>
+
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Computing steady-state from eigenvectors&quot;</span><span class="p">)</span>
 
         <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span><span class="p">))</span>
 
         <span class="n">pSS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">eigenvectors</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">))])</span>
 
-        <span class="c1"># Flatten the array out.</span>
-        <span class="c1"># For some reason, sometimes it&#39;s of the shape (n_eigenvectors, 1) instead of (n_eigenvectors,), meaning each</span>
-        <span class="c1">#   element is its own sub-array.</span>
-        <span class="c1"># I can&#39;t seem to consistently replicate this behavior, but I&#39;m sure it&#39;s  just some numpy weirdness I don&#39;t</span>
-        <span class="c1">#   fully understand. However, ravel/squeeze will flatten that out and fix that.</span>
-        <span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 
         <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pSS</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;Steady-state distribution sums to 0!&quot;</span>
         <span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pSS</span><span class="p">)</span>
-
-        <span class="c1"># # Remove values that are below machine precision</span>
-        <span class="c1"># pSS_eps = np.finfo(pSS.dtype).eps</span>
-        <span class="c1"># pSS[np.abs(pSS) &lt; pSS_eps] = 0.0</span>
-        <span class="c1">#</span>
-        <span class="c1"># # Normalize after removing these very small values</span>
-        <span class="c1"># pSS = pSS / np.sum(pSS)</span>
 
         <span class="c1"># The numpy eigensolver is iterative, and approximate. Given that data from WE often spans many orders of</span>
         <span class="c1">#   magnitude, we&#39;ll sometimes run into situations where our populations span more than machine precision.</span>
@@ -3043,7 +3123,7 @@
                 <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;N=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; dconv: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dconv</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="modelWE.get_steady_state_target_flux"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_steady_state_target_flux">[docs]</a>    <span class="k">def</span> <span class="nf">get_steady_state_target_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="modelWE.get_steady_state_target_flux"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_steady_state_target_flux">[docs]</a>    <span class="k">def</span> <span class="nf">get_steady_state_target_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pSS</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_set</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the total flux into the target state(s).</span>
 
@@ -3051,15 +3131,26 @@
 <span class="sd">            - `self.lagtime`</span>
 <span class="sd">            - `self.JtargetSS`</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pSS: (optional) array-like</span>
+<span class="sd">            Steady-state distribution. If nothing provided, then use self.pSS</span>
+
+<span class="sd">        _set: (optional) boolean</span>
+<span class="sd">            If True, then update self.JtargetSS and self.lagtime. If False, then just return the value of JtargetSS.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">Mss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span>
-        <span class="n">pSS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pSS</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lagtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lag</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># If no pSS was provided, then pull from self</span>
+        <span class="k">if</span> <span class="n">pSS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pSS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pSS</span><span class="p">))</span>
+
+        <span class="n">lagtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_lag</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># Get a list of all the states that AREN&#39;T targets, since we want to sum up</span>
         <span class="n">nTargets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indTargets</span><span class="o">.</span><span class="n">size</span>
@@ -3084,7 +3175,11 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">JtargetSS</span> <span class="o">=</span> <span class="n">Jt</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lagtime</span></div>
+        <span class="k">if</span> <span class="n">_set</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lagtime</span> <span class="o">=</span> <span class="n">lagtime</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">JtargetSS</span> <span class="o">=</span> <span class="n">Jt</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lagtime</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Jt</span> <span class="o">/</span> <span class="n">lagtime</span></div>
 
     <span class="k">def</span> <span class="nf">evolve_probability</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">nEvolve</span><span class="p">,</span> <span class="n">nStore</span>

@@ -47,6 +47,7 @@
       ~modelWE.get_model_steady_state_aristoffian
       ~modelWE.get_pcoord1D_fluxMatrix
       ~modelWE.get_seg_histories
+      ~modelWE.get_steady_state
       ~modelWE.get_steady_state_algebraic
       ~modelWE.get_steady_state_matrixpowers
       ~modelWE.get_steady_state_target_flux

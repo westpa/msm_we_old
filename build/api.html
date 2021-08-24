@@ -183,6 +183,26 @@
 </tbody>
 </table>
 <span class="target" id="module-msm_we.msm_we"></span><p>Main module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.msm_we.inverse_iteration">
+<span class="sig-prename descclassname"><span class="pre">msm_we.msm_we.</span></span><span class="sig-name descname"><span class="pre">inverse_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">guess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#inverse_iteration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.inverse_iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do one iteration of inverse iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>guess</strong> (<em>array-like</em><em>  (</em><em>N elements</em><em>)</em>) – Vector of weights to be used as the initial guess.</p></li>
+<li><p><strong>matrix</strong> (<em>array-like</em><em> (</em><em>NxN elements</em><em>)</em>) – Transition matrix to use for inverse iteration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The new vector of weights after one iteration of inverse iteration.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="msm_we.msm_we.modelWE">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.msm_we.</span></span><span class="sig-name descname"><span class="pre">modelWE</span></span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE" title="Permalink to this definition">¶</a></dt>
@@ -1086,7 +1106,7 @@ Corrects the “target” states to be true sink states.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="msm_we.msm_we.modelWE.get_steady_state_target_flux">
-<span class="sig-name descname"><span class="pre">get_steady_state_target_flux</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_steady_state_target_flux"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_steady_state_target_flux" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_steady_state_target_flux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pSS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_steady_state_target_flux"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_steady_state_target_flux" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the total flux into the target state(s).</p>
 <dl class="simple">
 <dt>Updates:</dt><dd><ul class="simple">
@@ -1096,11 +1116,17 @@ Corrects the “target” states to be true sink states.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pSS</strong> (<em>(</em><em>optional</em><em>) </em><em>array-like</em>) – Steady-state distribution. If nothing provided, then use self.pSS</p></li>
+<li><p><strong>_set</strong> (<em>(</em><em>optional</em><em>) </em><em>boolean</em>) – If True, then update self.JtargetSS and self.lagtime. If False, then just return the value of JtargetSS.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
