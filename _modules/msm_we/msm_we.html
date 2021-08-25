@@ -3046,7 +3046,7 @@
                 <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Flux convergence is at </span><span class="si">{</span><span class="n">flux_convergence_criterion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">flux_change</span> <span class="o">&lt;</span> <span class="n">flux_convergence_criterion</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">flux_change</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">flux_convergence_criterion</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Flux converged to </span><span class="si">{</span><span class="n">last_flux</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> after </span><span class="si">{</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2"> iterations of inverse iteration.&quot;</span>
                 <span class="p">)</span>
@@ -3104,9 +3104,7 @@
                 <span class="n">pSS_new</span> <span class="o">=</span> <span class="n">_tmatrix</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">pSS_last</span>
                 <span class="n">num_negative_elements</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pSS_new</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">num_negative_elements</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Reached convergence to semidefinite pSS in </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2"> iterations&quot;</span>
-                    <span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Corrected to semidefinite pSS in </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2"> iterations&quot;</span><span class="p">)</span>
                     <span class="k">break</span>
 
                 <span class="n">pSS_last</span> <span class="o">=</span> <span class="n">pSS_new</span>
@@ -3114,7 +3112,7 @@
 
             <span class="k">if</span> <span class="n">N</span> <span class="o">==</span> <span class="n">max_iters</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;Power method did NOT converge. Some negative values remain. This is weird, and you&quot;</span>
+                    <span class="s2">&quot;Power method did NOT obtain semidefinite pSS. Some negative values remain. This is weird, and you&quot;</span>
                     <span class="s2">&quot; should try to figure out why this is happening.&quot;</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
