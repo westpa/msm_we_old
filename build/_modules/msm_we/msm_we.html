@@ -454,29 +454,34 @@
                 <span class="s2">&quot;of paths.&quot;</span>
             <span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span> <span class="o">=</span> <span class="n">pcoord_ndim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_len</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_basis_pcoord_bounds</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">basis_pcoord_bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;No basis coord bounds provided to initialize(). &quot;</span>
                 <span class="s2">&quot;You can manually set this for now, but that will be deprecated eventually.&quot;</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_bounds</span> <span class="o">=</span> <span class="n">basis_pcoord_bounds</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basis_pcoord_bounds</span> <span class="o">=</span> <span class="n">basis_pcoord_bounds</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_pcoord_bounds</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">target_pcoord_bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;No target coord bounds provided to initialize(). &quot;</span>
                 <span class="s2">&quot;You can manually set this for now, but that will be deprecated eventually.&quot;</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_bounds</span> <span class="o">=</span> <span class="n">target_pcoord_bounds</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting basis pcoord bounds&quot;</span><span class="p">)</span>
+            <span class="c1"># self.WEtargetp1_bounds = target_pcoord_bounds</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_pcoord_bounds</span> <span class="o">=</span> <span class="n">target_pcoord_bounds</span>
+
+        <span class="c1"># self._basis_pcoord_bounds = None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fileList</span> <span class="o">=</span> <span class="n">fileList</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_data_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fileList</span><span class="p">)</span>
         <span class="c1">#####</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span> <span class="o">=</span> <span class="n">pcoord_ndim</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_len</span> <span class="o">=</span> <span class="mi">2</span>
-        <span class="c1"># self.pcoord_len = 50</span>
 
         <span class="k">if</span> <span class="n">tau</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No tau provided, defaulting to 1.&quot;</span><span class="p">)</span>
@@ -519,10 +524,12 @@
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;msm_we model successfully initialized&quot;</span><span class="p">)</span></div>
 
+    <span class="c1"># TODO: Deprecate this for an N-dimensional version</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">WEbasisp1_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_WEbasisp1_bounds</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis_pcoord_bounds</span>
 
+    <span class="c1"># TODO: Deprecate this for an N-dimensional version</span>
     <span class="nd">@WEbasisp1_bounds</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">WEbasisp1_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bounds</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -532,22 +539,65 @@
 <span class="sd">        ----------</span>
 <span class="sd">        bounds</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">bounds</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;A basis boundary has not been correctly provided&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_max</span> <span class="o">=</span> <span class="n">bounds</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_WEbasisp1_bounds</span> <span class="o">=</span> <span class="n">bounds</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;WEbasisp1_bounds is a deprecated attribute. &quot;</span>
+            <span class="s2">&quot;Set pcoord boundaries using basis_pcoord_bounds instead&quot;</span>
+        <span class="p">)</span>
 
-        <span class="c1"># Same as in WEtargetp1_bounds</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="ow">not</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_min</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_max</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-        <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">basis_bin_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_max</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">basis_bin_center</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_max</span><span class="p">][</span>
-                <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_min</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-            <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basis_pcoord_bounds</span> <span class="o">=</span> <span class="n">bounds</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">basis_pcoord_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basis_pcoord_bounds</span>
+
+    <span class="nd">@basis_pcoord_bounds</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">basis_pcoord_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bounds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the boundaries for the basis state in an arbitrary dimension pcoord space.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bounds: array-like, (pcoord_ndim x 2)</span>
+<span class="sd">            Array of [lower, upper] bounds for each progress coordinate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span>
+
+        <span class="c1"># In case it&#39;s a 1D pcoord provided as a simple list [min, max],</span>
+        <span class="c1">#   reshape it to be consistent with N-D pcoord boundaries as  [[min, max]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Please provide 1-D boundaries as a list of lists or 2-D array&quot;</span>
+                <span class="s2">&quot; [[lower bound, upper bound]]. Automatically doing conversion for now.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="k">assert</span> <span class="n">bounds</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">,</span>
+        <span class="p">),</span> <span class="s2">&quot;Shape of bounds was </span><span class="si">{bounds.shape}</span><span class="s2">, should&#39;ve been (</span><span class="si">{self.pcoord_ndim}</span><span class="s2">, 2)&quot;</span>
+
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">bound</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">bound</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">bound</span> <span class="ow">in</span> <span class="n">bounds</span><span class="p">]</span>
+        <span class="p">),</span> <span class="s2">&quot;A boundary has a lower bound larger than its upper bound&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Setting basis pcoord bounds to </span><span class="si">{</span><span class="n">bounds</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_basis_pcoord_bounds</span> <span class="o">=</span> <span class="n">bounds</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Set basis pcoord bounds to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_basis_pcoord_bounds</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">basis_bin_centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">bound_min</span><span class="p">,</span> <span class="n">bound_max</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bounds</span><span class="p">):</span>
+
+            <span class="c1"># If neither of the bin boundaries are infinity, then the bin center is their mean.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">abs</span><span class="p">(</span><span class="n">bound_min</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">abs</span><span class="p">(</span><span class="n">bound_max</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                <span class="n">basis_bin_centers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">bound_min</span><span class="p">,</span> <span class="n">bound_max</span><span class="p">])</span>
+
+            <span class="c1"># If one of them IS infinity, their &quot;bin center&quot; is the non-infinity one.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Janky indexing, if p1_max == inf then that&#39;s True, and True == 1 so it picks the second element</span>
+                <span class="n">basis_bin_centers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">bound_min</span><span class="p">,</span> <span class="n">bound_max</span><span class="p">][</span><span class="nb">abs</span><span class="p">(</span><span class="n">bound_min</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basis_bin_centers</span> <span class="o">=</span> <span class="n">basis_bin_centers</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Set basis pcoord centers to </span><span class="si">{</span><span class="n">basis_bin_centers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_lag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -564,10 +614,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_n_lag</span> <span class="o">=</span> <span class="n">lag</span>
 
+    <span class="c1"># TODO: Deprecate this for an N-dimensional version</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">WEtargetp1_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_WEtargetp1_bounds</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_pcoord_bounds</span>
 
+    <span class="c1"># TODO: Deprecate this for an N-dimensional version</span>
     <span class="nd">@WEtargetp1_bounds</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">WEtargetp1_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bounds</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -580,22 +632,61 @@
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">bounds</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;A target boundary has not been correctly provided&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_max</span> <span class="o">=</span> <span class="n">bounds</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_WEtargetp1_bounds</span> <span class="o">=</span> <span class="n">bounds</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;WEbasisp1_bounds is a deprecated attribute. &quot;</span>
+            <span class="s2">&quot;Set pcoord boundaries using basis_pcoord_bounds instead&quot;</span>
+        <span class="p">)</span>
 
-        <span class="c1"># If neither of the target bin boundaries are infinity, then the bin center is their mean.</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="ow">not</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_min</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_max</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-        <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">target_bin_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_max</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_pcoord_bounds</span> <span class="o">=</span> <span class="n">bounds</span>
 
-        <span class="c1"># If one of them IS infinity, their &quot;bin center&quot; is the non-infinity one.</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Janky indexing, if p1_max == inf then that&#39;s True, and True == 1 so it picks the second element</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">target_bin_center</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_max</span><span class="p">][</span>
-                <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_min</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-            <span class="p">]</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target_pcoord_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_pcoord_bounds</span>
+
+    <span class="nd">@target_pcoord_bounds</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">target_pcoord_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bounds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the boundaries for the target state in an arbitrary dimension pcoord space.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bounds: array-like, (pcoord_ndim x 2)</span>
+<span class="sd">            Array of [lower, upper] bounds for each progress coordinate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span>
+
+        <span class="c1"># In case it&#39;s a 1D pcoord provided as a simple list [min, max],</span>
+        <span class="c1">#   reshape it to be consistent with N-D pcoord boundaries as  [[min, max]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Please provide 1-D boundaries as a list of lists or 2-D array&quot;</span>
+                <span class="s2">&quot; [[lower bound, upper bound]]. Automatically doing conversion for now.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="k">assert</span> <span class="n">bounds</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">,</span>
+        <span class="p">),</span> <span class="s2">&quot;Shape of bounds was </span><span class="si">{bounds.shape}</span><span class="s2">, should&#39;ve been (</span><span class="si">{self.pcoord_ndim}</span><span class="s2">, 2)&quot;</span>
+
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">bound</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">bound</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">bound</span> <span class="ow">in</span> <span class="n">bounds</span><span class="p">]</span>
+        <span class="p">),</span> <span class="s2">&quot;A boundary has a lower bound larger than its upper bound&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_pcoord_bounds</span> <span class="o">=</span> <span class="n">bounds</span>
+
+        <span class="n">target_bin_centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">bound_min</span><span class="p">,</span> <span class="n">bound_max</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bounds</span><span class="p">):</span>
+
+            <span class="c1"># If neither of the bin boundaries are infinity, then the bin center is their mean.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">abs</span><span class="p">(</span><span class="n">bound_min</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">abs</span><span class="p">(</span><span class="n">bound_max</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+                <span class="n">target_bin_centers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">bound_min</span><span class="p">,</span> <span class="n">bound_max</span><span class="p">])</span>
+
+            <span class="c1"># If one of them IS infinity, their &quot;bin center&quot; is the non-infinity one.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Janky indexing, if p1_max == inf then that&#39;s True, and True == 1 so it picks the second element</span>
+                <span class="n">target_bin_centers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">bound_min</span><span class="p">,</span> <span class="n">bound_max</span><span class="p">][</span><span class="nb">abs</span><span class="p">(</span><span class="n">bound_min</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_bin_centers</span> <span class="o">=</span> <span class="n">target_bin_centers</span>
 
 <div class="viewcode-block" id="modelWE.initialize_from_h5"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.initialize_from_h5">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_from_h5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refPDBfile</span><span class="p">,</span> <span class="n">initPDBfile</span><span class="p">,</span> <span class="n">modelName</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -609,7 +700,8 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="modelWE.is_WE_basis"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.is_WE_basis">[docs]</a>    <span class="k">def</span> <span class="nf">is_WE_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoords</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -629,10 +721,19 @@
 <span class="sd">        This only checks the 0th progress coordinate</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">isBasis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
-            <span class="n">pcoords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_min</span><span class="p">,</span> <span class="n">pcoords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEbasisp1_max</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">isBasis</span></div>
+        <span class="n">in_basis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">pcoords</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">pcoord_dimension</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span><span class="p">):</span>
+            <span class="n">in_basis</span><span class="p">[:,</span> <span class="n">pcoord_dimension</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                <span class="n">pcoords</span><span class="p">[:,</span> <span class="n">pcoord_dimension</span><span class="p">]</span>
+                <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis_pcoord_bounds</span><span class="p">[</span><span class="n">pcoord_dimension</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">pcoords</span><span class="p">[:,</span> <span class="n">pcoord_dimension</span><span class="p">]</span>
+                <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis_pcoord_bounds</span><span class="p">[</span><span class="n">pcoord_dimension</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="n">in_basis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">in_basis</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">in_basis</span></div>
 
 <div class="viewcode-block" id="modelWE.is_WE_target"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.is_WE_target">[docs]</a>    <span class="k">def</span> <span class="nf">is_WE_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoords</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -655,10 +756,19 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">isTarget</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
-            <span class="n">pcoords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_min</span><span class="p">,</span> <span class="n">pcoords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">WEtargetp1_max</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">isTarget</span></div>
+        <span class="n">in_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">pcoords</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">pcoord_dimension</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span><span class="p">):</span>
+            <span class="n">in_target</span><span class="p">[:,</span> <span class="n">pcoord_dimension</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                <span class="n">pcoords</span><span class="p">[:,</span> <span class="n">pcoord_dimension</span><span class="p">]</span>
+                <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_pcoord_bounds</span><span class="p">[</span><span class="n">pcoord_dimension</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">pcoords</span><span class="p">[:,</span> <span class="n">pcoord_dimension</span><span class="p">]</span>
+                <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_pcoord_bounds</span><span class="p">[</span><span class="n">pcoord_dimension</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="n">in_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">in_target</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">in_target</span></div>
 
 <div class="viewcode-block" id="modelWE.load_iter_data"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.load_iter_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_iter_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -3058,6 +3168,7 @@
         <span class="n">last_pSS</span> <span class="o">=</span> <span class="n">algebraic_pss</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial flux: </span><span class="si">{</span><span class="n">last_flux</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">flux_warned</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">for</span> <span class="n">N</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iters</span><span class="p">):</span>
 
@@ -3083,7 +3194,15 @@
             <span class="n">flux_convergence_criterion</span> <span class="o">=</span> <span class="n">last_flux</span> <span class="o">*</span> <span class="n">flux_fractional_convergence</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> Flux convergence criterion is </span><span class="si">{</span><span class="n">flux_convergence_criterion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="k">assert</span> <span class="n">last_flux</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Got a negative flux, something is wrong!&quot;</span>
+            <span class="k">if</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">last_flux</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Got a negative flux, something is wrong!&quot;</span>
+                <span class="k">if</span> <span class="n">last_flux</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">flux_warned</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;Flux is 0, so will only converge after max iterations. &quot;</span>
+                        <span class="s2">&quot;If you&#39;re looking for equilibrium, this is probably OK.&quot;</span>
+                        <span class="s2">&quot; Otherwise, take a look at why you have 0 flux.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">flux_warned</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">flux_change</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">flux_convergence_criterion</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>

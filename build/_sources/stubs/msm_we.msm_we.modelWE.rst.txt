@@ -85,7 +85,9 @@
    
       ~modelWE.WEbasisp1_bounds
       ~modelWE.WEtargetp1_bounds
+      ~modelWE.basis_pcoord_bounds
       ~modelWE.n_lag
+      ~modelWE.target_pcoord_bounds
       ~modelWE.modelName
       ~modelWE.fileList
       ~modelWE.n_data_files
