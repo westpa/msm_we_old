@@ -399,6 +399,7 @@
         <span class="n">target_pcoord_bounds</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dim_reduce_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
         <span class="n">tau</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pcoord_ndim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the model-builder.</span>
@@ -425,6 +426,9 @@
 
 <span class="sd">        tau: float</span>
 <span class="sd">            Resampling time (i.e. time of 1 WE iteration). Used to map fluxes to physical times.</span>
+
+<span class="sd">        pcoord_ndim: int</span>
+<span class="sd">            Defaults to 1. Dimensionality of progress coordinates.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -470,7 +474,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_data_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fileList</span><span class="p">)</span>
         <span class="c1">#####</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span> <span class="o">=</span> <span class="n">pcoord_ndim</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_len</span> <span class="o">=</span> <span class="mi">2</span>
         <span class="c1"># self.pcoord_len = 50</span>
 
@@ -1878,6 +1882,7 @@
                 <span class="o">+</span> <span class="mi">1</span>
             <span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Keeping </span><span class="si">{</span><span class="n">components_for_var</span><span class="si">}</span><span class="s2"> components&quot;</span><span class="p">)</span>
+            <span class="n">components_for_var</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">components_for_var</span><span class="p">,</span> <span class="n">total_num_iterations</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
             <span class="c1"># Now do the PCA again, with that many components, using all the iterations.</span>
             <span class="n">ipca</span> <span class="o">=</span> <span class="n">iPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">components_for_var</span><span class="p">)</span>
@@ -2164,15 +2169,33 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[]</span>
 
+                <span class="n">continued</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">):</span>
-                    <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                    <span class="n">_iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                         <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span>
                     <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">continued</span><span class="p">:</span>
+                        <span class="n">iter_coords</span> <span class="o">=</span> <span class="n">_iter_coords</span>
+                    <span class="k">elif</span> <span class="n">continued</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Appending </span><span class="si">{</span><span class="n">_iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> trajs for clustering&quot;</span>
+                        <span class="p">)</span>
+                        <span class="n">iter_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">,</span> <span class="n">_iter_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
                     <span class="c1"># This better pass, but just be sure.</span>
                     <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">cluster_model</span><span class="p">)</span> <span class="ow">is</span> <span class="n">mini_kmeans</span>
 
-                    <span class="n">cluster_model</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">cluster_model</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="s2">&quot;Not enough samples for the desired number of clusters, pulling&quot;</span>
+                            <span class="s2">&quot;more iterations.&quot;</span>
+                        <span class="p">)</span>
+                        <span class="n">continued</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">continued</span> <span class="o">=</span> <span class="kc">False</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span>
 
@@ -2189,16 +2212,33 @@
             <span class="c1"># raise NotImplementedError(&quot;PCA + streaming clustering is not yet supported&quot;)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[]</span>
 
+            <span class="n">continued</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">):</span>
                 <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
-                <span class="n">transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+                <span class="n">_transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
                 <span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">continued</span><span class="p">:</span>
+                    <span class="n">transformed_coords</span> <span class="o">=</span> <span class="n">_transformed_coords</span>
+                <span class="k">elif</span> <span class="n">continued</span><span class="p">:</span>
+                    <span class="n">transformed_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">transformed_coords</span><span class="p">,</span> <span class="n">_transformed_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+                    <span class="p">)</span>
 
                 <span class="c1"># This better pass, but just be sure.</span>
                 <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">cluster_model</span><span class="p">)</span> <span class="ow">is</span> <span class="n">mini_kmeans</span>
 
-                <span class="n">cluster_model</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">transformed_coords</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">cluster_model</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">transformed_coords</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="s2">&quot;Not enough samples for the desired number of clusters, pulling&quot;</span>
+                        <span class="s2">&quot;more iterations.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">continued</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">continued</span> <span class="o">=</span> <span class="kc">False</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span>
 
@@ -3015,9 +3055,6 @@
 
         <span class="c1"># ## Next, use that as an initial guess  for inverse iteration</span>
 
-        <span class="c1"># Call it converged when the flux estimate stops changing by this much</span>
-        <span class="n">flux_convergence_criterion</span> <span class="o">=</span> <span class="n">last_flux</span> <span class="o">*</span> <span class="n">flux_fractional_convergence</span>
-
         <span class="n">last_pSS</span> <span class="o">=</span> <span class="n">algebraic_pss</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial flux: </span><span class="si">{</span><span class="n">last_flux</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -3040,11 +3077,13 @@
             <span class="p">)</span>
             <span class="n">last_flux</span> <span class="o">=</span> <span class="n">new_flux</span>
 
-            <span class="c1"># Set the convergence criterion after one iteration, in case the original result is really junk</span>
-            <span class="k">if</span> <span class="n">N</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">flux_convergence_criterion</span> <span class="o">=</span> <span class="n">last_flux</span> <span class="o">*</span> <span class="n">flux_fractional_convergence</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Flux convergence is at </span><span class="si">{</span><span class="n">flux_convergence_criterion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">continue</span>
+            <span class="c1"># Set the convergence criterion after the iteration, in case the original result is really junk</span>
+            <span class="c1"># Do it after so the first time this is calculated, it&#39;s using the result of the first iteration.</span>
+            <span class="c1"># If the initial numpy estimate was really bad, it&#39;ll never be used.</span>
+            <span class="n">flux_convergence_criterion</span> <span class="o">=</span> <span class="n">last_flux</span> <span class="o">*</span> <span class="n">flux_fractional_convergence</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> Flux convergence criterion is </span><span class="si">{</span><span class="n">flux_convergence_criterion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="n">last_flux</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Got a negative flux, something is wrong!&quot;</span>
 
             <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">flux_change</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">flux_convergence_criterion</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
