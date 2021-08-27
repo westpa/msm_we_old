@@ -312,6 +312,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">basis_bin_center</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_WEbasisp1_bounds</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_basis_pcoord_bounds</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_pcoord_bounds</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot;str: Dimensionality reduction method. Must be one of &quot;pca&quot;, &quot;vamp&quot;, or &quot;none&quot; (**NOT** NoneType)&quot;&quot;&quot;</span>
 
@@ -457,7 +460,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span> <span class="o">=</span> <span class="n">pcoord_ndim</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_len</span> <span class="o">=</span> <span class="mi">2</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_basis_pcoord_bounds</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">basis_pcoord_bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;No basis coord bounds provided to initialize(). &quot;</span>
@@ -581,9 +583,7 @@
             <span class="p">[</span><span class="n">bound</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">bound</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">bound</span> <span class="ow">in</span> <span class="n">bounds</span><span class="p">]</span>
         <span class="p">),</span> <span class="s2">&quot;A boundary has a lower bound larger than its upper bound&quot;</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Setting basis pcoord bounds to </span><span class="si">{</span><span class="n">bounds</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_basis_pcoord_bounds</span> <span class="o">=</span> <span class="n">bounds</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Set basis pcoord bounds to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_basis_pcoord_bounds</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">basis_bin_centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">bound_min</span><span class="p">,</span> <span class="n">bound_max</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bounds</span><span class="p">):</span>
@@ -597,7 +597,6 @@
                 <span class="c1"># Janky indexing, if p1_max == inf then that&#39;s True, and True == 1 so it picks the second element</span>
                 <span class="n">basis_bin_centers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">bound_min</span><span class="p">,</span> <span class="n">bound_max</span><span class="p">][</span><span class="nb">abs</span><span class="p">(</span><span class="n">bound_min</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basis_bin_centers</span> <span class="o">=</span> <span class="n">basis_bin_centers</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Set basis pcoord centers to </span><span class="si">{</span><span class="n">basis_bin_centers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_lag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
