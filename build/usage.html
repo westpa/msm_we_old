@@ -288,6 +288,12 @@ than on an instance of a <code class="code docutils literal notranslate"><span c
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_steady_state</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>Note: This may fail or encounter difficulties for datasets where no target flux has been obtained.
+This can happen with either incomplete sampling to your target state, or with equilibrium data.
+This is because it uses the flux estimate as a convergence criterion.
+If the flux is 0, then it’s not meaningful to  look at convergence of 0, so it’ll just run
+for the maximum number of iterations. You can specify <code class="code docutils literal notranslate"><span class="pre">max_iters=1</span></code> to avoid unnecessary
+iteration, or you can use <code class="code docutils literal notranslate"><span class="pre">model.get_steady_state_algebraic</span></code>.</p>
 </li>
 <li><p>Update cluster structures</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">update_cluster_structures</span><span class="p">()</span>

@@ -54,6 +54,7 @@
       ~modelWE.get_traj_coordinates
       ~modelWE.get_transition_data
       ~modelWE.get_transition_data_lag0
+      ~modelWE.get_transition_data_lag0_slow
       ~modelWE.get_warps_from_parent
       ~modelWE.get_warps_from_pcoord
       ~modelWE.initialize
