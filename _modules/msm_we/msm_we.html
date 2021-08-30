@@ -169,8 +169,10 @@
 <span class="n">__metaclass__</span> <span class="o">=</span> <span class="nb">type</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tqdm</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
+
 <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sparse</span>
 <span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">IncrementalPCA</span> <span class="k">as</span> <span class="n">iPCA</span>
@@ -637,6 +639,14 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">target_pcoord_bounds</span> <span class="o">=</span> <span class="n">bounds</span>
+
+<div class="viewcode-block" id="modelWE.progress_disable"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.progress_disable">[docs]</a>    <span class="k">def</span> <span class="nf">progress_disable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Disable all progress bars&quot;&quot;&quot;</span>
+        <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="fm">__init__</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="modelWE.progress_enable"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.progress_enable">[docs]</a>    <span class="k">def</span> <span class="nf">progress_enable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Enable all progress bars&quot;&quot;&quot;</span>
+        <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="fm">__init__</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">target_pcoord_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1286,12 +1296,6 @@
 <span class="sd">            - self.coordPairList, a list of  parent/child coordinate pairs</span>
 <span class="sd">            - self.transitionWeights, a copy of self.weightList</span>
 <span class="sd">            - self.departureWeights, a copy of self.weightList</span>
-
-<span class="sd">        TODO</span>
-<span class="sd">        ----</span>
-<span class="sd">        Test this when multiple data files contain coords for one iteration. I.e.,</span>
-<span class="sd">            you have N files, each of which has an iteration 1  in them. Should be fine,</span>
-<span class="sd">            but make sure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">weightList</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weightList</span>
@@ -1341,96 +1345,6 @@
                         <span class="sa">f</span><span class="s2">&quot;Bad coordinates for segments </span><span class="si">{</span><span class="n">nan_segments</span><span class="si">}</span><span class="s2">, setting weights to 0&quot;</span>
                     <span class="p">)</span>
                     <span class="n">weightList</span><span class="p">[</span><span class="n">nan_segments</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-        <span class="n">transitionWeights</span> <span class="o">=</span> <span class="n">weightList</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">departureWeights</span> <span class="o">=</span> <span class="n">weightList</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">coordPairList</span> <span class="o">=</span> <span class="n">coordPairList</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">transitionWeights</span> <span class="o">=</span> <span class="n">transitionWeights</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">departureWeights</span> <span class="o">=</span> <span class="n">departureWeights</span></div>
-
-<div class="viewcode-block" id="modelWE.get_transition_data_lag0_slow"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_transition_data_lag0_slow">[docs]</a>    <span class="k">def</span> <span class="nf">get_transition_data_lag0_slow</span><span class="p">(</span><span class="bp">self</span><span class="p">,):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get coordinate pairs as the position at the beginning and end of this iteration (i.e. at a lag of 0).</span>
-<span class="sd">        At a lag of 0, it&#39;s not possible to have warps, since warps/recycles are handled between iterations.</span>
-
-<span class="sd">        Updates:</span>
-<span class="sd">            - self.coordPairList, a list of  parent/child coordinate pairs</span>
-<span class="sd">            - self.transitionWeights, a copy of self.weightList</span>
-<span class="sd">            - self.departureWeights, a copy of self.weightList</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-
-<span class="sd">        Todo</span>
-<span class="sd">        -----</span>
-<span class="sd">        This function is pretty slow, and profiling says it&#39;s because of coords = dset[:], so it must be something</span>
-<span class="sd">        to do with how I&#39;m reading my HDF5 files. Maybe that&#39;s just my HDF5 file, or maybe I&#39;m accessing it in some</span>
-<span class="sd">        really inefficient way in here that I&#39;m not seeing.  Surprisingly, it doesn&#39;t seem to be the constant file</span>
-<span class="sd">        opening/closing.</span>
-
-<span class="sd">        Ah -- it was right in front of me. It&#39;s reading each segment out of an iteration one at a</span>
-<span class="sd">        time. Better to at the very least, read a whole iteration at once.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># get segment history data at lag time n_lag from current iter</span>
-        <span class="n">weightList</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weightList</span>
-        <span class="n">coordPairList</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getting transition data for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="si">}</span><span class="s2"> segs, at a lag of 0&quot;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">seg_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="p">):</span>
-
-            <span class="c1"># Open the WEST file corresponding to this segment</span>
-            <span class="n">west_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileList</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">westList</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">]]</span>
-
-            <span class="k">if</span> <span class="n">seg_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">dataIn</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">west_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
-                <span class="n">open_west_file</span> <span class="o">=</span> <span class="n">west_file</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># if we&#39;re opening a new file</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">west_file</span> <span class="o">==</span> <span class="n">open_west_file</span><span class="p">:</span>
-                    <span class="n">dataIn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-                    <span class="n">dataIn</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">west_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
-                    <span class="n">open_west_file</span> <span class="o">=</span> <span class="n">west_file</span>
-                <span class="c1"># If we&#39;re reading from the same file, it&#39;s already open, so use that.</span>
-                <span class="k">elif</span> <span class="n">west_file</span> <span class="o">==</span> <span class="n">open_west_file</span><span class="p">:</span>
-                    <span class="k">pass</span>
-
-            <span class="n">dsetName</span> <span class="o">=</span> <span class="s2">&quot;/iterations/iter_</span><span class="si">%08d</span><span class="s2">/auxdata/coord&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="p">)</span>
-
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">dset</span> <span class="o">=</span> <span class="n">dataIn</span><span class="p">[</span><span class="n">dsetName</span><span class="p">]</span>
-
-            <span class="c1"># This trips if it can&#39;t find the object it&#39;s looking for in the H5 file</span>
-            <span class="c1"># That might include things like looking for an iteration that doesn&#39;t exist</span>
-            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">errorWeight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">errorWeight</span> <span class="o">+</span> <span class="n">weightList</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">]</span>
-                <span class="n">weightList</span><span class="p">[</span>
-                    <span class="n">seg_idx</span>
-                <span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># set transitions without structures to zero weight</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span> <span class="o">+</span> <span class="mi">1</span>
-
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">e</span>
-
-            <span class="n">coords</span> <span class="o">=</span> <span class="n">dset</span><span class="p">[:]</span>
-
-            <span class="c1"># Update segment seg_idx in coordPairList with</span>
-            <span class="n">coordPairList</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">segindList</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span>
-            <span class="p">]</span>
-            <span class="n">coordPairList</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">segindList</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
-
-            <span class="c1"># Check for NaNs</span>
-            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">coordPairList</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">])</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Bad coordinates for segment </span><span class="si">{</span><span class="n">seg_idx</span><span class="si">}</span><span class="s2">, setting weights to 0&quot;</span>
-                <span class="p">)</span>
-                <span class="n">weightList</span><span class="p">[</span><span class="n">seg_idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-        <span class="n">dataIn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="n">transitionWeights</span> <span class="o">=</span> <span class="n">weightList</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">departureWeights</span> <span class="o">=</span> <span class="n">weightList</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -1773,70 +1687,52 @@
 
 <div class="viewcode-block" id="modelWE.load_iter_coordinates"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.load_iter_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">load_iter_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Updates state with the coordinates from the last iteration (or whichever iteration is in `self.n_iter`)</span>
-
-<span class="sd">        Updates:</span>
-<span class="sd">            - `self.cur_iter_coords`</span>
-<span class="sd">            - `self.coordsExist`</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        None</span>
-
-<span class="sd">        Todo</span>
-<span class="sd">        ----</span>
-<span class="sd">        Take n_iter as a parameter instead of getting the attribute value</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># get iteration final coordinates</span>
+
         <span class="n">cur_iter_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">iS</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">iS</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">westFile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileList</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">westList</span><span class="p">[</span><span class="n">iS</span><span class="p">]]</span>
-                    <span class="n">dataIn</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">westFile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
-                    <span class="n">dsetName</span> <span class="o">=</span> <span class="s2">&quot;/iterations/iter_</span><span class="si">%08d</span><span class="s2">/auxdata/coord&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="p">)</span>
-                    <span class="n">dset</span> <span class="o">=</span> <span class="n">dataIn</span><span class="p">[</span><span class="n">dsetName</span><span class="p">]</span>
-                    <span class="n">coord</span> <span class="o">=</span> <span class="n">dset</span><span class="p">[:]</span>
-                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">westList</span><span class="p">[</span><span class="n">iS</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">westList</span><span class="p">[</span><span class="n">iS</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
-                    <span class="c1"># TODO: Move this close() outside of the if/elif</span>
-                    <span class="n">dataIn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-                    <span class="n">westFile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileList</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">westList</span><span class="p">[</span><span class="n">iS</span><span class="p">]]</span>
-                    <span class="n">dataIn</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">westFile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
-                    <span class="n">dsetName</span> <span class="o">=</span> <span class="s2">&quot;/iterations/iter_</span><span class="si">%08d</span><span class="s2">/auxdata/coord&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="p">)</span>
-                    <span class="n">dset</span> <span class="o">=</span> <span class="n">dataIn</span><span class="p">[</span><span class="n">dsetName</span><span class="p">]</span>
-                    <span class="n">coord</span> <span class="o">=</span> <span class="n">dset</span><span class="p">[:]</span>
-                <span class="n">cur_iter_coords</span><span class="p">[</span><span class="n">iS</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">segindList</span><span class="p">[</span><span class="n">iS</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
 
-            <span class="c1"># KeyError is thrown if coordinates don&#39;t exist for this segment at this iteration</span>
-            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">westFile</span><span class="p">)</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;No coordinates for segment </span><span class="si">{</span><span class="n">iS</span><span class="si">}</span><span class="s2">, at iteration </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Tried to reference </span><span class="si">{</span><span class="n">dsetName</span><span class="si">}</span><span class="s2"> thinking there were </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;From segindlist: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segindList</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Segment with total index </span><span class="si">{</span><span class="n">iS</span><span class="si">}</span><span class="s2"> has index </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segindList</span><span class="p">[</span><span class="n">iS</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;segindlist: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">segindList</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">cur_iter_coords</span><span class="p">[</span><span class="n">iS</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">e</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Getting coordinates for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="si">}</span><span class="s2"> segs in iteration </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="si">}</span><span class="s2">, at a lag of 0&quot;</span>
+        <span class="p">)</span>
 
-            <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;error getting coordinates from &quot;</span>
-                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileList</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">westList</span><span class="p">[</span><span class="n">iS</span><span class="p">]]</span>
-                    <span class="o">+</span> <span class="s2">&quot; , iter &quot;</span>
-                    <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="p">)</span>
-                    <span class="o">+</span> <span class="s2">&quot; segment &quot;</span>
-                    <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">segindList</span><span class="p">[</span><span class="n">iS</span><span class="p">])</span>
-                    <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-                <span class="n">cur_iter_coords</span><span class="p">[</span><span class="n">iS</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">coordsExist</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># the segments in this iteration may be split across a number of different files</span>
+        <span class="c1"># &quot;Traditionally&quot;, we store a reference for  each segment  of which WEST file it&#39;s in</span>
+        <span class="c1"># But flip that, and for each west file, get which segments are in it</span>
+
+        <span class="n">seg_west_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">westList</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="p">)]</span>
+        <span class="n">west_file_idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seg_west_files</span><span class="p">)</span>
+        <span class="n">west_files</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fileList</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">west_file_idxs</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">west_file</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">west_files</span><span class="p">):</span>
+
+            <span class="n">segs_contained</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">seg_west_files</span> <span class="o">==</span> <span class="n">idx</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">west_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">data_file</span><span class="p">:</span>
+
+                <span class="n">dsetName</span> <span class="o">=</span> <span class="s2">&quot;/iterations/iter_</span><span class="si">%08d</span><span class="s2">/auxdata/coord&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="p">)</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">dset</span> <span class="o">=</span> <span class="n">data_file</span><span class="p">[</span><span class="n">dsetName</span><span class="p">]</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Error getting coordinates from </span><span class="si">{</span><span class="n">west_file</span><span class="si">}</span><span class="s2">, in iteration </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+                    <span class="n">cur_iter_coords</span><span class="p">[</span><span class="n">segs_contained</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
+                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">coordsExist</span> <span class="o">=</span> <span class="kc">False</span>
+
+                    <span class="k">raise</span> <span class="n">e</span>
+
+                <span class="n">coords</span> <span class="o">=</span> <span class="n">dset</span>
+
+                <span class="n">cur_iter_coords</span><span class="p">[</span><span class="n">segs_contained</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">cur_iter_coords</span> <span class="o">=</span> <span class="n">cur_iter_coords</span></div>
 
     <span class="k">def</span> <span class="nf">load_iter_coordinates0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># get iteration initial coordinates</span>
@@ -2056,7 +1952,9 @@
             <span class="n">total_num_iterations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numSegments</span><span class="p">)</span>
             <span class="n">first_iter</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_num_iterations</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">))</span>
             <span class="n">rough_ipca</span> <span class="o">=</span> <span class="n">iPCA</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">first_iter</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span>
+                <span class="nb">range</span><span class="p">(</span><span class="n">first_iter</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Initial iPCA&quot;</span>
+            <span class="p">):</span>
                 <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
                 <span class="n">processed_iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
                 <span class="n">rough_ipca</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">processed_iter_coords</span><span class="p">)</span>
@@ -2072,7 +1970,7 @@
 
             <span class="c1"># Now do the PCA again, with that many components, using all the iterations.</span>
             <span class="n">ipca</span> <span class="o">=</span> <span class="n">iPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">components_for_var</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;iPCA&quot;</span><span class="p">):</span>
                 <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
                 <span class="n">processed_iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
                 <span class="n">ipca</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">processed_iter_coords</span><span class="p">)</span>
@@ -2399,7 +2297,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="n">continued</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Clustering&quot;</span><span class="p">):</span>
                 <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
                 <span class="n">_transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
@@ -2429,7 +2327,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span>
 
             <span class="c1"># Now compute dtrajs from the final model</span>
-            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Discretization&quot;</span><span class="p">):</span>
                 <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
                 <span class="n">transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
