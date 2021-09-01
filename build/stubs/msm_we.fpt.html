@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Overview: module code &mdash; msm_we 0.1.0 documentation</title>
+  <title>msm_we.fpt &mdash; msm_we 0.1.0 documentation</title>
   
 
   
@@ -40,7 +40,9 @@
 
     
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="msm_we.ensembles" href="msm_we.ensembles.html" />
+    <link rel="prev" title="msm_we.msm_we.modelWE" href="msm_we.msm_we.modelWE.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,9 +92,17 @@
             
             
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../readme.html">msm_we</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="msm_we.msm_we.modelWE.html">msm_we.msm_we.modelWE</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">msm_we.fpt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="msm_we.ensembles.html">msm_we.ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="msm_we.nmm.html">msm_we.nmm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="msm_we.phat.html">msm_we.phat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="msm_we.utils.html">msm_we.utils</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Installation/Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../code_todos.html">TODOs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../authors.html">Credits</a></li>
@@ -145,10 +155,16 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Overview: module code</li>
+          <li><a href="../api.html">API Reference</a> &raquo;</li>
+        
+      <li>msm_we.fpt</li>
     
     
       <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/stubs/msm_we.fpt.rst.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
     
@@ -160,19 +176,42 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="msm_we/ensembles.html">msm_we.ensembles</a></li>
-<li><a href="msm_we/fpt.html">msm_we.fpt</a></li>
-<li><a href="msm_we/msm_we.html">msm_we.msm_we</a></li>
-<li><a href="msm_we/nmm.html">msm_we.nmm</a></li>
-<li><a href="msm_we/phat.html">msm_we.phat</a></li>
-<li><a href="msm_we/utils.html">msm_we.utils</a></li>
-</ul>
+  <div class="section" id="module-msm_we.fpt">
+<span id="msm-we-fpt"></span><h1>msm_we.fpt<a class="headerlink" href="#module-msm_we.fpt" title="Permalink to this headline">¶</a></h1>
+<p>Adapted from the original NMpathAnalysis package,
+<a class="reference external" href="https://github.com/ZuckermanLab/NMpathAnalysis">https://github.com/ZuckermanLab/NMpathAnalysis</a></p>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DirectFPT</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.fpt.MarkovFPT" title="msm_we.fpt.MarkovFPT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MarkovFPT</span></code></a>()</p></td>
+<td><p>Derived a class for calculating FPTs using Markovian transition matrix</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.fpt.MatrixFPT" title="msm_we.fpt.MatrixFPT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MatrixFPT</span></code></a>()</p></td>
+<td><p>Define a base class for calculating FPTs using transition matrix</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.fpt.NonMarkovFPT" title="msm_we.fpt.NonMarkovFPT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NonMarkovFPT</span></code></a>()</p></td>
+<td><p>Derived a class for calculating FPTs using Non Markov transition matrix</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
 
            </div>
            
           </div>
           <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="msm_we.ensembles.html" class="btn btn-neutral float-right" title="msm_we.ensembles" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="msm_we.msm_we.modelWE.html" class="btn btn-neutral float-left" title="msm_we.msm_we.modelWE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

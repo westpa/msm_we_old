@@ -1,0 +1,47 @@
+﻿msm\_we.utils
+=============
+
+.. automodule:: msm_we.utils
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      check_tmatrix
+      clean_tmatrix
+      get_shape
+      map_to_integers
+      normalize
+      normalize_markov_matrix
+      num_of_nonzero_elements
+      pops_from_nm_tmatrix
+      pops_from_tmatrix
+      pseudo_nm_tmatrix
+      random_markov_matrix
+      reverse_sort_lists
+      weighted_choice
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Interval
+   
+   
+
+   
+   
+   
+
+
+

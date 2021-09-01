@@ -1,0 +1,32 @@
+﻿msm\_we.fpt
+===========
+
+.. automodule:: msm_we.fpt
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      DirectFPT
+      MarkovFPT
+      MatrixFPT
+      NonMarkovFPT
+   
+   
+
+   
+   
+   
+
+
+

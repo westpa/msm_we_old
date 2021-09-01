@@ -1,0 +1,572 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>msm_we.utils &mdash; msm_we 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> msm_we
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">msm_we</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Installation/Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code_todos.html">TODOs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">msm_we</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>msm_we.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for msm_we.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Adapted from the original NMpathAnalysis package,</span>
+<span class="sd">https://github.com/ZuckermanLab/NMpathAnalysis</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+
+
+<div class="viewcode-block" id="Interval"><a class="viewcode-back" href="../../api.html#msm_we.utils.Interval">[docs]</a><span class="k">class</span> <span class="nc">Interval</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Intervals are in general defined as half-open interval [start,end).</span>
+
+<span class="sd">    in any case, in each dimension the interval is specified using a list [a,b]</span>
+<span class="sd">    where a &lt; b</span>
+
+<span class="sd">    - For 1D (single) interval a single list in the form [a,b] has to be given</span>
+
+<span class="sd">    - The union of multiple (1D) intervals can be specified as:</span>
+<span class="sd">        [[a,b],[c,d],...]</span>
+
+<span class="sd">    - A list of lists [[a,b],[c,d],...] are used for a n-dimensional</span>
+<span class="sd">        intervals, one for each dimension, i.e, len(interval) = n_variables</span>
+
+<span class="sd">    - A list-of-lists-of-lists for the mathematical union of n-dimensional</span>
+<span class="sd">        intervals&#39;</span>
+
+<span class="sd">        [ [[a,b],[c,d],...],  [[e,f],[g,h],...], ... ]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval_set</span><span class="p">,</span> <span class="n">n_variables</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interval_set</span> <span class="o">=</span> <span class="n">interval_set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">=</span> <span class="n">n_variables</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interval_set</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="n">len_shape</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">len_shape</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># single 1D interval</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval_set</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">item</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval_set</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">len_shape</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>  <span class="c1"># union of multiple 1D intervals</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">([(</span><span class="n">item</span> <span class="ow">in</span> <span class="n">Interval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interval_set</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">len_shape</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># n-dimensional interval</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">([(</span><span class="n">item</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">Interval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interval_set</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># union of n-dimensional intervals</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">([(</span><span class="n">item</span> <span class="ow">in</span> <span class="n">Interval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interval_set</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The given interval has not the expected shape&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="reverse_sort_lists"><a class="viewcode-back" href="../../api.html#msm_we.utils.reverse_sort_lists">[docs]</a><span class="k">def</span> <span class="nf">reverse_sort_lists</span><span class="p">(</span><span class="n">list_1</span><span class="p">,</span> <span class="n">list_2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Reverse sorting two list based on the first one&quot;&quot;&quot;</span>
+    <span class="n">list_1_sorted</span><span class="p">,</span> <span class="n">list_2_sorted</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">list_1</span><span class="p">,</span> <span class="n">list_2</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">list_1_sorted</span><span class="p">,</span> <span class="n">list_2_sorted</span></div>
+
+
+<div class="viewcode-block" id="weighted_choice"><a class="viewcode-back" href="../../api.html#msm_we.utils.weighted_choice">[docs]</a><span class="k">def</span> <span class="nf">weighted_choice</span><span class="p">(</span><span class="n">list_</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select an element from a list with probability from weights&quot;&quot;&quot;</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">size</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">)])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>  <span class="c1"># just in case</span>
+
+    <span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+
+    <span class="n">_sum</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_sum</span> <span class="o">&lt;=</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="n">_sum</span> <span class="o">+</span> <span class="n">probs</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="n">choice</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_sum</span> <span class="o">+=</span> <span class="n">probs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">list_</span><span class="p">[</span><span class="n">choice</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_shape"><a class="viewcode-back" href="../../api.html#msm_we.utils.get_shape">[docs]</a><span class="k">def</span> <span class="nf">get_shape</span><span class="p">(</span><span class="n">trajectory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the shape of a trajectory array in tuple (n_snapshots, n_variables)&quot;&quot;&quot;</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">n_snapshots</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_variables</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">n_variables</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;The shape </span><span class="si">{}</span><span class="s2"> of the trajectory/array </span><span class="se">\</span>
+<span class="s2">            given is not as expected&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">shape</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">n_snapshots</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_variables</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s2">&quot;The shape </span><span class="si">{}</span><span class="s2"> of the trajectory/array given is not </span><span class="se">\</span>
+<span class="s2">            as expected&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">shape</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">n_snapshots</span><span class="p">,</span> <span class="n">n_variables</span></div>
+
+
+<div class="viewcode-block" id="num_of_nonzero_elements"><a class="viewcode-back" href="../../api.html#msm_we.utils.num_of_nonzero_elements">[docs]</a><span class="k">def</span> <span class="nf">num_of_nonzero_elements</span><span class="p">(</span><span class="n">my_vector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the number of non-zero elements in a vector&quot;&quot;&quot;</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">my_vector</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">element</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">counter</span></div>
+
+
+<div class="viewcode-block" id="normalize_markov_matrix"><a class="viewcode-back" href="../../api.html#msm_we.utils.normalize_markov_matrix">[docs]</a><span class="k">def</span> <span class="nf">normalize_markov_matrix</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">,</span> <span class="n">reversible</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Transform a matrix of positive elements to a markov-like matrix</span>
+
+<span class="sd">    by dividing each row by the sum of the elements of the row.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">reversible</span><span class="p">:</span>
+        <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">t_matrix</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">t_matrix</span>
+
+    <span class="n">n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">n_states</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_states</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">t_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;All the elements in the input </span><span class="se">\</span>
+<span class="s2">            matrix must be non-negative&quot;</span>
+            <span class="p">)</span>
+        <span class="n">t_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:])</span>
+
+    <span class="k">return</span> <span class="n">t_matrix</span></div>
+
+
+<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../api.html#msm_we.utils.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">my_vector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Normalize a vector</span>
+
+<span class="sd">    by dividing each element by the total sum of all its elements</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">my_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">my_vector</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_vector</span><span class="p">)</span>
+
+    <span class="n">sum_</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">my_vector</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sum_</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">my_vector</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">my_vector</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">sum_</span>
+    <span class="k">return</span> <span class="n">my_vector</span></div>
+
+
+<div class="viewcode-block" id="random_markov_matrix"><a class="viewcode-back" href="../../api.html#msm_we.utils.random_markov_matrix">[docs]</a><span class="k">def</span> <span class="nf">random_markov_matrix</span><span class="p">(</span><span class="n">n_states</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a random transition markov matrix&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">n_states</span><span class="p">,</span> <span class="n">n_states</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">normalize_markov_matrix</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="check_tmatrix"><a class="viewcode-back" href="../../api.html#msm_we.utils.check_tmatrix">[docs]</a><span class="k">def</span> <span class="nf">check_tmatrix</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">,</span> <span class="n">accept_null_rows</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if the given matrix is actually a row-stochastic transition matrix</span>
+
+<span class="sd">     i.e, all the elements are non-negative and the rows add to one.</span>
+<span class="sd">    If the keyword argument accept_null_rows is True, is going</span>
+<span class="sd">    to accept rows where all the elements are zero. Those &quot;problematic&quot;</span>
+<span class="sd">    states are going to be removed later if necessary by clean_tmatrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">value_error</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The object given is not a transition matrix&quot;</span><span class="p">)</span>
+
+    <span class="n">n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">n_states</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+        <span class="n">value_error</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">):</span>
+        <span class="n">sum_</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">value_error</span><span class="p">()</span>
+            <span class="n">sum_</span> <span class="o">+=</span> <span class="n">element</span>
+
+        <span class="k">if</span> <span class="n">accept_null_rows</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">sum_</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span> <span class="ow">or</span> <span class="n">sum_</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">):</span>
+                <span class="n">value_error</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">sum_</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+                <span class="n">value_error</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="clean_tmatrix"><a class="viewcode-back" href="../../api.html#msm_we.utils.clean_tmatrix">[docs]</a><span class="k">def</span> <span class="nf">clean_tmatrix</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">,</span> <span class="n">rm_absorbing</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Removes the states/indexes with no transitions and that are absorbing</span>
+
+<span class="sd">    if the the keyword argument rm_absorbing is true</span>
+<span class="sd">    Returns the &quot;clean&quot; transition matrix and a list with the</span>
+<span class="sd">    removed states/indexes (clean_tmatrix, removed_states)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+    <span class="n">n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+
+    <span class="c1"># Removing the non-visited states and absorbing states</span>
+    <span class="n">removed_states</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_states</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">[</span><span class="n">index</span><span class="p">]):</span>  <span class="c1"># non-visited</span>
+            <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">removed_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">t_matrix</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>  <span class="c1"># absorbing state</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">t_matrix</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_states</span><span class="p">)</span> <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="n">index</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The sum of the elements in a row of the </span><span class="se">\</span>
+<span class="s2">                    transition matrix must be one&quot;</span>
+                <span class="p">)</span>
+            <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">removed_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+    <span class="c1"># Renormalizing just in case</span>
+    <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">normalize_markov_matrix</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">t_matrix</span><span class="p">,</span> <span class="n">removed_states</span></div>
+
+
+<div class="viewcode-block" id="pops_from_tmatrix"><a class="viewcode-back" href="../../api.html#msm_we.utils.pops_from_tmatrix">[docs]</a><span class="k">def</span> <span class="nf">pops_from_tmatrix</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the eigen values and eigen vectors of the transposed transition matrix</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    transition_matrix : ndarray with shape = (n_states, n_states)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    the solution, p, of K.T p = p where K.T is the transposed transition matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">check_tmatrix</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+
+    <span class="n">n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+
+    <span class="c1"># Cleaning the transition matrix</span>
+    <span class="n">cleaned_matrix</span><span class="p">,</span> <span class="n">removed_states</span> <span class="o">=</span> <span class="n">clean_tmatrix</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+
+    <span class="c1"># Computing</span>
+    <span class="n">eig_vals</span><span class="p">,</span> <span class="n">eig_vecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">cleaned_matrix</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">eig_vecs</span> <span class="o">=</span> <span class="n">eig_vecs</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># for convenience, now every row is an eig_vector</span>
+
+    <span class="n">eig_vals_close_to_one</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">eig_vals</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+    <span class="n">real_eig_vecs</span> <span class="o">=</span> <span class="p">[</span><span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplex</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">eig_vecs</span><span class="p">]</span>
+
+    <span class="n">new_n_states</span> <span class="o">=</span> <span class="n">n_states</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">removed_states</span><span class="p">)</span>
+
+    <span class="n">ss_solution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">new_n_states</span><span class="p">)</span>  <span class="c1"># steady-state solution</span>
+    <span class="k">for</span> <span class="n">is_close_to_one</span><span class="p">,</span> <span class="n">is_real</span><span class="p">,</span> <span class="n">eigv</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">eig_vals_close_to_one</span><span class="p">,</span> <span class="n">real_eig_vecs</span><span class="p">,</span> <span class="n">eig_vecs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">is_close_to_one</span>
+            <span class="ow">and</span> <span class="n">is_real</span>
+            <span class="ow">and</span> <span class="n">num_of_nonzero_elements</span><span class="p">(</span><span class="n">eigv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">num_of_nonzero_elements</span><span class="p">(</span><span class="n">ss_solution</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="p">((</span><span class="n">eigv</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="n">eigv</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+        <span class="p">):</span>
+            <span class="n">ss_solution</span> <span class="o">=</span> <span class="n">eigv</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">ss_solution</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s2">&quot;No steady-state solution found for </span><span class="se">\</span>
+<span class="s2">        the given transition matrix&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">ss_solution</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">ss_solution</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+
+    <span class="c1"># Now we have to insert back in the solution, the missing</span>
+    <span class="c1"># elements with zero probabilities</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">removed_states</span><span class="p">):</span>
+        <span class="n">ss_solution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">ss_solution</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ss_solution</span></div>
+
+
+<div class="viewcode-block" id="pops_from_nm_tmatrix"><a class="viewcode-back" href="../../api.html#msm_we.utils.pops_from_nm_tmatrix">[docs]</a><span class="k">def</span> <span class="nf">pops_from_nm_tmatrix</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the populations of the real/physical states</span>
+
+<span class="sd">    from a non-Markovian transtion matrix with shape (2*n_states, 2*n_states)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">check_tmatrix</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">,</span> <span class="n">accept_null_rows</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">size</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The non-Markovian transition matrix has to &quot;</span> <span class="s2">&quot;have an even number of columns/rows&quot;</span><span class="p">)</span>
+
+    <span class="n">n_states</span> <span class="o">=</span> <span class="n">size</span> <span class="o">//</span> <span class="mi">2</span>  <span class="c1"># Real/physical microstates</span>
+
+    <span class="n">pops_nm</span> <span class="o">=</span> <span class="n">pops_from_tmatrix</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+
+    <span class="n">pops</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_states</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_states</span><span class="p">):</span>
+        <span class="n">pops</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">pops_nm</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">pops_nm</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">pops</span></div>
+
+
+<div class="viewcode-block" id="map_to_integers"><a class="viewcode-back" href="../../api.html#msm_we.utils.map_to_integers">[docs]</a><span class="k">def</span> <span class="nf">map_to_integers</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">mapping_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Map a sequence of elements to a sequence of integers</span>
+<span class="sd">    for intance, maps [1, &#39;a&#39;, 1, &#39;b&#39;, 2.2] to [0, 1, 0, 2, 3]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mapping_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mapping_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">new_sequence</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sequence</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">mapping_dict</span><span class="p">[</span><span class="n">element</span><span class="p">]</span> <span class="o">=</span> <span class="n">counter</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">new_sequence</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping_dict</span><span class="p">[</span><span class="n">element</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">new_sequence</span><span class="p">,</span> <span class="n">mapping_dict</span></div>
+
+
+<div class="viewcode-block" id="pseudo_nm_tmatrix"><a class="viewcode-back" href="../../api.html#msm_we.utils.pseudo_nm_tmatrix">[docs]</a><span class="k">def</span> <span class="nf">pseudo_nm_tmatrix</span><span class="p">(</span><span class="n">markovian_tmatrix</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Obtain a pseudo non-Markovian transition matrix from a Markovian transiton matrix</span>
+
+<span class="sd">    The pseudo Markovian matrix has a shape of (2 n_states, 2 n_states)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">check_tmatrix</span><span class="p">(</span><span class="n">markovian_tmatrix</span><span class="p">)</span>
+    <span class="n">n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">markovian_tmatrix</span><span class="p">)</span>
+
+    <span class="c1"># pseudo non-Markovian transition matrix</span>
+    <span class="n">p_nm_tmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_states</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_states</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_states</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_states</span><span class="p">):</span>
+            <span class="n">p_nm_tmatrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">markovian_tmatrix</span><span class="p">[</span><span class="n">i</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">j</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_states</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_states</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="n">stateB</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">j</span> <span class="ow">in</span> <span class="n">stateB</span><span class="p">):</span>
+                <span class="n">p_nm_tmatrix</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="n">stateA</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">j</span> <span class="ow">in</span> <span class="n">stateA</span><span class="p">):</span>
+                <span class="n">p_nm_tmatrix</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="n">j</span> <span class="ow">in</span> <span class="n">stateA</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="n">stateA</span><span class="p">):</span>
+                <span class="n">p_nm_tmatrix</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="n">j</span> <span class="ow">in</span> <span class="n">stateB</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="n">stateB</span><span class="p">):</span>
+                <span class="n">p_nm_tmatrix</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="n">check_tmatrix</span><span class="p">(</span><span class="n">p_nm_tmatrix</span><span class="p">)</span>  <span class="c1"># just in case</span>
+    <span class="k">return</span> <span class="n">p_nm_tmatrix</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, John Russo.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

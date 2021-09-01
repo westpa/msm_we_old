@@ -1,0 +1,841 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>msm_we.fpt &mdash; msm_we 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> msm_we
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">msm_we</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Installation/Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code_todos.html">TODOs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">msm_we</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>msm_we.fpt</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for msm_we.fpt</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Adapted from the original NMpathAnalysis package,</span>
+<span class="sd">https://github.com/ZuckermanLab/NMpathAnalysis</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">import</span> <span class="nn">msm_we.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">msm_we.utils</span> <span class="kn">import</span> <span class="n">Interval</span>
+
+
+<span class="k">class</span> <span class="nc">DirectFPT</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">mean_fpts</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">trajectories</span><span class="p">,</span> <span class="n">stateA</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stateB</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_variables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Empirical mean first passage times (MFPTs) calculation (no model</span>
+<span class="sd">        involved) by tracing the trajectories. Notice the difference between</span>
+<span class="sd">        notation between FPTs and MFPTs.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        trajectories:   List of trajectories [traj1, traj2, traj4], each trajectory</span>
+<span class="sd">                        can be a one dimensional array, e.g.,</span>
+<span class="sd">                            [[1,2,1, ...], [0,1,1, ...], ... ]</span>
+<span class="sd">                        or a multidimensional array (matrix) where each column</span>
+<span class="sd">                        represents the evolution of a variable.</span>
+
+<span class="sd">                        Important: If a single trajectory is given as argument it</span>
+<span class="sd">                        also has to be inside a list (e.g. [traj1])</span>
+
+<span class="sd">        stateA, stateB: List of integers</span>
+<span class="sd">                        If the trajectories are discrete (discrete = True), both</span>
+<span class="sd">                        states are a list of indexes. However, if the trajectories</span>
+<span class="sd">                        are not discrete, the states are &quot;interval&quot; objects</span>
+<span class="sd">                        (see Interval class).</span>
+
+<span class="sd">        lag_time:       integer</span>
+<span class="sd">                        Lag time used, the trajectory is &quot;observed&quot; every lag_time</span>
+<span class="sd">                        time steps</span>
+
+<span class="sd">        discrete:       boolean</span>
+<span class="sd">                        False when the trajectories are are not discrete. In that</span>
+<span class="sd">                        case the macrostates stateA and stateB are considered</span>
+<span class="sd">                        interval objects.</span>
+
+<span class="sd">        n_variables:    integer</span>
+<span class="sd">                        If the trajectory is space continuous,the number of</span>
+<span class="sd">                        variables/dimensions is needed. In this case every</span>
+<span class="sd">                        trajectory inside &quot;trajectories&quot; should have the same</span>
+<span class="sd">                        number of dimensions.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A dictionary with the keys: &#39;mfptAB&#39;, &#39;std_err_mfptAB&#39;, &#39;mfptBA&#39;,</span>
+<span class="sd">        &#39;std_err_mfptBA&#39; and the corresponding values. Those values are already</span>
+<span class="sd">        multiplied by the lag_time used (not the physical units).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">passage_timesAB</span><span class="p">,</span> <span class="n">passage_timesBA</span><span class="p">,</span> <span class="n">tb_values</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">fpts</span><span class="p">(</span><span class="n">trajectories</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">discrete</span><span class="p">,</span> <span class="n">n_variables</span><span class="p">,</span> <span class="n">lag_time</span><span class="p">)</span>
+        <span class="n">n_AB</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">passage_timesAB</span><span class="p">)</span>
+        <span class="n">n_BA</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">passage_timesBA</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">passage_timesAB</span><span class="p">):</span>
+            <span class="n">mfptAB</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">passage_timesAB</span><span class="p">))</span> <span class="o">/</span> <span class="n">n_AB</span>
+            <span class="n">std_err_mfptAB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">passage_timesAB</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_AB</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: No A-&gt;B events observed&quot;</span><span class="p">)</span>
+            <span class="n">mfptAB</span> <span class="o">=</span> <span class="s2">&quot;NaN&quot;</span>
+            <span class="n">std_err_mfptAB</span> <span class="o">=</span> <span class="s2">&quot;NaN&quot;</span>
+
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">passage_timesBA</span><span class="p">):</span>
+            <span class="n">mfptBA</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">passage_timesBA</span><span class="p">))</span> <span class="o">/</span> <span class="n">n_BA</span>
+            <span class="n">std_err_mfptBA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">passage_timesBA</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_BA</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: No B-&gt;A events observed&quot;</span><span class="p">)</span>
+            <span class="n">mfptBA</span> <span class="o">=</span> <span class="s2">&quot;NaN&quot;</span>
+            <span class="n">std_err_mfptBA</span> <span class="o">=</span> <span class="s2">&quot;NaN&quot;</span>
+
+        <span class="n">kinetics</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;mfptAB&quot;</span><span class="p">:</span> <span class="n">mfptAB</span><span class="p">,</span>
+            <span class="s2">&quot;std_err_mfptAB&quot;</span><span class="p">:</span> <span class="n">std_err_mfptAB</span><span class="p">,</span>
+            <span class="s2">&quot;mfptBA&quot;</span><span class="p">:</span> <span class="n">mfptBA</span><span class="p">,</span>
+            <span class="s2">&quot;std_err_mfptBA&quot;</span><span class="p">:</span> <span class="n">std_err_mfptBA</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of A-&gt;B/B-&gt;A  events: </span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_AB</span><span class="p">,</span> <span class="n">n_BA</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">kinetics</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fpts</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">trajectories</span><span class="p">,</span> <span class="n">stateA</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stateB</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_variables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Empirical first passage times (FPTs) calculation (no model involved)</span>
+<span class="sd">        by tracing the trajectories. IMPORTANT: Notice the difference in notation</span>
+<span class="sd">        between FPTs and MFPTs.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        trajectories:   List of trajectories [traj1, traj2, traj4], each trajectory</span>
+<span class="sd">                        can be a one dimensional array, e.g.,</span>
+<span class="sd">                            [[1,2,1, ...], [0,1,1, ...], ... ]</span>
+<span class="sd">                        or a mutidimensional array (matrix) where each column</span>
+<span class="sd">                        represents the evolution of a variable.</span>
+
+<span class="sd">                        Important: If a single trajectory is given as argument it</span>
+<span class="sd">                        also has to be inside a list (e.g. [traj1])</span>
+
+<span class="sd">        stateA, stateB: List of integers</span>
+<span class="sd">                        If the trajectories are discrete (discrete = True), both</span>
+<span class="sd">                        states are a list of indexes. However, if the trajectories</span>
+<span class="sd">                        are not discrete, the states are &quot;interval&quot; objects</span>
+<span class="sd">                        (see Interval class).</span>
+
+<span class="sd">        lag_time:       integer</span>
+<span class="sd">                        Lag time used, the trajectory is &quot;observed&quot; every lag_time</span>
+<span class="sd">                        time steps</span>
+
+<span class="sd">        discrete:       boolean</span>
+<span class="sd">                        False when the trajectories are are not discrete. In that</span>
+<span class="sd">                        case the macrostates stateA and stateB are considered</span>
+<span class="sd">                        interval objects.</span>
+
+<span class="sd">        n_variables:    integer</span>
+<span class="sd">                        If the trajectory is space continuous,the number of</span>
+<span class="sd">                        variables/dimensions is needed. In this case every</span>
+<span class="sd">                        trajectory inside &quot;trajectories&quot; should have the same</span>
+<span class="sd">                        number of dimensions.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A tuple of two 1D-ndarray (array1, array2), the first one contains the</span>
+<span class="sd">        observed first passage times A-&gt;B and the second one the FPTs B-&gt;A. Those</span>
+<span class="sd">        values are already multiplied by the lag_time used (not the physical units)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">stateA</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">stateB</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The final and initial states have &quot;</span> <span class="s2">&quot;to be defined to compute the MFPT&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">discrete</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            The states are considered/transformed-to intervals if the Ensemble</span>
+<span class="sd">            is a set of continuous trajectories</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">n_variables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;In continuous trajectories the number of &quot;</span> <span class="s2">&quot;variables is needed&quot;</span><span class="p">)</span>
+
+            <span class="n">stateA</span> <span class="o">=</span> <span class="n">Interval</span><span class="p">(</span><span class="n">stateA</span><span class="p">,</span> <span class="n">n_variables</span><span class="p">)</span>
+            <span class="n">stateB</span> <span class="o">=</span> <span class="n">Interval</span><span class="p">(</span><span class="n">stateB</span><span class="p">,</span> <span class="n">n_variables</span><span class="p">)</span>
+
+        <span class="n">passage_timesAB</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">passage_timesBA</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tb_values</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="n">trajectories</span><span class="p">:</span>
+            <span class="n">previous_color</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
+            <span class="n">tb_counter</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># event duration counter</span>
+            <span class="n">fpt_counter</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># first passage time counter</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">),</span> <span class="n">lag_time</span><span class="p">):</span>
+                <span class="n">snapshot</span> <span class="o">=</span> <span class="n">traj</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">tb_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># state and color determination</span>
+                <span class="k">if</span> <span class="n">snapshot</span> <span class="ow">in</span> <span class="n">stateA</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
+                <span class="k">elif</span> <span class="n">snapshot</span> <span class="ow">in</span> <span class="n">stateB</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">previous_color</span>
+                    <span class="n">tb_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># passage times</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">color</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">color</span> <span class="o">==</span> <span class="s2">&quot;B&quot;</span><span class="p">):</span>
+                    <span class="n">fpt_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="n">previous_color</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span> <span class="ow">and</span> <span class="n">color</span> <span class="o">==</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span>
+                    <span class="n">tb_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tb_counter</span><span class="p">)</span>
+                    <span class="n">passage_timesAB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fpt_counter</span><span class="p">)</span>
+                    <span class="n">fpt_counter</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">elif</span> <span class="n">previous_color</span> <span class="o">==</span> <span class="s2">&quot;B&quot;</span> <span class="ow">and</span> <span class="n">color</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span>
+                    <span class="n">tb_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tb_counter</span><span class="p">)</span>
+                    <span class="n">passage_timesBA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fpt_counter</span><span class="p">)</span>
+                    <span class="n">fpt_counter</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">elif</span> <span class="n">previous_color</span> <span class="o">==</span> <span class="s2">&quot;Unknown&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">color</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span> <span class="ow">or</span> <span class="n">color</span> <span class="o">==</span> <span class="s2">&quot;B&quot;</span><span class="p">):</span>
+                    <span class="n">fpt_counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">snapshot</span> <span class="ow">in</span> <span class="n">stateA</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">snapshot</span> <span class="ow">in</span> <span class="n">stateB</span><span class="p">):</span>
+                    <span class="n">tb_counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="n">previous_color</span> <span class="o">=</span> <span class="n">color</span>
+
+        <span class="n">passage_timesAB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">passage_timesAB</span><span class="p">)</span> <span class="o">*</span> <span class="n">lag_time</span>
+        <span class="n">passage_timesBA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">passage_timesBA</span><span class="p">)</span> <span class="o">*</span> <span class="n">lag_time</span>
+
+        <span class="k">return</span> <span class="n">passage_timesAB</span><span class="p">,</span> <span class="n">passage_timesBA</span><span class="p">,</span> <span class="n">tb_values</span>
+
+
+<div class="viewcode-block" id="MatrixFPT"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MatrixFPT">[docs]</a><span class="k">class</span> <span class="nc">MatrixFPT</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Define a base class for calculating FPTs using transition matrix&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MatrixFPT.mean_fpts"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MatrixFPT.mean_fpts">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">mean_fpts</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tmatrix</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculting mean-first passave time for at transition matrix</span>
+
+<span class="sd">        Derived class will implement this function differently.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="MatrixFPT.directional_mfpt"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MatrixFPT.directional_mfpt">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">directional_mfpt</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transition_matrix</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">ini_probs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Computes the mean-first passage time in a single direction using a recursive procedure</span>
+
+<span class="sd">        This method is useful when there is no B-&gt;A ensemble but only A-&gt;B transitions,</span>
+<span class="sd">        for instance when B is absorbing.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        transition_matrix:  Numpy 2D array</span>
+
+<span class="sd">        stateA, stateB:     List of integers</span>
+<span class="sd">                            Both states are a list of indexes.</span>
+
+<span class="sd">        ini_probs:          List of float, default is None</span>
+<span class="sd">                            initial probabilities in stateA</span>
+
+<span class="sd">        lag_time:           integer</span>
+<span class="sd">                            Lag time used, the trajectory is &quot;observed&quot; every lag_time</span>
+<span class="sd">                            time steps</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mean-first passage time from A-&gt;B</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lenA</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stateA</span><span class="p">)</span>
+        <span class="n">lenB</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stateB</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ini_probs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ini_probs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">lenA</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenA</span><span class="p">)]</span>
+
+        <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+
+        <span class="n">ini_state</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">stateA</span><span class="p">)</span>
+        <span class="n">f_state</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">stateB</span><span class="p">))</span>
+
+        <span class="k">assert</span> <span class="n">lenA</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ini_probs</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenB</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">,</span> <span class="n">f_state</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">,</span> <span class="n">f_state</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenA</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">f_state</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ini_state</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+                    <span class="n">ini_state</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">ini_state</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="n">new_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">)</span>
+
+        <span class="n">mfptAB</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">new_size</span><span class="p">)</span>
+        <span class="n">idty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">new_size</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_size</span><span class="p">)])</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">idty</span> <span class="o">-</span> <span class="n">t_matrix</span><span class="p">),</span> <span class="n">c</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ini_state</span><span class="p">)):</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">ini_state</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">mfptAB</span> <span class="o">+=</span> <span class="n">ini_probs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">mfptAB</span> <span class="o">=</span> <span class="n">mfptAB</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ini_probs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mfptAB</span> <span class="o">*</span> <span class="n">lag_time</span></div>
+
+<div class="viewcode-block" id="MatrixFPT.mfpts_to_target_microstate"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MatrixFPT.mfpts_to_target_microstate">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">mfpts_to_target_microstate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transition_matrix</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Computes all the mean-first passage to a target microstate (k)</span>
+
+<span class="sd">        Returns a list where the i-element is mfpt(i-&gt;k). This function is</span>
+<span class="sd">        useful to compute the mfpt matrix.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        transition_matrix:  Numpy 2D array</span>
+
+<span class="sd">        target:             Integer number that specifies the index of the state. The indexes</span>
+<span class="sd">                            should be consistent with the transition matrix and python</span>
+<span class="sd">                            (i.e. starting from 0)</span>
+
+<span class="sd">        lag_time:           Integer</span>
+<span class="sd">                            Lag time used, the trajectory is &quot;observed&quot; every lag_time</span>
+<span class="sd">                            time steps</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        a list where the i-element is mfpt(i-&gt;k). This function is</span>
+<span class="sd">        useful to compute the mfpt matrix.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+
+        <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">new_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">new_size</span><span class="p">)</span>
+        <span class="n">idty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">new_size</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_size</span><span class="p">)])</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">idty</span> <span class="o">-</span> <span class="n">t_matrix</span><span class="p">),</span> <span class="n">c</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">m</span> <span class="o">*</span> <span class="n">lag_time</span></div>
+
+<div class="viewcode-block" id="MatrixFPT.mfpts_matrix"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MatrixFPT.mfpts_matrix">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">mfpts_matrix</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transition_matrix</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate MFPT matrix, i.e., the matrix where the ij-element is MFPT(i-&gt;j)</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        transition_matrix:  Numpy 2D array</span>
+
+<span class="sd">        lag_time:           Integer</span>
+<span class="sd">                            Lag time used, the trajectory is &quot;observed&quot; every lag_time</span>
+<span class="sd">                            time steps</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mean-first passage time matrix with ij-element of MFPT(i-&gt;j)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+        <span class="n">temp_values</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">temp_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mfpts_to_target_microstate</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">lag_time</span><span class="p">))</span>
+
+        <span class="n">mfpt_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">temp_values</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># to nummpy array and transposed</span>
+        <span class="k">return</span> <span class="n">mfpt_m</span></div>
+
+<div class="viewcode-block" id="MatrixFPT.min_commute_time"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MatrixFPT.min_commute_time">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">min_commute_time</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">matrix_of_mfpts</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate minimum commuting time (round trip time) between all pairs</span>
+
+<span class="sd">        of microstates from the matrix of mfpts. It also returns the indexes</span>
+<span class="sd">        of the pair of microstates involved.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        matrix_of_mfpts:    Numpy 2D array</span>
+<span class="sd">                            matrix of MFPTs with ij-element of MFPT(i-&gt;j)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Minimum commuting time (round trip time) between all pairs</span>
+<span class="sd">        of microstates and the indexes of the pair of microstates involved.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">matrix_of_mfpts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">matrix_of_mfpts</span><span class="p">)</span>
+
+        <span class="n">n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix_of_mfpts</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">n_states</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix_of_mfpts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="n">n_states</span> <span class="o">&gt;=</span> <span class="mi">2</span>
+
+        <span class="c1"># Initial values, arbitrary choice</span>
+        <span class="n">index_i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">index_j</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">commute_times</span> <span class="o">=</span> <span class="n">matrix_of_mfpts</span> <span class="o">+</span> <span class="n">matrix_of_mfpts</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">min_ct</span> <span class="o">=</span> <span class="n">commute_times</span><span class="p">[</span><span class="n">index_i</span><span class="p">,</span> <span class="n">index_j</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_states</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_states</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">commute_times</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min_ct</span><span class="p">:</span>
+                    <span class="n">min_ct</span> <span class="o">=</span> <span class="n">commute_times</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                    <span class="n">index_i</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">index_j</span> <span class="o">=</span> <span class="n">j</span>
+
+        <span class="k">return</span> <span class="n">min_ct</span><span class="p">,</span> <span class="n">index_i</span><span class="p">,</span> <span class="n">index_j</span></div>
+
+<div class="viewcode-block" id="MatrixFPT.max_commute_time"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MatrixFPT.max_commute_time">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">max_commute_time</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">matrix_of_mfpts</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate maximum commuting time (round trip time) between all pairs</span>
+
+<span class="sd">        of microstates from the matrix of mfpts. It also returns the indexes</span>
+<span class="sd">        of the pair of microstates involved.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        matrix_of_mfpts:    Numpy 2D array</span>
+<span class="sd">                            matrix of MFPTs with ij-element of MFPT(i-&gt;j)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Maximum commuting time (round trip time) between all pairs</span>
+<span class="sd">        of microstates and the indexes of the pair of microstates involved.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">matrix_of_mfpts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">matrix_of_mfpts</span><span class="p">)</span>
+
+        <span class="n">n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix_of_mfpts</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">n_states</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix_of_mfpts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="n">n_states</span> <span class="o">&gt;=</span> <span class="mi">2</span>
+
+        <span class="c1"># Initial values, arbitrary choice</span>
+        <span class="n">index_i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">index_j</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">commute_times</span> <span class="o">=</span> <span class="n">matrix_of_mfpts</span> <span class="o">+</span> <span class="n">matrix_of_mfpts</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">max_ct</span> <span class="o">=</span> <span class="n">commute_times</span><span class="p">[</span><span class="n">index_i</span><span class="p">,</span> <span class="n">index_j</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_states</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_states</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">commute_times</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_ct</span><span class="p">:</span>
+                    <span class="n">max_ct</span> <span class="o">=</span> <span class="n">commute_times</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                    <span class="n">index_i</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">index_j</span> <span class="o">=</span> <span class="n">j</span>
+
+        <span class="k">return</span> <span class="n">max_ct</span><span class="p">,</span> <span class="n">index_i</span><span class="p">,</span> <span class="n">index_j</span></div>
+
+<div class="viewcode-block" id="MatrixFPT.fpt_distribution"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MatrixFPT.fpt_distribution">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fpt_distribution</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">t_matrix</span><span class="p">,</span> <span class="n">initial_state</span><span class="p">,</span> <span class="n">final_state</span><span class="p">,</span> <span class="n">initial_distrib</span><span class="p">,</span> <span class="n">max_n_lags</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculated distribution of first passage times from transition matrix</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        t_matrix:           Numpy 2D array</span>
+
+<span class="sd">        initial_state,</span>
+<span class="sd">        final_states:       List of integer numbers</span>
+<span class="sd">                            Specifies the indexes of initial and final states.</span>
+
+<span class="sd">        ini_probs:          List of float, default is None</span>
+<span class="sd">                            initial probabilities for initial states</span>
+
+<span class="sd">        max_n_lag:          Integer</span>
+<span class="sd">                            maximum number of lags</span>
+
+<span class="sd">        lag_time:           Integer</span>
+<span class="sd">                            Lag time used, the trajectory is &quot;observed&quot; every lag_time</span>
+<span class="sd">                            time steps</span>
+
+<span class="sd">        dt:                 float,</span>
+<span class="sd">                            Time step</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Distributions of first passage times</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># copy everything since they are going to be modified</span>
+        <span class="n">tmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">)</span>
+        <span class="n">ini_state</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">initial_state</span><span class="p">)</span>
+        <span class="n">f_state</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">final_state</span><span class="p">))</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ini_state</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial_distrib</span><span class="p">)</span>
+
+        <span class="n">tmatrix</span><span class="p">[:,</span> <span class="n">f_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">[:,</span> <span class="n">f_state</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">f_state</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">tmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">,</span> <span class="n">f_state</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">tmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">,</span> <span class="n">f_state</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ini_state</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">f_state</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ini_state</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+                    <span class="n">ini_state</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">ini_state</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="n">f_state</span> <span class="o">=</span> <span class="n">f_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">new_n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">)</span>
+        <span class="n">list_of_pdfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">ini_state</span><span class="p">),</span> <span class="n">max_n_lags</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">prevFmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">istateIndex</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ini_state</span><span class="p">)):</span>
+            <span class="n">prevFmatrix</span> <span class="o">=</span> <span class="n">tmatrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="c1"># prevFmatrix[:] = tmatrix[:]</span>
+            <span class="n">Fmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">new_n_states</span><span class="p">,</span> <span class="n">new_n_states</span><span class="p">))</span>
+            <span class="n">list_of_pdfs</span><span class="p">[</span><span class="n">istateIndex</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmatrix</span><span class="p">[</span><span class="n">ini_state</span><span class="p">[</span><span class="n">istateIndex</span><span class="p">],</span> <span class="n">f_state</span><span class="p">]</span>
+
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_calc_fmatrix</span><span class="p">(</span>
+                <span class="n">Fmatrix</span><span class="p">,</span> <span class="n">tmatrix</span><span class="p">,</span> <span class="n">prevFmatrix</span><span class="p">,</span> <span class="n">list_of_pdfs</span><span class="p">,</span> <span class="n">max_n_lags</span><span class="p">,</span> <span class="n">ini_state</span><span class="p">,</span> <span class="n">istateIndex</span><span class="p">,</span> <span class="n">f_state</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">sum_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">initial_distrib</span><span class="p">)</span>
+        <span class="n">initial_distrib</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">initial_distrib</span><span class="p">)</span>
+
+        <span class="n">density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">initial_distrib</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">list_of_pdfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">sum_</span>
+
+        <span class="n">dt2</span> <span class="o">=</span> <span class="n">lag_time</span> <span class="o">*</span> <span class="n">dt</span>
+
+        <span class="n">density_vs_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt2</span><span class="p">,</span> <span class="n">dens</span> <span class="o">/</span> <span class="n">dt2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dens</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">density</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">density_vs_t</span></div>
+
+    <span class="k">def</span> <span class="nf">_calc_fmatrix</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">Fmatrix</span><span class="p">,</span> <span class="n">tmatrix</span><span class="p">,</span> <span class="n">prevFmatrix</span><span class="p">,</span> <span class="n">list_of_pdfs</span><span class="p">,</span> <span class="n">max_n_lags</span><span class="p">,</span> <span class="n">ini_state</span><span class="p">,</span> <span class="n">istateIndex</span><span class="p">,</span> <span class="n">f_state</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_n_lags</span><span class="p">):</span>
+            <span class="n">Fmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">,</span> <span class="n">prevFmatrix</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">prevFmatrix</span><span class="p">)))</span>
+
+            <span class="n">list_of_pdfs</span><span class="p">[</span><span class="n">istateIndex</span><span class="p">,</span> <span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">Fmatrix</span><span class="p">[</span><span class="n">ini_state</span><span class="p">[</span><span class="n">istateIndex</span><span class="p">],</span> <span class="n">f_state</span><span class="p">]</span>
+            <span class="n">prevFmatrix</span> <span class="o">=</span> <span class="n">Fmatrix</span></div>
+
+
+<div class="viewcode-block" id="MarkovFPT"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MarkovFPT">[docs]</a><span class="k">class</span> <span class="nc">MarkovFPT</span><span class="p">(</span><span class="n">MatrixFPT</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Derived a class for calculating FPTs using Markovian transition matrix&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MarkovFPT.mean_fpts"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MarkovFPT.mean_fpts">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">mean_fpts</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">markov_tmatrix</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Computes mean first passage times using Markovian transition matrix</span>
+
+<span class="sd">        in both directions A-&gt;B and B-&gt;A from a markov model. The MFPTs computed</span>
+<span class="sd">        in this way are directly comparable with the values obtained by a long back</span>
+<span class="sd">        and forth simulation between the target states.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        markov_matrix:      Numpy 2D array</span>
+<span class="sd">                            Markovian transition matrix</span>
+
+<span class="sd">        stateA, stateB:     List of integers</span>
+<span class="sd">                            Both states are a list of indexes.</span>
+
+<span class="sd">        lag_time:           integer</span>
+<span class="sd">                            Lag time used, the trajectory is &quot;observed&quot; every lag_time</span>
+<span class="sd">                            time steps</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mean-first passage times from A-&gt;B and B-&gt;A</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">auxiliar_matrix</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">pseudo_nm_tmatrix</span><span class="p">(</span><span class="n">markov_tmatrix</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">)</span>
+
+        <span class="c1"># Is going to return a Markovian mfpt since the auxiliar</span>
+        <span class="c1"># matrix was build from a pure Markovian matrix</span>
+        <span class="k">return</span> <span class="n">NonMarkovFPT</span><span class="o">.</span><span class="n">mean_fpts</span><span class="p">(</span><span class="n">auxiliar_matrix</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">lag_time</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MarkovFPT.markov_commute_time"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MarkovFPT.markov_commute_time">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">markov_commute_time</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transition_matrix</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Computing commute time for Markovian Model</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        transition_matrix:  Numpy 2D array</span>
+<span class="sd">                            Markovian transition matrix</span>
+
+<span class="sd">        stateA, stateB:     List of integers</span>
+<span class="sd">                            Both states are a list of indexes.</span>
+
+<span class="sd">        lag_time:           integer</span>
+<span class="sd">                            Lag time used, the trajectory is &quot;observed&quot; every lag_time</span>
+<span class="sd">                            time steps</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Commute time from mean-first passage times</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mfpts</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mean_fpts</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">lag_time</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mfpts</span><span class="p">[</span><span class="s2">&quot;mfptAB&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">mfpts</span><span class="p">[</span><span class="s2">&quot;mfptBA&quot;</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="NonMarkovFPT"><a class="viewcode-back" href="../../api.html#msm_we.fpt.NonMarkovFPT">[docs]</a><span class="k">class</span> <span class="nc">NonMarkovFPT</span><span class="p">(</span><span class="n">MatrixFPT</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Derived a class for calculating FPTs using Non Markov transition matrix&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NonMarkovFPT.mean_fpts"><a class="viewcode-back" href="../../api.html#msm_we.fpt.NonMarkovFPT.mean_fpts">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">mean_fpts</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">nm_transition_matrix</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Computes the mean first passage times from a non-markovian model</span>
+
+<span class="sd">        in both directions of A-&gt;B and B-&gt;A. The shape of the transition matrix</span>
+<span class="sd">        should be (2*n_states, 2*n_states).</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        nm_transition_matrix:   Numpy 2D array</span>
+<span class="sd">                                Non-Markovian transition matrix</span>
+
+<span class="sd">        stateA, stateB:         List of integers</span>
+<span class="sd">                                Both states are a list of indexes.</span>
+
+<span class="sd">        lag_time:               integer</span>
+<span class="sd">                                Lag time used, the trajectory is &quot;observed&quot; every lag_time</span>
+<span class="sd">                                time steps</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mean-first passage times from A-&gt;B and B-&gt;A</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">check_tmatrix</span><span class="p">(</span><span class="n">nm_transition_matrix</span><span class="p">)</span>
+
+        <span class="n">labeled_pops</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">pops_from_tmatrix</span><span class="p">(</span><span class="n">nm_transition_matrix</span><span class="p">)</span>
+
+        <span class="n">n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">labeled_pops</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="n">fluxAB</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">fluxBA</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_states</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_states</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">j</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">stateB</span><span class="p">:</span>
+                    <span class="n">fluxAB</span> <span class="o">+=</span> <span class="n">labeled_pops</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">nm_transition_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_states</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_states</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">j</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">stateA</span><span class="p">:</span>
+                    <span class="n">fluxBA</span> <span class="o">+=</span> <span class="n">labeled_pops</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">nm_transition_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+        <span class="n">pop_colorA</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">pop_colorB</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_states</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">pop_colorA</span> <span class="o">+=</span> <span class="n">labeled_pops</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_states</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">pop_colorB</span> <span class="o">+=</span> <span class="n">labeled_pops</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">fluxAB</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">mfptAB</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mfptAB</span> <span class="o">=</span> <span class="n">pop_colorA</span> <span class="o">/</span> <span class="n">fluxAB</span>
+
+        <span class="k">if</span> <span class="n">fluxBA</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">mfptBA</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mfptBA</span> <span class="o">=</span> <span class="n">pop_colorB</span> <span class="o">/</span> <span class="n">fluxBA</span>
+
+        <span class="n">mfptAB</span> <span class="o">*=</span> <span class="n">lag_time</span>
+        <span class="n">mfptBA</span> <span class="o">*=</span> <span class="n">lag_time</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mfptAB</span><span class="o">=</span><span class="n">mfptAB</span><span class="p">,</span> <span class="n">mfptBA</span><span class="o">=</span><span class="n">mfptBA</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, John Russo.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

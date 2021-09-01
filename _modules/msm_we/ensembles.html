@@ -1,0 +1,692 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>msm_we.ensembles &mdash; msm_we 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> msm_we
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">msm_we</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Installation/Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code_todos.html">TODOs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">msm_we</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>msm_we.ensembles</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for msm_we.ensembles</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Adapted from the original NMpathAnalysis package,</span>
+<span class="sd">https://github.com/ZuckermanLab/NMpathAnalysis</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span>
+
+<span class="kn">from</span> <span class="nn">msm_we.utils</span> <span class="kn">import</span> <span class="n">Interval</span>
+<span class="kn">from</span> <span class="nn">msm_we.utils</span> <span class="kn">import</span> <span class="n">get_shape</span><span class="p">,</span> <span class="n">weighted_choice</span>
+<span class="kn">from</span> <span class="nn">msm_we.utils</span> <span class="kn">import</span> <span class="n">reverse_sort_lists</span>
+<span class="kn">from</span> <span class="nn">msm_we.fpt</span> <span class="kn">import</span> <span class="n">DirectFPT</span><span class="p">,</span> <span class="n">NonMarkovFPT</span>
+
+
+<div class="viewcode-block" id="Ensemble"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.Ensemble">[docs]</a><span class="k">class</span> <span class="nc">Ensemble</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Define a base class to store a list of space-continuous trajectories</span>
+
+<span class="sd">     e.g.: [ trajectory1, trajectory2,...], each trajectory is just a matrix</span>
+<span class="sd">    where each row is a snapshot, and each column represents the evolution</span>
+<span class="sd">    of the corresponding variable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectories</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an object of Ensemble class&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discrete</span> <span class="o">=</span> <span class="n">discrete</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lag_time</span> <span class="o">=</span> <span class="n">lag_time</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">trajectories</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">trajectories</span> <span class="o">==</span> <span class="p">[]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trajectories</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Empty ensemble generated&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we have a list/array of trajectories</span>
+            <span class="n">_n_snapshots</span><span class="p">,</span> <span class="n">_n_variables</span> <span class="o">=</span> <span class="n">get_shape</span><span class="p">(</span><span class="n">trajectories</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="n">traj_length</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># Average trajectory length</span>
+            <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">trajectories</span><span class="p">:</span>
+                <span class="n">traj_length</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+                <span class="n">n_snapshots</span><span class="p">,</span> <span class="n">n_variables</span> <span class="o">=</span> <span class="n">get_shape</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">n_variables</span> <span class="o">!=</span> <span class="n">_n_variables</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Error: All the trajectories must have the same &quot;</span> <span class="s2">&quot;number of variables&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">=</span> <span class="n">_n_variables</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trajectories</span> <span class="o">=</span> <span class="n">trajectories</span>
+            <span class="n">n_trajs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trajectories</span><span class="p">)</span>
+
+            <span class="n">traj_length</span> <span class="o">/=</span> <span class="n">n_trajs</span>  <span class="c1"># Average</span>
+
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Read </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">-dimensional) trajectories of &quot;</span> <span class="s2">&quot;average length </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_trajs</span><span class="p">,</span> <span class="n">n_variables</span><span class="p">,</span> <span class="n">traj_length</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Ensemble.add_trajectory"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.Ensemble.add_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">add_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a single trajectory to the ensemble&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">trajectory</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="n">_n_snapshots</span><span class="p">,</span> <span class="n">_n_variables</span> <span class="o">=</span> <span class="n">get_shape</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Empty ensemble</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trajectories</span> <span class="o">=</span> <span class="p">[</span><span class="n">trajectory</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">=</span> <span class="n">_n_variables</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">!=</span> <span class="n">_n_variables</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;All the trajectories in the same ensemble must &quot;</span> <span class="s2">&quot;have the same number of variables&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">trajectories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># returns the number of trajectories in the ensemble</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectories</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">discrete</span><span class="p">:</span>
+            <span class="n">feature</span> <span class="o">=</span> <span class="s2">&quot;Discrete, &quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">feature</span> <span class="o">=</span> <span class="s2">&quot;Continuous, &quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="n">feature</span>
+            <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> with </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">-dimensional) trajectories&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__len__</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Total number of snapshots: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span> <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]))</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">ensemble_sum</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">trajectories</span><span class="p">:</span>
+            <span class="n">ensemble_sum</span><span class="o">.</span><span class="n">add_trajectory</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ensemble_sum</span>
+
+    <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__add__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectories</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectories</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Ensemble.empirical_mfpts"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.Ensemble.empirical_mfpts">[docs]</a>    <span class="k">def</span> <span class="nf">empirical_mfpts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate mean first passage time using direct counting method&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DirectFPT</span><span class="o">.</span><span class="n">mean_fpts</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trajectories</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">discrete</span><span class="p">,</span> <span class="n">n_variables</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lag_time</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_count_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_states</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">map_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Built the count matrix&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">map_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">n_states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The number of states and a map function &quot;</span> <span class="s2">&quot;have to be given as argument&quot;</span><span class="p">)</span>
+
+        <span class="n">count_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_states</span><span class="p">,</span> <span class="n">n_states</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectories</span><span class="p">:</span>
+            <span class="n">previous_state</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
+            <span class="k">for</span> <span class="n">snapshot</span> <span class="ow">in</span> <span class="n">traj</span><span class="p">:</span>
+                <span class="n">current_state</span> <span class="o">=</span> <span class="n">map_function</span><span class="p">(</span><span class="n">snapshot</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">previous_state</span> <span class="o">!=</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">:</span>
+                    <span class="n">count_matrix</span><span class="p">[</span><span class="n">previous_state</span><span class="p">,</span> <span class="n">current_state</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.0</span>
+                <span class="n">previous_state</span> <span class="o">=</span> <span class="n">current_state</span>
+
+        <span class="k">return</span> <span class="n">count_matrix</span>
+
+    <span class="k">def</span> <span class="nf">_mle_transition_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_states</span><span class="p">,</span> <span class="n">map_function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate transition matrix from count matrix&quot;&quot;&quot;</span>
+        <span class="n">count_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_matrix</span><span class="p">(</span><span class="n">n_states</span><span class="p">,</span> <span class="n">map_function</span><span class="p">)</span>
+        <span class="n">transition_matrix</span> <span class="o">=</span> <span class="n">count_matrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Transforming the count matrix to a transition matrix</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_states</span><span class="p">):</span>
+            <span class="n">row_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:])</span>
+            <span class="k">if</span> <span class="n">row_sum</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">transition_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">transition_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">row_sum</span>
+
+        <span class="k">return</span> <span class="n">transition_matrix</span>
+
+<div class="viewcode-block" id="Ensemble.empirical_corr_function"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.Ensemble.empirical_corr_function">[docs]</a>    <span class="k">def</span> <span class="nf">empirical_corr_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate correlation function for trajectories&quot;&quot;&quot;</span>
+        <span class="n">n_dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span>
+
+        <span class="n">stateA</span> <span class="o">=</span> <span class="n">Interval</span><span class="p">(</span><span class="n">stateA</span><span class="p">,</span> <span class="n">n_dim</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">discrete</span> <span class="k">else</span> <span class="n">stateA</span>
+        <span class="n">stateB</span> <span class="o">=</span> <span class="n">Interval</span><span class="p">(</span><span class="n">stateB</span><span class="p">,</span> <span class="n">n_dim</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">discrete</span> <span class="k">else</span> <span class="n">stateB</span>
+
+        <span class="n">corr_values</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">delay</span> <span class="ow">in</span> <span class="n">times</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span>
+            <span class="k">assert</span> <span class="n">delay</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+            <span class="n">sum_</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">counts</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectories</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span> <span class="o">-</span> <span class="n">delay</span><span class="p">):</span>
+                    <span class="n">sum_</span> <span class="o">+=</span> <span class="p">(</span><span class="n">traj</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">stateA</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">traj</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">delay</span><span class="p">]</span> <span class="ow">in</span> <span class="n">stateB</span><span class="p">)</span>
+                    <span class="n">counts</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
+                        <span class="n">sum_</span> <span class="o">+=</span> <span class="p">(</span><span class="n">traj</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">stateB</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">traj</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">delay</span><span class="p">]</span> <span class="ow">in</span> <span class="n">stateA</span><span class="p">)</span>
+                        <span class="n">counts</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">corr_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sum_</span> <span class="o">/</span> <span class="n">counts</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">corr_values</span></div></div>
+
+
+<div class="viewcode-block" id="PathEnsemble"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.PathEnsemble">[docs]</a><span class="k">class</span> <span class="nc">PathEnsemble</span><span class="p">(</span><span class="n">Ensemble</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Derive a class to store trajectories for path analysis&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">trajectories</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stateA</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stateB</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">trajectories</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">discrete</span><span class="p">,</span> <span class="n">lag_time</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">stateA</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">stateB</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;The initial state (stateA) and final state (stateB) </span><span class="se">\</span>
+<span class="s2">                 have to be specified&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stateA</span> <span class="o">=</span> <span class="n">stateA</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stateB</span> <span class="o">=</span> <span class="n">stateB</span>
+
+<div class="viewcode-block" id="PathEnsemble.from_ensemble"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.PathEnsemble.from_ensemble">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_ensemble</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">,</span> <span class="n">stateA</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stateB</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">map_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build a PathEnsemble from an ensemble object or a set of trajectories&quot;&quot;&quot;</span>
+
+        <span class="n">list_of_pathsAB</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">ensemble</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">n_variables</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">ensemble</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_variables</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">stateA</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">stateB</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;The initial state (stateA) and final state (stateB) </span><span class="se">\</span>
+<span class="s2">                have to be specified&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">trajectories</span><span class="p">:</span>
+            <span class="n">previous_color</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
+            <span class="n">pathAB</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_snapshot</span> <span class="ow">in</span> <span class="n">traj</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="n">map_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">snapshot</span> <span class="o">=</span> <span class="n">map_function</span><span class="p">(</span><span class="n">_snapshot</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">snapshot</span> <span class="o">=</span> <span class="n">_snapshot</span>
+
+                <span class="c1"># color determination</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">discrete</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">snapshot</span> <span class="ow">in</span> <span class="n">Interval</span><span class="p">(</span><span class="n">stateA</span><span class="p">,</span> <span class="n">n_variables</span><span class="p">):</span>
+                        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
+                    <span class="k">elif</span> <span class="n">snapshot</span> <span class="ow">in</span> <span class="n">Interval</span><span class="p">(</span><span class="n">stateB</span><span class="p">,</span> <span class="n">n_variables</span><span class="p">):</span>
+                        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">color</span> <span class="o">=</span> <span class="n">previous_color</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">snapshot</span> <span class="ow">in</span> <span class="n">stateA</span><span class="p">:</span>
+                        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
+                    <span class="k">elif</span> <span class="n">snapshot</span> <span class="ow">in</span> <span class="n">stateB</span><span class="p">:</span>
+                        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">color</span> <span class="o">=</span> <span class="n">previous_color</span>
+
+                <span class="k">if</span> <span class="n">color</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span>
+                    <span class="n">pathAB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snapshot</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span><span class="n">color</span> <span class="o">==</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">previous_color</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">):</span>
+                    <span class="n">pathAB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snapshot</span><span class="p">)</span>
+                    <span class="n">list_of_pathsAB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pathAB</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">))</span>
+                    <span class="n">pathAB</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="n">previous_color</span> <span class="o">=</span> <span class="n">color</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">list_of_pathsAB</span><span class="p">,</span> <span class="n">stateA</span><span class="o">=</span><span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="o">=</span><span class="n">stateB</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="n">discrete</span><span class="p">,)</span></div>
+
+    <span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance_metric</span><span class="p">,</span> <span class="n">n_cluster</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;K-means&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not implemented yet&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiscreteEnsemble"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.DiscreteEnsemble">[docs]</a><span class="k">class</span> <span class="nc">DiscreteEnsemble</span><span class="p">(</span><span class="n">Ensemble</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Define a base class to store a list of space-discrete trajectories&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectories</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize an object of Discrete Ensemble&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">trajectories</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">discrete</span><span class="p">,</span> <span class="n">lag_time</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;A discrete trajectory must have a one-dimensional </span><span class="se">\</span>
+<span class="s2">                index/variable unless is empty&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_variables</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># by definition</span>
+
+<div class="viewcode-block" id="DiscreteEnsemble.from_ensemble"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.DiscreteEnsemble.from_ensemble">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_ensemble</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ens</span><span class="p">,</span> <span class="n">map_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build a DiscreteEnsemble from an ensemble object or a set of trajectories&quot;&quot;&quot;</span>
+        <span class="c1"># TODO: Check the case when ens is a list of trajs</span>
+        <span class="k">if</span> <span class="n">map_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A map function has to be given as argument&quot;</span><span class="p">)</span>
+
+        <span class="n">discrete_trajs_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">Ensemble</span><span class="p">):</span>
+            <span class="c1"># it is an Ensemble object</span>
+            <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">trajectories</span><span class="p">:</span>
+                <span class="n">d_traj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">snapshot</span> <span class="ow">in</span> <span class="n">traj</span><span class="p">:</span>
+                    <span class="n">d_traj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_traj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">map_function</span><span class="p">(</span><span class="n">snapshot</span><span class="p">)]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">discrete_trajs_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d_traj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">discrete_trajs_list</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># it is a list of trajectories</span>
+            <span class="n">d_traj</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">traj</span> <span class="ow">in</span> <span class="n">ens</span><span class="p">:</span>
+                <span class="n">d_traj</span> <span class="o">+=</span> <span class="p">[</span><span class="n">map_function</span><span class="p">(</span><span class="n">snapshot</span><span class="p">)]</span>
+            <span class="n">d_traj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d_traj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">([</span><span class="n">d_traj</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="DiscreteEnsemble.from_transition_matrix"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.DiscreteEnsemble.from_transition_matrix">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_transition_matrix</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">transition_matrix</span><span class="p">,</span> <span class="n">sim_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initial_state</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generates a DiscreteEnsemble from the transition matrix&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sim_length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The simulation length must be given&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">transition_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+
+        <span class="n">n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">n_states</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">current_state</span> <span class="o">=</span> <span class="n">initial_state</span>
+        <span class="n">discrete_traj</span> <span class="o">=</span> <span class="p">[</span><span class="n">initial_state</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sim_length</span><span class="p">):</span>
+            <span class="n">next_state</span> <span class="o">=</span> <span class="n">weighted_choice</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_states</span><span class="p">)],</span> <span class="n">transition_matrix</span><span class="p">[</span><span class="n">current_state</span><span class="p">,</span> <span class="p">:])</span>
+            <span class="n">discrete_traj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+            <span class="n">current_state</span> <span class="o">=</span> <span class="n">next_state</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">discrete_traj</span><span class="p">)])</span></div></div>
+
+
+<div class="viewcode-block" id="DiscretePathEnsemble"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.DiscretePathEnsemble">[docs]</a><span class="k">class</span> <span class="nc">DiscretePathEnsemble</span><span class="p">(</span><span class="n">PathEnsemble</span><span class="p">,</span> <span class="n">DiscreteEnsemble</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Derive a class to store a list of discrete trajectories for path analysis&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">trajectories</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stateA</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stateB</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">trajectories</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">discrete</span><span class="p">,</span> <span class="n">lag_time</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DiscretePathEnsemble.from_transition_matrix"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.DiscretePathEnsemble.from_transition_matrix">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_transition_matrix</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">transition_matrix</span><span class="p">,</span> <span class="n">stateA</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stateB</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_paths</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">ini_pops</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">1000000000</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a path ensemble from a transition matrix</span>
+
+<span class="sd">        stateA:     list, intitial state</span>
+
+<span class="sd">        stateB:     list, final state</span>
+
+<span class="sd">        n_paths:    integer, with default value of 1000</span>
+<span class="sd">                    number of paths to generate</span>
+
+<span class="sd">        ini_pops:   list or label, probability distribution over the</span>
+<span class="sd">                    initial state used to generate the path</span>
+
+<span class="sd">                    possible values:</span>
+<span class="sd">                    ----------------</span>
+<span class="sd">                    a) None</span>
+<span class="sd">                    Use a uniform distribution over the states in stateA</span>
+<span class="sd">                    c) list</span>
+<span class="sd">                    A list with the explicit values of the populations in stateA</span>
+<span class="sd">                    that should be used to generate the ensemble</span>
+<span class="sd">        max_iters:  integer, with default value of 1000000000</span>
+<span class="sd">                    maximum of iterations for generating path trajectories</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">ini_pops</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ini_pops</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stateA</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stateA</span><span class="p">))]</span>
+        <span class="k">elif</span> <span class="n">ini_pops</span> <span class="o">==</span> <span class="s2">&quot;ss&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Sorry: not yet implemented&quot;</span><span class="p">)</span>
+
+        <span class="n">n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">n_states</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">d_trajectories</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_paths</span><span class="p">):</span>
+            <span class="n">current_state</span> <span class="o">=</span> <span class="n">weighted_choice</span><span class="p">(</span><span class="n">stateA</span><span class="p">,</span> <span class="n">ini_pops</span><span class="p">)</span>  <span class="c1"># Initial state</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="n">current_state</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iters</span><span class="p">):</span>
+                <span class="n">next_state</span> <span class="o">=</span> <span class="n">weighted_choice</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_states</span><span class="p">)],</span> <span class="n">transition_matrix</span><span class="p">[</span><span class="n">current_state</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="n">path</span> <span class="o">+=</span> <span class="p">[</span><span class="n">next_state</span><span class="p">]</span>
+                <span class="n">current_state</span> <span class="o">=</span> <span class="n">next_state</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">max_iters</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">WARNING: max iteration reached when generating &quot;</span> <span class="s2">&quot;the path ensemble, consider to increase max_iters&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">current_state</span> <span class="ow">in</span> <span class="n">stateB</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+            <span class="n">path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">d_trajectories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">d_trajectories</span><span class="p">,</span> <span class="n">stateA</span><span class="o">=</span><span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="o">=</span><span class="n">stateB</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DiscretePathEnsemble.from_ensemble"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.DiscretePathEnsemble.from_ensemble">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_ensemble</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">map_function</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build a DiscreteEnsemble from an ensemble object or a set of trajectories&quot;&quot;&quot;</span>
+        <span class="n">ens</span> <span class="o">=</span> <span class="n">PathEnsemble</span><span class="o">.</span><span class="n">from_ensemble</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="p">,</span> <span class="n">map_function</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">trajectories</span><span class="p">,</span> <span class="n">stateA</span><span class="o">=</span><span class="n">stateA</span><span class="p">,</span> <span class="n">stateB</span><span class="o">=</span><span class="n">stateB</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DiscretePathEnsemble.nm_mfpt"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.DiscretePathEnsemble.nm_mfpt">[docs]</a>    <span class="k">def</span> <span class="nf">nm_mfpt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ini_probs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the mean-first passage time from the transition matrix&quot;&quot;&quot;</span>
+        <span class="n">t_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mle_transition_matrix</span><span class="p">(</span><span class="n">n_states</span><span class="p">)</span>
+        <span class="n">ini_state</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stateA</span><span class="p">)</span>
+        <span class="n">final_state</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stateB</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">NonMarkovFPT</span><span class="o">.</span><span class="n">directional_mfpt</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">,</span> <span class="n">ini_state</span><span class="p">,</span> <span class="n">final_state</span><span class="p">,</span> <span class="n">ini_probs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_fundamental_sequences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transition_matrix</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Divide/classify the path ensemble into fundamental sequences&quot;&quot;&quot;</span>
+
+        <span class="n">fundamental_seqs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectories</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
+                <span class="n">cmatrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connectivity_matrix</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">transition_matrix</span> <span class="o">*</span> <span class="n">transition_matrix</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cmatrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connectivity_matrix</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">transition_matrix</span><span class="p">)</span>
+
+            <span class="n">path_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph_from_matrix</span><span class="p">(</span><span class="n">cmatrix</span><span class="p">)</span>
+            <span class="n">shortest_path</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">dijkstra_path</span><span class="p">(</span><span class="n">path_graph</span><span class="p">,</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;distance&quot;</span><span class="p">)</span>
+
+            <span class="n">fundamental_seqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shortest_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fundamental_seqs</span>
+
+<div class="viewcode-block" id="DiscretePathEnsemble.weighted_fundamental_sequences"><a class="viewcode-back" href="../../api.html#msm_we.ensembles.DiscretePathEnsemble.weighted_fundamental_sequences">[docs]</a>    <span class="k">def</span> <span class="nf">weighted_fundamental_sequences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transition_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate sorted fundamental sequences with weights&quot;&quot;&quot;</span>
+        <span class="n">fs_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_sequences</span><span class="p">(</span><span class="n">transition_matrix</span><span class="p">,</span> <span class="n">symmetric</span><span class="p">)</span>
+        <span class="n">element_count</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">tot_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">fs_list</span><span class="p">:</span>
+            <span class="n">pseudo_index</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="n">tot_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">pseudo_index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">element_count</span><span class="p">:</span>
+                <span class="n">element_count</span><span class="p">[</span><span class="n">pseudo_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">element_count</span><span class="p">[</span><span class="n">pseudo_index</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">new_fs_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">element_count</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">new_fs_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">tot_count</span><span class="p">))</span>
+
+        <span class="n">reversed_sorted_weights</span><span class="p">,</span> <span class="n">reversed_sorted_new_fs_list</span> <span class="o">=</span> <span class="n">reverse_sort_lists</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">new_fs_list</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">reversed_sorted_new_fs_list</span><span class="p">,</span> <span class="n">reversed_sorted_weights</span><span class="p">,</span> <span class="n">tot_count</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_graph_from_matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Builds a directed Graph from a matrix like a transition matrix&quot;&quot;&quot;</span>
+
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">size</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+
+        <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">):</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">distance</span><span class="o">=-</span><span class="n">log</span><span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">G</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_connectivity_matrix</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;From a given path and a matrix construct a connectivity matrix</span>
+
+<span class="sd">        whose elements ij are zero if the transition i-&gt;j</span>
+<span class="sd">        is not observed in the path or (i=j), while keep the rest of the</span>
+<span class="sd">        elements in the input matrix.</span>
+
+<span class="sd">        This way, from the connectivity matrix we could later create a graph</span>
+<span class="sd">        that represents the path, being the &quot;distance&quot; between nodes equal</span>
+<span class="sd">        to -log(Tij)</span>
+
+<span class="sd">        Tij --&gt; i,j element in the transition matrix</span>
+
+<span class="sd">        the path must be 1D array of indexes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span>
+
+        <span class="n">n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">n_states</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">c_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_states</span><span class="p">,</span> <span class="n">n_states</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">c_matrix</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span>
+
+        <span class="k">return</span> <span class="n">c_matrix</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, John Russo.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

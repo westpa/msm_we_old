@@ -35,6 +35,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -96,6 +97,11 @@
 <li class="toctree-l1"><a class="reference internal" href="readme.html">msm_we</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="stubs/msm_we.msm_we.modelWE.html">msm_we.msm_we.modelWE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stubs/msm_we.fpt.html">msm_we.fpt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stubs/msm_we.ensembles.html">msm_we.ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stubs/msm_we.nmm.html">msm_we.nmm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stubs/msm_we.phat.html">msm_we.phat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stubs/msm_we.utils.html">msm_we.utils</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Installation/Usage</a></li>
@@ -179,6 +185,21 @@
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="stubs/msm_we.msm_we.modelWE.html#msm_we.msm_we.modelWE" title="msm_we.msm_we.modelWE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msm_we.msm_we.modelWE</span></code></a></p></td>
 <td><p>Implementation of haMSM model building, particularly for steady-state estimation (but there are lots of extras), from WE sampling with basis (source) and target (sink) states with recycling.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="stubs/msm_we.fpt.html#module-msm_we.fpt" title="msm_we.fpt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msm_we.fpt</span></code></a></p></td>
+<td><p>Adapted from the original NMpathAnalysis package, <a class="reference external" href="https://github.com/ZuckermanLab/NMpathAnalysis">https://github.com/ZuckermanLab/NMpathAnalysis</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="stubs/msm_we.ensembles.html#module-msm_we.ensembles" title="msm_we.ensembles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msm_we.ensembles</span></code></a></p></td>
+<td><p>Adapted from the original NMpathAnalysis package, <a class="reference external" href="https://github.com/ZuckermanLab/NMpathAnalysis">https://github.com/ZuckermanLab/NMpathAnalysis</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="stubs/msm_we.nmm.html#module-msm_we.nmm" title="msm_we.nmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msm_we.nmm</span></code></a></p></td>
+<td><p>Adapted from the original NMpathAnalysis package, <a class="reference external" href="https://github.com/ZuckermanLab/NMpathAnalysis">https://github.com/ZuckermanLab/NMpathAnalysis</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="stubs/msm_we.phat.html#module-msm_we.phat" title="msm_we.phat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msm_we.phat</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="stubs/msm_we.utils.html#module-msm_we.utils" title="msm_we.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msm_we.utils</span></code></a></p></td>
+<td><p>Adapted from the original NMpathAnalysis package, <a class="reference external" href="https://github.com/ZuckermanLab/NMpathAnalysis">https://github.com/ZuckermanLab/NMpathAnalysis</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -1190,6 +1211,1015 @@ is less than this.</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<span class="target" id="module-msm_we.fpt"></span><p>Adapted from the original NMpathAnalysis package,
+<a class="reference external" href="https://github.com/ZuckermanLab/NMpathAnalysis">https://github.com/ZuckermanLab/NMpathAnalysis</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.fpt.MatrixFPT">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.fpt.</span></span><span class="sig-name descname"><span class="pre">MatrixFPT</span></span><a class="reference internal" href="_modules/msm_we/fpt.html#MatrixFPT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MatrixFPT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a base class for calculating FPTs using transition matrix</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.fpt.MatrixFPT.mean_fpts">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">mean_fpts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmatrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#MatrixFPT.mean_fpts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MatrixFPT.mean_fpts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculting mean-first passave time for at transition matrix</p>
+<p>Derived class will implement this function differently.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.fpt.MatrixFPT.directional_mfpt">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">directional_mfpt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ini_probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#MatrixFPT.directional_mfpt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MatrixFPT.directional_mfpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the mean-first passage time in a single direction using a recursive procedure</p>
+<p>This method is useful when there is no B-&gt;A ensemble but only A-&gt;B transitions,
+for instance when B is absorbing.</p>
+<p>transition_matrix:  Numpy 2D array</p>
+<dl class="simple">
+<dt>stateA, stateB:     List of integers</dt><dd><p>Both states are a list of indexes.</p>
+</dd>
+<dt>ini_probs:          List of float, default is None</dt><dd><p>initial probabilities in stateA</p>
+</dd>
+<dt>lag_time:           integer</dt><dd><p>Lag time used, the trajectory is “observed” every lag_time
+time steps</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>mean-first passage time from A-&gt;B</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.fpt.MatrixFPT.mfpts_to_target_microstate">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">mfpts_to_target_microstate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#MatrixFPT.mfpts_to_target_microstate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MatrixFPT.mfpts_to_target_microstate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes all the mean-first passage to a target microstate (k)</p>
+<p>Returns a list where the i-element is mfpt(i-&gt;k). This function is
+useful to compute the mfpt matrix.</p>
+<p>transition_matrix:  Numpy 2D array</p>
+<dl class="simple">
+<dt>target:             Integer number that specifies the index of the state. The indexes</dt><dd><p>should be consistent with the transition matrix and python
+(i.e. starting from 0)</p>
+</dd>
+<dt>lag_time:           Integer</dt><dd><p>Lag time used, the trajectory is “observed” every lag_time
+time steps</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>a list where the i-element is mfpt(i-&gt;k). This function is</em></p></li>
+<li><p><em>useful to compute the mfpt matrix.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.fpt.MatrixFPT.mfpts_matrix">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">mfpts_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#MatrixFPT.mfpts_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MatrixFPT.mfpts_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate MFPT matrix, i.e., the matrix where the ij-element is MFPT(i-&gt;j)</p>
+<p>transition_matrix:  Numpy 2D array</p>
+<dl class="simple">
+<dt>lag_time:           Integer</dt><dd><p>Lag time used, the trajectory is “observed” every lag_time
+time steps</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>mean-first passage time matrix with ij-element of MFPT(i-&gt;j)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.fpt.MatrixFPT.min_commute_time">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">min_commute_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix_of_mfpts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#MatrixFPT.min_commute_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MatrixFPT.min_commute_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate minimum commuting time (round trip time) between all pairs</p>
+<p>of microstates from the matrix of mfpts. It also returns the indexes
+of the pair of microstates involved.</p>
+<dl class="simple">
+<dt>matrix_of_mfpts:    Numpy 2D array</dt><dd><p>matrix of MFPTs with ij-element of MFPT(i-&gt;j)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>Minimum commuting time (round trip time) between all pairs</em></p></li>
+<li><p><em>of microstates and the indexes of the pair of microstates involved.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.fpt.MatrixFPT.max_commute_time">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">max_commute_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix_of_mfpts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#MatrixFPT.max_commute_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MatrixFPT.max_commute_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate maximum commuting time (round trip time) between all pairs</p>
+<p>of microstates from the matrix of mfpts. It also returns the indexes
+of the pair of microstates involved.</p>
+<dl class="simple">
+<dt>matrix_of_mfpts:    Numpy 2D array</dt><dd><p>matrix of MFPTs with ij-element of MFPT(i-&gt;j)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>Maximum commuting time (round trip time) between all pairs</em></p></li>
+<li><p><em>of microstates and the indexes of the pair of microstates involved.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.fpt.MatrixFPT.fpt_distribution">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">fpt_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_distrib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n_lags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#MatrixFPT.fpt_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MatrixFPT.fpt_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculated distribution of first passage times from transition matrix</p>
+<p>t_matrix:           Numpy 2D array</p>
+<p>initial_state,
+final_states:       List of integer numbers</p>
+<blockquote>
+<div><p>Specifies the indexes of initial and final states.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>ini_probs:          List of float, default is None</dt><dd><p>initial probabilities for initial states</p>
+</dd>
+<dt>max_n_lag:          Integer</dt><dd><p>maximum number of lags</p>
+</dd>
+<dt>lag_time:           Integer</dt><dd><p>Lag time used, the trajectory is “observed” every lag_time
+time steps</p>
+</dd>
+<dt>dt:                 float,</dt><dd><p>Time step</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Distributions of first passage times</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.fpt.MarkovFPT">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.fpt.</span></span><span class="sig-name descname"><span class="pre">MarkovFPT</span></span><a class="reference internal" href="_modules/msm_we/fpt.html#MarkovFPT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MarkovFPT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Derived a class for calculating FPTs using Markovian transition matrix</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.fpt.MarkovFPT.mean_fpts">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">mean_fpts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markov_tmatrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#MarkovFPT.mean_fpts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MarkovFPT.mean_fpts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes mean first passage times using Markovian transition matrix</p>
+<p>in both directions A-&gt;B and B-&gt;A from a markov model. The MFPTs computed
+in this way are directly comparable with the values obtained by a long back
+and forth simulation between the target states.</p>
+<dl class="simple">
+<dt>markov_matrix:      Numpy 2D array</dt><dd><p>Markovian transition matrix</p>
+</dd>
+<dt>stateA, stateB:     List of integers</dt><dd><p>Both states are a list of indexes.</p>
+</dd>
+<dt>lag_time:           integer</dt><dd><p>Lag time used, the trajectory is “observed” every lag_time
+time steps</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>mean-first passage times from A-&gt;B and B-&gt;A</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.fpt.MarkovFPT.markov_commute_time">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">markov_commute_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#MarkovFPT.markov_commute_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MarkovFPT.markov_commute_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computing commute time for Markovian Model</p>
+<dl class="simple">
+<dt>transition_matrix:  Numpy 2D array</dt><dd><p>Markovian transition matrix</p>
+</dd>
+<dt>stateA, stateB:     List of integers</dt><dd><p>Both states are a list of indexes.</p>
+</dd>
+<dt>lag_time:           integer</dt><dd><p>Lag time used, the trajectory is “observed” every lag_time
+time steps</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Commute time from mean-first passage times</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.fpt.NonMarkovFPT">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.fpt.</span></span><span class="sig-name descname"><span class="pre">NonMarkovFPT</span></span><a class="reference internal" href="_modules/msm_we/fpt.html#NonMarkovFPT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.NonMarkovFPT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Derived a class for calculating FPTs using Non Markov transition matrix</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.fpt.NonMarkovFPT.mean_fpts">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">mean_fpts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nm_transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#NonMarkovFPT.mean_fpts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.NonMarkovFPT.mean_fpts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the mean first passage times from a non-markovian model</p>
+<p>in both directions of A-&gt;B and B-&gt;A. The shape of the transition matrix
+should be (2*n_states, 2*n_states).
+Parameters:
+———–
+nm_transition_matrix:   Numpy 2D array</p>
+<blockquote>
+<div><p>Non-Markovian transition matrix</p>
+</div></blockquote>
+<dl class="simple">
+<dt>stateA, stateB:         List of integers</dt><dd><p>Both states are a list of indexes.</p>
+</dd>
+<dt>lag_time:               integer</dt><dd><p>Lag time used, the trajectory is “observed” every lag_time
+time steps</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>mean-first passage times from A-&gt;B and B-&gt;A</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-msm_we.ensembles"></span><p>Adapted from the original NMpathAnalysis package,
+<a class="reference external" href="https://github.com/ZuckermanLab/NMpathAnalysis">https://github.com/ZuckermanLab/NMpathAnalysis</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.ensembles.Ensemble">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.ensembles.</span></span><span class="sig-name descname"><span class="pre">Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'float32'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.Ensemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a base class to store a list of space-continuous trajectories</p>
+<blockquote>
+<div><p>e.g.: [ trajectory1, trajectory2,…], each trajectory is just a matrix</p>
+</div></blockquote>
+<p>where each row is a snapshot, and each column represents the evolution
+of the corresponding variable.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.ensembles.Ensemble.add_trajectory">
+<span class="sig-name descname"><span class="pre">add_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#Ensemble.add_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.Ensemble.add_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a single trajectory to the ensemble</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.ensembles.Ensemble.empirical_mfpts">
+<span class="sig-name descname"><span class="pre">empirical_mfpts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#Ensemble.empirical_mfpts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.Ensemble.empirical_mfpts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate mean first passage time using direct counting method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.ensembles.Ensemble.empirical_corr_function">
+<span class="sig-name descname"><span class="pre">empirical_corr_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#Ensemble.empirical_corr_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.Ensemble.empirical_corr_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate correlation function for trajectories</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.ensembles.PathEnsemble">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.ensembles.</span></span><span class="sig-name descname"><span class="pre">PathEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'float32'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#PathEnsemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.PathEnsemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Derive a class to store trajectories for path analysis</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.ensembles.PathEnsemble.from_ensemble">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'float32'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#PathEnsemble.from_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.PathEnsemble.from_ensemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a PathEnsemble from an ensemble object or a set of trajectories</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.ensembles.DiscreteEnsemble">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.ensembles.</span></span><span class="sig-name descname"><span class="pre">DiscreteEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'int32'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#DiscreteEnsemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.DiscreteEnsemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a base class to store a list of space-discrete trajectories</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.ensembles.DiscreteEnsemble.from_ensemble">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'int32'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#DiscreteEnsemble.from_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.DiscreteEnsemble.from_ensemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a DiscreteEnsemble from an ensemble object or a set of trajectories</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.ensembles.DiscreteEnsemble.from_transition_matrix">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_transition_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#DiscreteEnsemble.from_transition_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.DiscreteEnsemble.from_transition_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a DiscreteEnsemble from the transition matrix</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.ensembles.DiscretePathEnsemble">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.ensembles.</span></span><span class="sig-name descname"><span class="pre">DiscretePathEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'int32'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#DiscretePathEnsemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.DiscretePathEnsemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Derive a class to store a list of discrete trajectories for path analysis</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.ensembles.DiscretePathEnsemble.from_transition_matrix">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_transition_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ini_pops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#DiscretePathEnsemble.from_transition_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.DiscretePathEnsemble.from_transition_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a path ensemble from a transition matrix</p>
+<p>stateA:     list, intitial state</p>
+<p>stateB:     list, final state</p>
+<dl>
+<dt>n_paths:    integer, with default value of 1000</dt><dd><p>number of paths to generate</p>
+</dd>
+<dt>ini_pops:   list or label, probability distribution over the</dt><dd><p>initial state used to generate the path</p>
+<p>a) None
+Use a uniform distribution over the states in stateA
+c) list
+A list with the explicit values of the populations in stateA
+that should be used to generate the ensemble</p>
+</dd>
+<dt>max_iters:  integer, with default value of 1000000000</dt><dd><p>maximum of iterations for generating path trajectories</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.ensembles.DiscretePathEnsemble.from_ensemble">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#DiscretePathEnsemble.from_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.DiscretePathEnsemble.from_ensemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a DiscreteEnsemble from an ensemble object or a set of trajectories</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.ensembles.DiscretePathEnsemble.nm_mfpt">
+<span class="sig-name descname"><span class="pre">nm_mfpt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ini_probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#DiscretePathEnsemble.nm_mfpt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.DiscretePathEnsemble.nm_mfpt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the mean-first passage time from the transition matrix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.ensembles.DiscretePathEnsemble.weighted_fundamental_sequences">
+<span class="sig-name descname"><span class="pre">weighted_fundamental_sequences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/ensembles.html#DiscretePathEnsemble.weighted_fundamental_sequences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.ensembles.DiscretePathEnsemble.weighted_fundamental_sequences" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate sorted fundamental sequences with weights</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-msm_we.nmm"></span><p>Adapted from the original NMpathAnalysis package,
+<a class="reference external" href="https://github.com/ZuckermanLab/NMpathAnalysis">https://github.com/ZuckermanLab/NMpathAnalysis</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.nmm.NonMarkovModel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.nmm.</span></span><span class="sig-name descname"><span class="pre">NonMarkovModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_traj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sliding_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reversible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markovian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coarse_macrostates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/nmm.html#NonMarkovModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.nmm.NonMarkovModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a class for analyzing MD trajectories using Markovian or non-Markovian Model</p>
+<p>from a list of 1D trajectories of integers representing macrostates</p>
+<p>For example:</p>
+<p>trajectories = [ [1 , 2, 0, …], [2, 2, 1, …], [3, 1, 2, …], …]</p>
+<p>If only one sequence is given in trajectories, the format is the same:</p>
+<p>trajectories = [ [1 , 2, 0, …] ]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>integer</strong> (<em>lag_time</em>) – Lag time of the model.</p></li>
+<li><p><strong>default</strong> – Lag time of the model.</p></li>
+<li><p><strong>(</strong><strong>boolean</strong><strong>)</strong> (<em>sliding_window</em>) – Use a sliding window of length lag_time to compute the count matrix</p></li>
+<li><p><strong>stateA</strong> – Define the initial and final macrostates in form of python lists
+for example: stateA=[0,2,5], stateB = [1]</p></li>
+<li><p><strong>lists</strong><strong>)</strong> (<em>stateB</em><em> (</em><em>python</em>) – Define the initial and final macrostates in form of python lists
+for example: stateA=[0,2,5], stateB = [1]</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="msm_we.nmm.NonMarkovModel.n_states">
+<span class="sig-name descname"><span class="pre">n_states</span></span><a class="headerlink" href="#msm_we.nmm.NonMarkovModel.n_states" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="msm_we.nmm.NonMarkovModel.nm_cmatrix">
+<span class="sig-name descname"><span class="pre">nm_cmatrix</span></span><a class="headerlink" href="#msm_we.nmm.NonMarkovModel.nm_cmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores the number of transitions between states, the i,j element cij
+stores the number of transitions observed from i to j.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array, with shape (2 n_states, 2 n_states)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="msm_we.nmm.NonMarkovModel.populations">
+<span class="sig-name descname"><span class="pre">populations</span></span><a class="reference internal" href="_modules/msm_we/nmm.html#NonMarkovModel.populations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.nmm.NonMarkovModel.populations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Equilibrium population, the steady state solution of of the
+transition matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array, shape (n_states,)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.nmm.NonMarkovModel.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/nmm.html#NonMarkovModel.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.nmm.NonMarkovModel.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits the non-Markovian model from a list of sequences</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.nmm.NonMarkovModel.from_nm_tmatrix">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_nm_tmatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/nmm.html#NonMarkovModel.from_nm_tmatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.nmm.NonMarkovModel.from_nm_tmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a discrete ensemble from the transition matrix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.nmm.NonMarkovModel.empirical_mfpts">
+<span class="sig-name descname"><span class="pre">empirical_mfpts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/nmm.html#NonMarkovModel.empirical_mfpts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.nmm.NonMarkovModel.empirical_mfpts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate mean first passage time using direct counting method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.nmm.NonMarkovModel.corr_function">
+<span class="sig-name descname"><span class="pre">corr_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/nmm.html#NonMarkovModel.corr_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.nmm.NonMarkovModel.corr_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the correlation function for a set of times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>integers</strong><strong>)</strong> (<em>times</em><em> (</em><em>list of</em>) – List of dt values used to compute the correlation function.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List of floats with the correlation values for the dt given in times</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.nmm.MarkovPlusColorModel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.nmm.</span></span><span class="sig-name descname"><span class="pre">MarkovPlusColorModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_traj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sliding_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hist_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/nmm.html#MarkovPlusColorModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.nmm.MarkovPlusColorModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a class for analyzing MD trajectories using Markovian Plus Color Model</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.nmm.MarkovPlusColorModel.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/nmm.html#MarkovPlusColorModel.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.nmm.MarkovPlusColorModel.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits the markov plus color model from a list of sequences</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-msm_we.phat"></span><dl class="py class">
+<dt class="sig sig-object py" id="msm_we.phat.PathwayClassifier">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.phat.</span></span><span class="sig-name descname"><span class="pre">PathwayClassifier</span></span><a class="reference internal" href="_modules/msm_we/phat.html#PathwayClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.PathwayClassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for parametrized pathway classifiers.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.phat.PathwayClassifier.classify">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">classify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#PathwayClassifier.classify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.PathwayClassifier.classify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the pathway class of a trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trajectory</strong> (<em>object</em>) – An object (e.g., a time series) representing a sample path
+of a stochastic process.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The pathway class of the trajectory.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>hashable object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.phat.PathwayClassifier.histogram">
+<span class="sig-name descname"><span class="pre">histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#PathwayClassifier.histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.PathwayClassifier.histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a pathway histogram filled with the given trajectory data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trajectories</strong> (<em>iterable</em>) – Trajectories to be classified.</p></li>
+<li><p><strong>weights</strong> (<em>iterable of float</em><em>, </em><em>optional</em>) – The weight of each trajectory. By default, each trajectory
+has weight 1. Weights are paired with trajectories in the
+order they are iterated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A pathway histogram of the given data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#msm_we.phat.PathwayHistogram" title="msm_we.phat.PathwayHistogram">PathwayHistogram</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.phat.FundamentalSequenceClassifier">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.phat.</span></span><span class="sig-name descname"><span class="pre">FundamentalSequenceClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetrized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#FundamentalSequenceClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.FundamentalSequenceClassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fundamental sequence (FS) classifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transition_matrix</strong> (<em>(</em><em>N</em><em>, </em><em>N</em><em>) </em><em>array_like</em>) – Transition matrix of a discrete time Markov chain. Must be
+a stochastic matrix with row sums equal to one.</p></li>
+<li><p><strong>states</strong> (<em>(</em><em>N</em><em>,</em><em>) </em><em>array_like</em><em>, </em><em>optional</em>) – State labels of the Markov chain. Values must be hashable.
+Default is <code class="docutils literal notranslate"><span class="pre">range(N)</span></code>.</p></li>
+<li><p><strong>symmetrized</strong> (<em>bool</em><em>, </em><em>default True</em>) – If True, classify paths by symmetrized FS.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="msm_we.phat.FundamentalSequenceClassifier.graph">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">graph</span></span><a class="headerlink" href="#msm_we.phat.FundamentalSequenceClassifier.graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Surprisal graph of the underlying Markov chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>nx.Graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.phat.FundamentalSequenceClassifier.classify">
+<span class="sig-name descname"><span class="pre">classify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">discrete_trajectory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#FundamentalSequenceClassifier.classify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.FundamentalSequenceClassifier.classify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the pathway class of a discrete trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>discrete_trajectory</strong> (<em>sequence</em>) – A node path in <a class="reference internal" href="#msm_we.phat.FundamentalSequenceClassifier.graph" title="msm_we.phat.FundamentalSequenceClassifier.graph"><code class="xref py py-attr docutils literal notranslate"><span class="pre">graph</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The fundamental sequence of <cite>discrete_trajectory</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.phat.VoronoiPathwayClassifier">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.phat.</span></span><span class="sig-name descname"><span class="pre">VoronoiPathwayClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#VoronoiPathwayClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.VoronoiPathwayClassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>A classifier based on a Voronoi partition of trajectory space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>iterable</em>) – Trajectories to be used as Voronoi centers.</p></li>
+<li><p><strong>distance</strong> (<em>callable</em><em>, </em><em>optional</em>) – A function that takes two trajectories and returns their distance.
+The default distance between two trajectories <cite>s</cite> and <cite>q</cite> is the
+symmetric difference cardinality <code class="docutils literal notranslate"><span class="pre">len(set(s)</span> <span class="pre">^</span> <span class="pre">set(q))</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="msm_we.phat.VoronoiPathwayClassifier.centers">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">centers</span></span><a class="headerlink" href="#msm_we.phat.VoronoiPathwayClassifier.centers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Voronoi centers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>sequence</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="msm_we.phat.VoronoiPathwayClassifier.distance">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">distance</span></span><a class="headerlink" href="#msm_we.phat.VoronoiPathwayClassifier.distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.phat.VoronoiPathwayClassifier.classify">
+<span class="sig-name descname"><span class="pre">classify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#VoronoiPathwayClassifier.classify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.VoronoiPathwayClassifier.classify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the pathway class of a trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trajectory</strong> (<em>object</em>) – An object (e.g., a time series) representing a sample path
+of a stochastic process.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The zero-based index of the closest Voronoi center. Ties are
+broken according to the ordering of <a class="reference internal" href="#msm_we.phat.VoronoiPathwayClassifier.centers" title="msm_we.phat.VoronoiPathwayClassifier.centers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">centers</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.phat.WeightedSample">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.phat.</span></span><span class="sig-name descname"><span class="pre">WeightedSample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#WeightedSample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.WeightedSample" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sequence of (observation, weight) pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observations</strong> (<em>iterable</em><em>, </em><em>default</em><em> (</em><em>)</em>) – A sequence of observations.</p></li>
+<li><p><strong>weights</strong> (<em>iterable of floats</em><em>, </em><em>optional</em>) – The weight of each observation. By default, each observation
+has weight 1. Weights are paired with observations in the
+order they are iterated.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="msm_we.phat.WeightedSample.observations">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">observations</span></span><a class="headerlink" href="#msm_we.phat.WeightedSample.observations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator over the observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>iterator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="msm_we.phat.WeightedSample.weights">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">weights</span></span><a class="headerlink" href="#msm_we.phat.WeightedSample.weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator over the weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>iterator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="msm_we.phat.WeightedSample.total_weight">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">total_weight</span></span><a class="headerlink" href="#msm_we.phat.WeightedSample.total_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum of the weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.phat.PathwayHistogram">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.phat.</span></span><span class="sig-name descname"><span class="pre">PathwayHistogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#PathwayHistogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.PathwayHistogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>A pathway histogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>classifier</strong> (<em>callable</em>) – A function that takes a single trajectory as input and returns a
+hashable value representing the pathway class of the trajectory.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="msm_we.phat.PathwayHistogram.classifier">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">classifier</span></span><a class="headerlink" href="#msm_we.phat.PathwayHistogram.classifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mapping from trajectories to pathway classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="msm_we.phat.PathwayHistogram.data">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#msm_we.phat.PathwayHistogram.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read-only view of histogram data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>types.MappingProxyType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.phat.PathwayHistogram.classes">
+<span class="sig-name descname"><span class="pre">classes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#PathwayHistogram.classes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.PathwayHistogram.classes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterable[Hashable]: Pathway classes (block labels).</p>
+<p>Alias self.data.keys().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.phat.PathwayHistogram.blocks">
+<span class="sig-name descname"><span class="pre">blocks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#PathwayHistogram.blocks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.PathwayHistogram.blocks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterable[WeightedSample]: Data belonging to each class.</p>
+<p>Alias self.data.values().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.phat.PathwayHistogram.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#PathwayHistogram.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.PathwayHistogram.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a trajectory to the histogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trajectory</strong> (<em>object</em>) – Trajectory to be classified.</p></li>
+<li><p><strong>weight</strong> (<em>float</em><em>, </em><em>default 1.0</em>) – The weight of the trajectory.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.phat.PathwayHistogram.fill">
+<span class="sig-name descname"><span class="pre">fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accumulate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#PathwayHistogram.fill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.PathwayHistogram.fill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill the histogram with data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trajectories</strong> (<em>iterable</em>) – Trajectories to be classified.</p></li>
+<li><p><strong>weights</strong> (<em>iterable of float</em><em>, </em><em>optional</em>) – The weight of each trajectory. By default, each trajectory
+has weight 1. Weights are paired with trajectories in the
+order they are iterated.</p></li>
+<li><p><strong>accumulate</strong> (<em>bool</em><em>, </em><em>default True</em>) – If True, retain any existing data in the histogram. If False,
+clear the histogram before filling with the given data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="msm_we.phat.PathwayHistogram.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#PathwayHistogram.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.PathwayHistogram.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all data from the histogram.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.phat.pathway_histogram">
+<span class="sig-prename descclassname"><span class="pre">msm_we.phat.</span></span><span class="sig-name descname"><span class="pre">pathway_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trajectories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#pathway_histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.pathway_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a pathway histogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>classifier</strong> (<a class="reference internal" href="#msm_we.phat.PathwayClassifier" title="msm_we.phat.PathwayClassifier"><em>PathwayClassifier</em></a>) – A function that maps a trajectory to its pathway class.</p></li>
+<li><p><strong>trajectories</strong> (<em>iterable</em>) – Trajectories to be classified.</p></li>
+<li><p><strong>weights</strong> (<em>iterable of float</em><em>, </em><em>optional</em>) – The weight of each trajectory. By default, each trajectory
+has weight 1. Weights are paired with trajectories in the
+order they are iterated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A pathway histogram of the given data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#msm_we.phat.PathwayHistogram" title="msm_we.phat.PathwayHistogram">PathwayHistogram</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.phat.surprisal_graph">
+<span class="sig-prename descclassname"><span class="pre">msm_we.phat.</span></span><span class="sig-name descname"><span class="pre">surprisal_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetrized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stationary_distribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#surprisal_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.surprisal_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the surprisal graph of a discrete-time Markov chain.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>transition_matrix<span class="classifier">(N, N) array_like</span></dt><dd><dl class="simple">
+<dt>Transition matrix of a discrete-time Markov chain. Must be</dt><dd><p>a stochastic matrix with row sums equal to one.</p>
+</dd>
+</dl>
+</dd>
+<dt>states<span class="classifier">(N,) array_like, optional</span></dt><dd><p>State labels of the Markov chain. Values must be unique and
+hashable. Default is <code class="docutils literal notranslate"><span class="pre">range(N)</span></code>.</p>
+</dd>
+<dt>symmetrized<span class="classifier">bool, default True</span></dt><dd><p>If True, edge weights are round-trip distances. If False, weights
+are one-way distances. See Notes for details.</p>
+</dd>
+<dt>stationary_distribution<span class="classifier">(N,) array_like, optional</span></dt><dd><p>Stationary distribution of <cite>transition_matrix</cite>. Ignored when
+<cite>symmetrized</cite> is False. If <cite>symmetrized</cite> is True and the
+stationary distribution has already been computed, this parameter
+can be passed to avoid redundant computation.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>graph<span class="classifier">nx.DiGraph</span></dt><dd><p>The (symmetrized) surprisal graph of the Markov chain. The weight
+of edge <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y)</span></code> is given by <code class="docutils literal notranslate"><span class="pre">graph[x][y]['surprisal']</span></code>.</p>
+</dd>
+</dl>
+<p>The <em>surprisal graph</em> of a Markov chain with state space
+<span class="math notranslate nohighlight">\(V\)</span> and transition matrix <span class="math notranslate nohighlight">\(T \colon V   imes V  o [0, 1]\)</span>
+is the weighted directed graph <span class="math notranslate nohighlight">\((V, E, \delta)\)</span> with edges</p>
+<div class="math notranslate nohighlight">
+\[E = \{ (x, y) : T(x, y) &gt; 0       ext{ and } x\]</div>
+</div></blockquote>
+<p>e y }</p>
+<blockquote>
+<div><p>and weights <span class="math notranslate nohighlight">\(\delta \colon E  o [0, \infty)\)</span> given by</p>
+<div class="math notranslate nohighlight">
+\[\delta(x, y) = -\log T(x, y).\]</div>
+<p>The edge weight <span class="math notranslate nohighlight">\(\delta(x, y)\)</span> is the
+<a class="reference external" href="https://en.wikipedia.org/wiki/Information_content">information content</a>,
+or <em>surprisal</em>, of a one-step transition from <span class="math notranslate nohighlight">\(x\)</span> to <span class="math notranslate nohighlight">\(y\)</span>.</p>
+<p>For a reversible Markov chain, the <em>symmetrized</em> surprisal graph is
+the graph <span class="math notranslate nohighlight">\((V, E, \delta^*)\)</span> with edge weights</p>
+<div class="math notranslate nohighlight">
+\[\delta^*(x, y) = \delta(x, y) + \delta(y, x).\]</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.phat.fundamental_sequence">
+<span class="sig-prename descclassname"><span class="pre">msm_we.phat.</span></span><span class="sig-name descname"><span class="pre">fundamental_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'surprisal'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#fundamental_sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.fundamental_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the fundamental sequence of a path (walk).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> (<em>nx.Graph</em>) – A NetworkX graph.</p></li>
+<li><p><strong>path</strong> (<em>sequence</em>) – A node path in <cite>graph</cite>.</p></li>
+<li><p><strong>weight_attr</strong> (<em>str</em><em> or </em><em>None</em><em>, </em><em>default 'surprisal'</em>) – Name of the edge attribute to use as a weight/distance/cost.
+If None, all edges have equal weight.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The fundamental sequence of <cite>path</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.phat.loop_erasure">
+<span class="sig-prename descclassname"><span class="pre">msm_we.phat.</span></span><span class="sig-name descname"><span class="pre">loop_erasure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#loop_erasure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.loop_erasure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the loop-erasure of a discrete sample path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>sequence</em>) – A sequence of hashable values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The loop erasure of <cite>path</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.phat.symmetric_difference_cardinality">
+<span class="sig-prename descclassname"><span class="pre">msm_we.phat.</span></span><span class="sig-name descname"><span class="pre">symmetric_difference_cardinality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/phat.html#symmetric_difference_cardinality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.phat.symmetric_difference_cardinality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the cardinality of the symmetric difference of two sets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<em>iterable</em>) – Elements of the first set. Values must be hashable.</p></li>
+<li><p><strong>q</strong> (<em>iterable</em>) – Elements of the second set. Values must be hashable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">len(set(s)</span> <span class="pre">^</span> <span class="pre">set(q))</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-msm_we.utils"></span><p>Adapted from the original NMpathAnalysis package,
+<a class="reference external" href="https://github.com/ZuckermanLab/NMpathAnalysis">https://github.com/ZuckermanLab/NMpathAnalysis</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="msm_we.utils.Interval">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">Interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_variables</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#Interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.Interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Intervals are in general defined as half-open interval [start,end).</p>
+<p>in any case, in each dimension the interval is specified using a list [a,b]
+where a &lt; b</p>
+<ul>
+<li><p>For 1D (single) interval a single list in the form [a,b] has to be given</p></li>
+<li><dl class="simple">
+<dt>The union of multiple (1D) intervals can be specified as:</dt><dd><p>[[a,b],[c,d],…]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>A list of lists [[a,b],[c,d],…] are used for a n-dimensional</dt><dd><p>intervals, one for each dimension, i.e, len(interval) = n_variables</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>A list-of-lists-of-lists for the mathematical union of n-dimensional</dt><dd><p>intervals’</p>
+<p>[ [[a,b],[c,d],…],  [[e,f],[g,h],…], … ]</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.reverse_sort_lists">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">reverse_sort_lists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#reverse_sort_lists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.reverse_sort_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reverse sorting two list based on the first one</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.weighted_choice">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">weighted_choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#weighted_choice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.weighted_choice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select an element from a list with probability from weights</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.get_shape">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">get_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#get_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.get_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the shape of a trajectory array in tuple (n_snapshots, n_variables)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.num_of_nonzero_elements">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">num_of_nonzero_elements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#num_of_nonzero_elements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.num_of_nonzero_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of non-zero elements in a vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.normalize_markov_matrix">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">normalize_markov_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reversible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#normalize_markov_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.normalize_markov_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform a matrix of positive elements to a markov-like matrix</p>
+<p>by dividing each row by the sum of the elements of the row.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.normalize">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize a vector</p>
+<p>by dividing each element by the total sum of all its elements</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.random_markov_matrix">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">random_markov_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#random_markov_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.random_markov_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a random transition markov matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.check_tmatrix">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">check_tmatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accept_null_rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#check_tmatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.check_tmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the given matrix is actually a row-stochastic transition matrix</p>
+<blockquote>
+<div><p>i.e, all the elements are non-negative and the rows add to one.</p>
+</div></blockquote>
+<p>If the keyword argument accept_null_rows is True, is going
+to accept rows where all the elements are zero. Those “problematic”
+states are going to be removed later if necessary by clean_tmatrix.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.clean_tmatrix">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">clean_tmatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rm_absorbing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#clean_tmatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.clean_tmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes the states/indexes with no transitions and that are absorbing</p>
+<p>if the the keyword argument rm_absorbing is true
+Returns the “clean” transition matrix and a list with the
+removed states/indexes (clean_tmatrix, removed_states)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.pops_from_tmatrix">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">pops_from_tmatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#pops_from_tmatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.pops_from_tmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the eigen values and eigen vectors of the transposed transition matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>transition_matrix</strong> (<em>ndarray with shape =</em><em> (</em><em>n_states</em><em>, </em><em>n_states</em><em>)</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>the solution, p, of K.T p = p where K.T is the transposed transition matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.pops_from_nm_tmatrix">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">pops_from_nm_tmatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transition_matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#pops_from_nm_tmatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.pops_from_nm_tmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the populations of the real/physical states</p>
+<p>from a non-Markovian transtion matrix with shape (2*n_states, 2*n_states)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.map_to_integers">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">map_to_integers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#map_to_integers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.map_to_integers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map a sequence of elements to a sequence of integers
+for intance, maps [1, ‘a’, 1, ‘b’, 2.2] to [0, 1, 0, 2, 3]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="msm_we.utils.pseudo_nm_tmatrix">
+<span class="sig-prename descclassname"><span class="pre">msm_we.utils.</span></span><span class="sig-name descname"><span class="pre">pseudo_nm_tmatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markovian_tmatrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stateB</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/utils.html#pseudo_nm_tmatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.utils.pseudo_nm_tmatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain a pseudo non-Markovian transition matrix from a Markovian transiton matrix</p>
+<p>The pseudo Markovian matrix has a shape of (2 n_states, 2 n_states)</p>
 </dd></dl>
 
 </div>

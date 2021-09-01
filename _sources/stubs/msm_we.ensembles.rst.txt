@@ -1,0 +1,32 @@
+﻿msm\_we.ensembles
+=================
+
+.. automodule:: msm_we.ensembles
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      DiscreteEnsemble
+      DiscretePathEnsemble
+      Ensemble
+      PathEnsemble
+   
+   
+
+   
+   
+   
+
+
+

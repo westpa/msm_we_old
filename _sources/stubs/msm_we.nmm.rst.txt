@@ -1,0 +1,30 @@
+﻿msm\_we.nmm
+===========
+
+.. automodule:: msm_we.nmm
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      MarkovPlusColorModel
+      NonMarkovModel
+   
+   
+
+   
+   
+   
+
+
+
