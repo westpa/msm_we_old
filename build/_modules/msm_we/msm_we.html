@@ -569,7 +569,7 @@
 
         <span class="c1"># In case it&#39;s a 1D pcoord provided as a simple list [min, max],</span>
         <span class="c1">#   reshape it to be consistent with N-D pcoord boundaries as  [[min, max]]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Please provide 1-D boundaries as a list of lists or 2-D array&quot;</span>
                 <span class="s2">&quot; [[lower bound, upper bound]]. Automatically doing conversion for now.&quot;</span>
@@ -666,7 +666,7 @@
 
         <span class="c1"># In case it&#39;s a 1D pcoord provided as a simple list [min, max],</span>
         <span class="c1">#   reshape it to be consistent with N-D pcoord boundaries as  [[min, max]]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pcoord_ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Please provide 1-D boundaries as a list of lists or 2-D array&quot;</span>
                 <span class="s2">&quot; [[lower bound, upper bound]]. Automatically doing conversion for now.&quot;</span>
@@ -2150,8 +2150,12 @@
                     <span class="k">continue</span>
 
                 <span class="k">if</span> <span class="n">cluster_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">removed_clusters</span><span class="p">:</span>
+
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="s2">&quot;This dtraj point was in a removed cluster -- this should never happen!&quot;</span>
+                    <span class="p">)</span>
                     <span class="c1"># log.debug(f&quot;Skipping cluster {cluster_idx}&quot;)</span>
-                    <span class="k">continue</span>
+                    <span class="c1"># continue</span>
 
                 <span class="k">if</span> <span class="n">cluster_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cluster_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                     <span class="n">cluster_structures</span><span class="p">[</span><span class="n">cluster_idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2723,6 +2727,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">errorWeight</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">errorCount</span> <span class="o">=</span> <span class="mi">0</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fluxMatrixParams</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_lag</span><span class="p">,</span> <span class="n">first_iter</span><span class="p">,</span> <span class="n">last_iter</span><span class="p">]</span>
+
         <span class="c1"># +2 because the basis and target states are the last two indices</span>
         <span class="n">fluxMatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span>
         <span class="n">nI</span> <span class="o">=</span> <span class="mi">0</span>
@@ -2984,14 +2990,14 @@
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed clusters were </span><span class="si">{</span><span class="n">removed_clusters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">removed_clusters</span> <span class="o">=</span> <span class="n">removed_clusters</span>
 
+        <span class="c1"># TODO: Since I re-discretize below, this is no longer necessary.</span>
+        <span class="c1">#  For now, set it to 1:1 for backwards compatibility</span>
         <span class="c1"># After cleaning, the cluster indices may no longer be consecutive.</span>
         <span class="c1">#  So, when I do the cleaning, I need to build a mapping of old, nonconsecutive cluster indices from the</span>
         <span class="c1">#  non-cleaned matrix, to new, consecutive indices.</span>
         <span class="c1"># That&#39;s like collapsing the nonconsecutive list. In other words, imagine I started with 5 clusters [0,1,2,3,4]</span>
         <span class="c1">#   and clean cluster 2. Now, I&#39;ll still have clusters labeled as [0,1,3,4], but my steady-state distribution</span>
         <span class="c1">#   is only 4 elements. So indexing element 4 won&#39;t do anything.</span>
-
-        <span class="c1"># TODO: Define this in __init__</span>
         <span class="n">cluster_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)}</span>
         <span class="n">n_removed</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">cluster_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -3001,6 +3007,36 @@
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New cluster mapping is  </span><span class="si">{</span><span class="n">cluster_mapping</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cluster_mapping</span> <span class="o">=</span> <span class="n">cluster_mapping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_mapping</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Remove the bad clusters from the set of cluster centers. Thus, they won&#39;t be used by self.clusters.predict</span>
+        <span class="c1">#   in the future.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">cluster_centers_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">,</span> <span class="n">removed_clusters</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Re-discretize dtrajs. This uses the method used in cluster_coordinates for PCA, if it breaks for something</span>
+        <span class="c1">#   else that&#39;s  why.</span>
+        <span class="c1"># TODO: You don&#39;t actually need to rediscretize every point -- just the removed ones.  Do this  later to make</span>
+        <span class="c1">#   this more efficient.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Discretization&quot;</span><span class="p">):</span>
+            <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
+
+            <span class="c1"># Skip if  this is an empty iteration</span>
+            <span class="k">if</span> <span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">transformed_coords</span><span class="p">))</span>
+
+        <span class="c1"># Rebuild the fluxmatrix with whatever params were originally provided</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_fluxMatrix</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_fluxMatrixParams</span><span class="p">)</span>
 
         <span class="c1"># Update self.n_clusters to account for any removed clusters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">-=</span> <span class="n">n_removed</span></div>
@@ -3223,12 +3259,20 @@
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DONE&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pSS</span> <span class="o">=</span> <span class="n">last_pSS</span></div>
 
-<div class="viewcode-block" id="modelWE.get_steady_state_algebraic"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_steady_state_algebraic">[docs]</a>    <span class="k">def</span> <span class="nf">get_steady_state_algebraic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="modelWE.get_steady_state_algebraic"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_steady_state_algebraic">[docs]</a>    <span class="k">def</span> <span class="nf">get_steady_state_algebraic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">check_negative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">set</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the steady-state distribution as the eigenvectors of the transition matrix.</span>
 
 <span class="sd">        Updates:</span>
 <span class="sd">            - `self.pSS`</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        max_iters: int, optional</span>
+<span class="sd">            Defaults to 1000. Number of power-method iterations to run if the numpy eigensolver returns negative elements.</span>
+
+<span class="sd">        check_negative: bool, optional</span>
+<span class="sd">            Defaults to True. If True, then raise an Exception if there are negative elements in the normalized pSS.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -3256,11 +3300,10 @@
         <span class="c1">#   This causes hiccups in the eigensolver. However, we can&#39;t just zero these out (as attempted above),</span>
         <span class="c1">#   because these values are often important.</span>
         <span class="c1"># So, if there are any negative elements, try to correct the NP eigensolver result using the matrix method</span>
-        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pSS</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pSS</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">max_iters</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s2">&quot;Negative elements in pSS after normalization, attempting to correct with matrix power method.&quot;</span>
             <span class="p">)</span>
-            <span class="n">max_iters</span> <span class="o">=</span> <span class="mi">1000</span>
             <span class="n">pSS_last</span> <span class="o">=</span> <span class="n">pSS</span>
             <span class="n">_tmatrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
@@ -3283,11 +3326,27 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS_new</span>
 
-        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
-            <span class="n">pSS</span> <span class="o">&gt;=</span> <span class="mi">0</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Some negative elements in steady-state distribution: </span><span class="si">{</span><span class="n">pSS</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="n">max_iters</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Negative elements in pSS after normalization, &quot;</span>
+                <span class="s2">&quot;but max_iters=0 so not attempting to correct with power method.&quot;</span>
+            <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">pSS</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">check_negative</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+                    <span class="n">pSS</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+                <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Some negative elements in steady-state distribution: </span><span class="si">{</span><span class="n">pSS</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Some negative  elements in pSS... Ignoring, and setting model.pSS anyways.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">set</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pSS</span> <span class="o">=</span> <span class="n">pSS</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pSS</span></div>
 
 <div class="viewcode-block" id="modelWE.get_steady_state_matrixpowers"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_steady_state_matrixpowers">[docs]</a>    <span class="k">def</span> <span class="nf">get_steady_state_matrixpowers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conv</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

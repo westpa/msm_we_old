@@ -1089,7 +1089,7 @@ Convergence of the inverse iteration is determined using change in the flux esti
 
 <dl class="py method">
 <dt class="sig sig-object py" id="msm_we.msm_we.modelWE.get_steady_state_algebraic">
-<span class="sig-name descname"><span class="pre">get_steady_state_algebraic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_steady_state_algebraic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_steady_state_algebraic" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_steady_state_algebraic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_negative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.get_steady_state_algebraic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.get_steady_state_algebraic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the steady-state distribution as the eigenvectors of the transition matrix.</p>
 <dl class="simple">
 <dt>Updates:</dt><dd><ul class="simple">
@@ -1098,11 +1098,17 @@ Convergence of the inverse iteration is determined using change in the flux esti
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>optional</em>) – Defaults to 1000. Number of power-method iterations to run if the numpy eigensolver returns negative elements.</p></li>
+<li><p><strong>check_negative</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defaults to True. If True, then raise an Exception if there are negative elements in the normalized pSS.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
