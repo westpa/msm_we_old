@@ -3017,8 +3017,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">,</span> <span class="n">removed_clusters</span><span class="p">,</span> <span class="mi">0</span>
         <span class="p">)</span>
 
-        <span class="c1"># Re-discretize dtrajs. This uses the method used in cluster_coordinates for PCA, if it breaks for something</span>
-        <span class="c1">#   else that&#39;s  why.</span>
         <span class="c1"># TODO: You don&#39;t actually need to rediscretize every point -- just the removed ones.  Do this  later to make</span>
         <span class="c1">#   this more efficient.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3039,11 +3037,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">removed_clusters</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="c1"># Rebuild the fluxmatrix with whatever params were originally provided</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">get_fluxMatrix</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_fluxMatrixParams</span><span class="p">)</span>
-
         <span class="c1"># Update self.n_clusters to account for any removed clusters</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">-=</span> <span class="n">n_removed</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">-=</span> <span class="n">n_removed</span>
+
+        <span class="c1"># Rebuild the fluxmatrix with whatever params were originally provided</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_fluxMatrix</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_fluxMatrixParams</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="modelWE.get_model_clusters"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_model_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_model_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
