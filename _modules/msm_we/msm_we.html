@@ -172,6 +172,8 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">concurrent</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
 
 <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sparse</span>
@@ -1906,6 +1908,47 @@
         <span class="k">for</span> <span class="n">iS</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nSeg</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">trajSet</span><span class="p">[</span><span class="n">iS</span><span class="p">]</span> <span class="o">=</span> <span class="n">traj_iters</span><span class="p">[</span><span class="n">iS</span><span class="p">,</span> <span class="n">last_index</span><span class="p">[</span><span class="n">iS</span><span class="p">]</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
 
+    <span class="k">def</span> <span class="nf">do_pca</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="n">rough_pca</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">processCoordinates</span> <span class="o">=</span> <span class="n">arg</span>
+        <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
+
+        <span class="c1"># If  no good coords in this iteration, skip it</span>
+        <span class="k">if</span> <span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">rough_pca</span>
+
+        <span class="n">processed_iter_coords</span> <span class="o">=</span> <span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
+        <span class="n">rough_pca</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">processed_iter_coords</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rough_pca</span><span class="o">.</span><span class="n">n_samples_seen_</span><span class="si">}</span><span class="s2"> samples seen&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rough_pca</span>
+
+    <span class="k">def</span> <span class="nf">do_full_pca</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+
+        <span class="n">ipca</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">processCoordinates</span><span class="p">,</span> <span class="n">components_for_var</span> <span class="o">=</span> <span class="n">arg</span>
+
+        <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
+
+        <span class="n">used_iters</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Keep adding coords until you have more than your components</span>
+        <span class="k">while</span> <span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">components_for_var</span><span class="p">:</span>
+
+            <span class="n">used_iters</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">_iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span> <span class="o">+</span> <span class="n">used_iters</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">iter_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">,</span> <span class="n">_iter_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">processed_iter_coords</span> <span class="o">=</span> <span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;About to run iPCA on  </span><span class="si">{</span><span class="n">processed_iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> processed coords&quot;</span>
+        <span class="p">)</span>
+        <span class="n">ipca</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">processed_iter_coords</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ipca</span><span class="p">,</span> <span class="n">used_iters</span>
+
 <div class="viewcode-block" id="modelWE.dimReduce"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.dimReduce">[docs]</a>    <span class="k">def</span> <span class="nf">dimReduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dimensionality reduction using the scheme specified in initialization.</span>
@@ -1942,19 +1985,30 @@
             <span class="n">variance_cutoff</span> <span class="o">=</span> <span class="mf">0.95</span>
             <span class="c1"># total_num_iterations = len(self.numSegments)</span>
             <span class="n">total_num_iterations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span>
-            <span class="n">first_iter</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_num_iterations</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">))</span>
+
+            <span class="n">first_rough_iter</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_num_iterations</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">))</span>
+            <span class="n">first_iter</span> <span class="o">=</span> <span class="mi">1</span>
+
             <span class="n">rough_ipca</span> <span class="o">=</span> <span class="n">iPCA</span><span class="p">()</span>
+
             <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span>
-                <span class="nb">range</span><span class="p">(</span><span class="n">first_iter</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Initial iPCA&quot;</span>
+                <span class="nb">range</span><span class="p">(</span><span class="n">first_rough_iter</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Initial iPCA&quot;</span>
             <span class="p">):</span>
-                <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
 
-                <span class="c1"># If  no good coords in this iteration, skip it</span>
-                <span class="k">if</span> <span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">continue</span>
-
-                <span class="n">processed_iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
-                <span class="n">rough_ipca</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">processed_iter_coords</span><span class="p">)</span>
+                <span class="c1"># TODO: Allow  chunking here so you don&#39;t have  to  go 1  by  1, but N by N</span>
+                <span class="c1"># If you don&#39;t use &#39;fork&#39; context here, this will break in Jupyter.</span>
+                <span class="c1"># That&#39;s because processCoordinates is monkey-patched in. With &#39;spawn&#39; (i.e. without fork), the module</span>
+                <span class="c1">#   is re-imported in the child process. In the reimported  module, processCoordinates is undefined.</span>
+                <span class="c1"># With &#39;fork&#39;, it preserves the monkey-patched version.</span>
+                <span class="c1"># Additionally, &#39;fork&#39; is a little faster than  spawn. Ironically, that&#39;s usually at the cost  of memory</span>
+                <span class="c1">#   usage. But here, the memory being used by the main thread (and therefore being copied here) isn&#39;t</span>
+                <span class="c1">#   that great -- the memory issue stems from it not being freed up between successive calls.</span>
+                <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span><span class="p">(</span>
+                    <span class="n">max_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mp_context</span><span class="o">=</span><span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;fork&quot;</span><span class="p">)</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+                    <span class="n">rough_ipca</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">do_pca</span><span class="p">,</span> <span class="p">[</span><span class="n">rough_ipca</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">]</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
 
             <span class="n">components_for_var</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span>
@@ -1968,27 +2022,31 @@
             <span class="c1"># Now do the PCA again, with that many components, using all the iterations.</span>
             <span class="n">ipca</span> <span class="o">=</span> <span class="n">iPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">components_for_var</span><span class="p">)</span>
 
-            <span class="n">_iter_coords</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">continued</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;iPCA&quot;</span><span class="p">):</span>
-                <span class="n">_iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
+            <span class="n">extra_iters_used</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span>
+                <span class="nb">range</span><span class="p">(</span><span class="n">first_iter</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;iPCA&quot;</span>
+            <span class="p">):</span>
 
-                <span class="c1"># If no good coords in this iteration, skip it</span>
-                <span class="k">if</span> <span class="n">_iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">extra_iters_used</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">extra_iters_used</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Already processed  iter  </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">continue</span>
 
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">continued</span><span class="p">:</span>
-                    <span class="n">iter_coords</span> <span class="o">=</span> <span class="n">_iter_coords</span>
-                <span class="k">elif</span> <span class="n">continued</span><span class="p">:</span>
-                    <span class="n">iter_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">,</span> <span class="n">_iter_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">components_for_var</span><span class="p">:</span>
-                    <span class="n">continued</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="k">continue</span>
-
-                <span class="n">continued</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="n">processed_iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
-                <span class="n">ipca</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">processed_iter_coords</span><span class="p">)</span>
+                <span class="c1"># Try some stuff to help memory management. I think  a lot of memory is not being explicitly released</span>
+                <span class="c1">#   here when I&#39;m looping, because I can watch my swap usage steadily grow while it&#39;s running this loop.</span>
+                <span class="c1"># https://stackoverflow.com/questions/1316767/how-can-i-explicitly-free-memory-in-python has some good</span>
+                <span class="c1">#   details  on how memory may be freed by Python, but not necessarily recognized  as free by the OS.</span>
+                <span class="c1"># One &quot;guaranteed&quot; way to free  memory back to the OS that&#39;s been released by Python is to do  the memory</span>
+                <span class="c1">#   intensive operation  in a subprocess. So, maybe I need to do my partial fit in a subprocess.</span>
+                <span class="c1"># In fact, I first moved partial_fit alone to a subprocess, but that didn&#39;t help. The issue isn&#39;t</span>
+                <span class="c1">#   partial_fit, it&#39;s actually loading the coords.</span>
+                <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span><span class="p">(</span>
+                    <span class="n">max_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mp_context</span><span class="o">=</span><span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;fork&quot;</span><span class="p">)</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+                    <span class="n">ipca</span><span class="p">,</span> <span class="n">extra_iters_used</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">do_full_pca</span><span class="p">,</span>
+                        <span class="p">[</span><span class="n">ipca</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">,</span> <span class="n">components_for_var</span><span class="p">],</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">ipca</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="n">components_for_var</span>
@@ -2036,16 +2094,16 @@
             <span class="k">return</span> <span class="n">coords</span></div></div>
 
     <span class="c1"># def processCoordinates(self, coords):</span>
-<div class="viewcode-block" id="modelWE.processCoordinates"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.processCoordinates">[docs]</a>    <span class="k">def</span> <span class="nf">processCoordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        User-overrideable function to process coordinates.</span>
-
-<span class="sd">        This defines the featurization process.</span>
-<span class="sd">        It takes in takes in an array of the full set of coordinates, and spits out an array of the feature coordinates.</span>
-<span class="sd">        That array is then passed to functions like coor.pca(), coor.vamp(), or used directly if dimReduceMethod==&quot;none&quot;.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+    <span class="c1"># def processCoordinates(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     User-overrideable function to process coordinates.</span>
+    <span class="c1">#</span>
+    <span class="c1">#     This defines the featurization process.</span>
+    <span class="c1">#     It takes in takes in an array of the full set of coordinates, and spits out an array of the feature coordinates.</span>
+    <span class="c1">#     That array is then passed to functions like coor.pca(), coor.vamp(), or used directly if dimReduceMethod==&quot;none&quot;.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#</span>
+    <span class="c1">#     raise NotImplementedError</span>
 
 <div class="viewcode-block" id="modelWE.reduceCoordinates"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.reduceCoordinates">[docs]</a>    <span class="k">def</span> <span class="nf">reduceCoordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2183,6 +2241,69 @@
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cluster structure mapping completed.&quot;</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cluster keys are </span><span class="si">{</span><span class="n">cluster_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
+    <span class="k">def</span> <span class="nf">do_clustering</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+
+        <span class="n">kmeans_model</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">cluster_args</span><span class="p">,</span> <span class="n">processCoordinates</span> <span class="o">=</span> <span class="n">arg</span>
+
+        <span class="n">min_coords</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># The first time we cluster, we need at least n_clusters datapoints.</span>
+        <span class="c1"># Before the first clustering has been done, cluster_centers_ is unset, so use that to know if  we&#39;re  on the</span>
+        <span class="c1">#   first round.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kmeans_model</span><span class="p">,</span> <span class="s2">&quot;cluster_centers_&quot;</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;First batch to k-means, need a minimum of </span><span class="si">{</span><span class="n">cluster_args</span><span class="p">[</span><span class="s1">&#39;n_clusters&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> segments&quot;</span>
+            <span class="p">)</span>
+            <span class="n">min_coords</span> <span class="o">=</span> <span class="n">cluster_args</span><span class="p">[</span><span class="s2">&quot;n_clusters&quot;</span><span class="p">]</span>
+
+        <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
+
+        <span class="n">used_iters</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Keep adding coords until you have more than your components</span>
+        <span class="k">while</span> <span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">min_coords</span><span class="p">:</span>
+
+            <span class="n">used_iters</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">_iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span> <span class="o">+</span> <span class="n">used_iters</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">iter_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">,</span> <span class="n">_iter_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Have </span><span class="si">{</span><span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, need </span><span class="si">{</span><span class="n">min_coords</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">))</span>
+
+        <span class="n">kmeans_model</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">transformed_coords</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">kmeans_model</span><span class="p">,</span> <span class="n">used_iters</span>
+
+    <span class="k">def</span> <span class="nf">do_discretization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+
+        <span class="n">kmeans_model</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">processCoordinates</span> <span class="o">=</span> <span class="n">arg</span>
+
+        <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
+
+        <span class="n">used_iters</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Keep adding coords until you have more than your components</span>
+        <span class="k">while</span> <span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="n">used_iters</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">_iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span> <span class="o">+</span> <span class="n">used_iters</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">iter_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">,</span> <span class="n">_iter_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">))</span>
+
+        <span class="n">dtrajs</span> <span class="o">=</span> <span class="n">kmeans_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">transformed_coords</span><span class="p">)</span>
+
+        <span class="c1"># log.debug(f&quot;Took {used_iters} extra iterations to process iteration {iteration}&quot;)</span>
+
+        <span class="k">return</span> <span class="n">dtrajs</span><span class="p">,</span> <span class="n">used_iters</span>
+
 <div class="viewcode-block" id="modelWE.cluster_coordinates"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.cluster_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">cluster_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="n">streaming</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">_cluster_args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use k-means to cluster coordinates into `n_clusters` cluster centers, and saves the resulting cluster object</span>
@@ -2313,54 +2434,48 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="n">continued</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="c1"># continued = False</span>
+            <span class="n">extra_iters_used</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Clustering&quot;</span><span class="p">):</span>
-                <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
 
-                <span class="c1"># Skip if  this is an empty iteration</span>
-                <span class="k">if</span> <span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">extra_iters_used</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">extra_iters_used</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Already processed  iter  </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">continue</span>
 
-                <span class="n">_transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
-                <span class="p">)</span>
-
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">continued</span><span class="p">:</span>
-                    <span class="n">transformed_coords</span> <span class="o">=</span> <span class="n">_transformed_coords</span>
-                <span class="k">elif</span> <span class="n">continued</span><span class="p">:</span>
-                    <span class="n">transformed_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">transformed_coords</span><span class="p">,</span> <span class="n">_transformed_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
-                    <span class="p">)</span>
-
-                <span class="c1"># This better pass, but just be sure.</span>
-                <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">cluster_model</span><span class="p">)</span> <span class="ow">is</span> <span class="n">mini_kmeans</span>
-
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">cluster_model</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">transformed_coords</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                        <span class="s2">&quot;Not enough samples for the desired number of clusters, pulling&quot;</span>
-                        <span class="s2">&quot;more iterations.&quot;</span>
-                    <span class="p">)</span>
-                    <span class="n">continued</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">continued</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span><span class="p">(</span>
+                    <span class="n">max_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mp_context</span><span class="o">=</span><span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;fork&quot;</span><span class="p">)</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+                    <span class="n">cluster_model</span><span class="p">,</span> <span class="n">extra_iters_used</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">do_clustering</span><span class="p">,</span>
+                        <span class="p">[</span>
+                            <span class="n">cluster_model</span><span class="p">,</span>
+                            <span class="n">iteration</span><span class="p">,</span>
+                            <span class="n">cluster_args</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">,</span>
+                        <span class="p">],</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_model</span>
 
             <span class="c1"># Now compute dtrajs from the final model</span>
+            <span class="n">extra_iters_used</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Discretization&quot;</span><span class="p">):</span>
-                <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
 
-                <span class="c1"># Skip if  this is an empty iteration</span>
-                <span class="k">if</span> <span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">extra_iters_used</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">extra_iters_used</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Already processed  iter  </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">continue</span>
 
-                <span class="n">transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span><span class="p">(</span>
+                    <span class="n">max_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mp_context</span><span class="o">=</span><span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;fork&quot;</span><span class="p">)</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+                    <span class="n">dtrajs</span><span class="p">,</span> <span class="n">extra_iters_used</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">do_discretization</span><span class="p">,</span>
+                        <span class="p">[</span><span class="n">cluster_model</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">],</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cluster_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">transformed_coords</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dtrajs</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimReduceMethod</span> <span class="o">==</span> <span class="s2">&quot;vamp&quot;</span> <span class="ow">and</span> <span class="n">streaming</span><span class="p">:</span>
 
@@ -2775,7 +2890,14 @@
             <span class="p">):</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;getting fluxMatrix iter: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">iS</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-                <span class="n">fluxMatrixI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_fluxMatrix</span><span class="p">(</span><span class="n">iS</span><span class="p">)</span>
+                <span class="c1"># fluxMatrixI = self.get_iter_fluxMatrix(iS)</span>
+                <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span><span class="p">(</span>
+                    <span class="n">max_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mp_context</span><span class="o">=</span><span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;fork&quot;</span><span class="p">)</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+                    <span class="n">fluxMatrixI</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_fluxMatrix</span><span class="p">,</span> <span class="n">iS</span><span class="p">,</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+
                 <span class="n">fluxMatrix</span> <span class="o">=</span> <span class="n">fluxMatrix</span> <span class="o">+</span> <span class="n">fluxMatrixI</span>
                 <span class="n">nI</span> <span class="o">=</span> <span class="n">nI</span> <span class="o">+</span> <span class="mi">1</span>
 
@@ -3021,20 +3143,25 @@
         <span class="c1"># TODO: You don&#39;t actually need to rediscretize every point -- just the removed ones.  Do this  later to make</span>
         <span class="c1">#   this more efficient.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">extra_iters_used</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span>
             <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Post-cleaning rediscretization&quot;</span>
         <span class="p">):</span>
-            <span class="n">iter_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iter_coordinates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
 
-            <span class="c1"># Skip if  this is an empty iteration</span>
-            <span class="k">if</span> <span class="n">iter_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">extra_iters_used</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">extra_iters_used</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Already processed  iter  </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="n">transformed_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">(</span><span class="n">iter_coords</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span><span class="p">(</span>
+                <span class="n">max_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mp_context</span><span class="o">=</span><span class="n">mp</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;fork&quot;</span><span class="p">)</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+                <span class="n">dtrajs</span><span class="p">,</span> <span class="n">extra_iters_used</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">do_discretization</span><span class="p">,</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">processCoordinates</span><span class="p">],</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">transformed_coords</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtrajs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dtrajs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">removed_clusters</span> <span class="o">=</span> <span class="p">[]</span>
 

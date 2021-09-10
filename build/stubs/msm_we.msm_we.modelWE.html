@@ -240,6 +240,18 @@ microstategs using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.dimReduce" title="msm_we.msm_we.modelWE.dimReduce"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dimReduce</span></code></a>()</p></td>
 <td><p>Dimensionality reduction using the scheme specified in initialization.</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_clustering</span></code>(arg)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_discretization</span></code>(arg)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_full_pca</span></code>(arg)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_pca</span></code>(arg)</p></td>
+<td><p></p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">evolve_probability</span></code>(nEvolve, nStore)</p></td>
 <td><p></p></td>
 </tr>
@@ -394,28 +406,25 @@ microstategs using non-Markovian theory</em>, <strong>arXiv</strong> (2020).</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_flux_committor</span></code>(nwin)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.processCoordinates" title="msm_we.msm_we.modelWE.processCoordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">processCoordinates</span></code></a>()</p></td>
-<td><p>User-overrideable function to process coordinates.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.progress_disable" title="msm_we.msm_we.modelWE.progress_disable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">progress_disable</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.progress_disable" title="msm_we.msm_we.modelWE.progress_disable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">progress_disable</span></code></a>()</p></td>
 <td><p>Disable all progress bars</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.progress_enable" title="msm_we.msm_we.modelWE.progress_enable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">progress_enable</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.progress_enable" title="msm_we.msm_we.modelWE.progress_enable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">progress_enable</span></code></a>()</p></td>
 <td><p>Enable all progress bars</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.reduceCoordinates" title="msm_we.msm_we.modelWE.reduceCoordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reduceCoordinates</span></code></a>(coords)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.reduceCoordinates" title="msm_we.msm_we.modelWE.reduceCoordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reduceCoordinates</span></code></a>(coords)</p></td>
 <td><p>This performs the dimensionality reduction.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.set_basis" title="msm_we.msm_we.modelWE.set_basis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_basis</span></code></a>(basis)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.set_basis" title="msm_we.msm_we.modelWE.set_basis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_basis</span></code></a>(basis)</p></td>
 <td><p>Updates internal state with a new basis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.set_topology" title="msm_we.msm_we.modelWE.set_topology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_topology</span></code></a>(topology)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.set_topology" title="msm_we.msm_we.modelWE.set_topology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_topology</span></code></a>(topology)</p></td>
 <td><p>Updates internal state with a new topology.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.update_cluster_structures" title="msm_we.msm_we.modelWE.update_cluster_structures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_cluster_structures</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../api.html#msm_we.msm_we.modelWE.update_cluster_structures" title="msm_we.msm_we.modelWE.update_cluster_structures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_cluster_structures</span></code></a>()</p></td>
 <td><p>Find structures (i.e.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_iter_kh_pcoord</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_iter_kh_pcoord</span></code>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>

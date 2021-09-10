@@ -17,6 +17,10 @@
       ~modelWE.cluster_coordinates
       ~modelWE.collect_iter_coordinates
       ~modelWE.dimReduce
+      ~modelWE.do_clustering
+      ~modelWE.do_discretization
+      ~modelWE.do_full_pca
+      ~modelWE.do_pca
       ~modelWE.evolve_probability
       ~modelWE.evolve_probability2
       ~modelWE.evolve_probability_from_initial
@@ -68,7 +72,6 @@
       ~modelWE.plot_committor
       ~modelWE.plot_flux
       ~modelWE.plot_flux_committor
-      ~modelWE.processCoordinates
       ~modelWE.progress_disable
       ~modelWE.progress_enable
       ~modelWE.reduceCoordinates
