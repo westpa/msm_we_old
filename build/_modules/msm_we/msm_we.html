@@ -1940,7 +1940,8 @@
             <span class="c1">#   variance cutoff.</span>
             <span class="c1"># This is necessary because with incremental PCA, there&#39;s no way to do this ahead of time.</span>
             <span class="n">variance_cutoff</span> <span class="o">=</span> <span class="mf">0.95</span>
-            <span class="n">total_num_iterations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numSegments</span><span class="p">)</span>
+            <span class="c1"># total_num_iterations = len(self.numSegments)</span>
+            <span class="n">total_num_iterations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span>
             <span class="n">first_iter</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_num_iterations</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">))</span>
             <span class="n">rough_ipca</span> <span class="o">=</span> <span class="n">iPCA</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span>
