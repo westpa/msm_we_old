@@ -822,11 +822,6 @@ That means trying to replace usage of all_coords here.</p>
 <dt class="sig sig-object py" id="msm_we.msm_we.modelWE.Coordinates">
 <em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Coordinates</span></span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.Coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.Coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fake Coordinates class, in case you don’t want to use either PCA or VAMP for dimensionality reduction</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="msm_we.msm_we.modelWE.Coordinates.transform">
-<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/msm_we.html#modelWE.Coordinates.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.msm_we.modelWE.Coordinates.transform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py method">
@@ -1339,7 +1334,7 @@ of the pair of microstates involved.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="msm_we.fpt.MatrixFPT.fpt_distribution">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">fpt_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_distrib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n_lags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#MatrixFPT.fpt_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MatrixFPT.fpt_distribution" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">fpt_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_distrib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_power</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_power</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_n_lags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_recycling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/msm_we/fpt.html#MatrixFPT.fpt_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#msm_we.fpt.MatrixFPT.fpt_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculated distribution of first passage times from transition matrix</p>
 <p>t_matrix:           Numpy 2D array</p>
 <p>initial_state,
@@ -1350,12 +1345,26 @@ final_states:       List of integer numbers</p>
 <dl class="simple">
 <dt>ini_probs:          List of float, default is None</dt><dd><p>initial probabilities for initial states</p>
 </dd>
-<dt>max_n_lag:          Integer</dt><dd><p>maximum number of lags</p>
+</dl>
+<p>min_power,
+max_power:          Integer</p>
+<blockquote>
+<div><p>The minimum and maximum power when the FPT distribution is
+shown in logscale such as (10^min_power, 10^max_power)*lag_time*dt.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>max_n_lags:         Integer</dt><dd><p>maximum number of lags when the FPT distribution is shown in linear
+scale such as (0, max_n_logs)*lag_time*dt. When in logscale, this is number
+of points to shown in the range of (10^min_power, 10^max_power)*lag_time*dt.</p>
 </dd>
 <dt>lag_time:           Integer</dt><dd><p>Lag time used, the trajectory is “observed” every lag_time
 time steps</p>
 </dd>
-<dt>dt:                 float,</dt><dd><p>Time step</p>
+<dt>dt:                 Float</dt><dd><p>Time step</p>
+</dd>
+<dt>clean_recycling:    Bool</dt><dd><p>Cleaning the recycling of steady state simulation if True</p>
+</dd>
+<dt>logscale:           Bool</dt><dd><p>Option to use logscale for FPT time in the distribution</p>
 </dd>
 </dl>
 <dl class="field-list simple">

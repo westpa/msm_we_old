@@ -585,7 +585,9 @@
 
 <div class="viewcode-block" id="MatrixFPT.fpt_distribution"><a class="viewcode-back" href="../../api.html#msm_we.fpt.MatrixFPT.fpt_distribution">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">fpt_distribution</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> <span class="n">t_matrix</span><span class="p">,</span> <span class="n">initial_state</span><span class="p">,</span> <span class="n">final_state</span><span class="p">,</span> <span class="n">initial_distrib</span><span class="p">,</span> <span class="n">max_n_lags</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">t_matrix</span><span class="p">,</span> <span class="n">initial_state</span><span class="p">,</span> <span class="n">final_state</span><span class="p">,</span> <span class="n">initial_distrib</span><span class="p">,</span>
+            <span class="n">min_power</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_power</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">max_n_lags</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">lag_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">clean_recycling</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">logscale</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculated distribution of first passage times from transition matrix</span>
 
@@ -600,15 +602,29 @@
 <span class="sd">        ini_probs:          List of float, default is None</span>
 <span class="sd">                            initial probabilities for initial states</span>
 
-<span class="sd">        max_n_lag:          Integer</span>
-<span class="sd">                            maximum number of lags</span>
+<span class="sd">        min_power,</span>
+<span class="sd">        max_power:          Integer</span>
+<span class="sd">                            The minimum and maximum power when the FPT distribution is</span>
+<span class="sd">                            shown in logscale such as (10^min_power, 10^max_power)*lag_time*dt.</span>
+
+<span class="sd">        max_n_lags:         Integer</span>
+<span class="sd">                            maximum number of lags when the FPT distribution is shown in linear</span>
+<span class="sd">                            scale such as (0, max_n_logs)*lag_time*dt. When in logscale, this is number</span>
+<span class="sd">                            of points to shown in the range of (10^min_power, 10^max_power)*lag_time*dt.</span>
 
 <span class="sd">        lag_time:           Integer</span>
 <span class="sd">                            Lag time used, the trajectory is &quot;observed&quot; every lag_time</span>
 <span class="sd">                            time steps</span>
 
-<span class="sd">        dt:                 float,</span>
+<span class="sd">        dt:                 Float</span>
 <span class="sd">                            Time step</span>
+
+<span class="sd">        clean_recycling:    Bool</span>
+<span class="sd">                            Cleaning the recycling of steady state simulation if True</span>
+
+<span class="sd">        logscale:           Bool</span>
+<span class="sd">                            Option to use logscale for FPT time in the distribution</span>
+
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -618,52 +634,91 @@
 
         <span class="c1"># copy everything since they are going to be modified</span>
         <span class="n">tmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">t_matrix</span><span class="p">)</span>
+
         <span class="n">ini_state</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">initial_state</span><span class="p">)</span>
         <span class="n">f_state</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">final_state</span><span class="p">))</span>
 
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ini_state</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial_distrib</span><span class="p">)</span>
-
+        <span class="c1"># Designate target state 0 as the only target state,</span>
+        <span class="c1"># and adding all the fluxes into the other target states into state 0.</span>
+        <span class="c1"># Namely reassign any flux into any target state into target state 0.</span>
         <span class="n">tmatrix</span><span class="p">[:,</span> <span class="n">f_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">[:,</span> <span class="n">f_state</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
+        <span class="c1"># Remove all other target states</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">f_state</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">tmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">,</span> <span class="n">f_state</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">tmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">,</span> <span class="n">f_state</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># For each initial state with a greater index than the target state we&#39;re cleaning.</span>
+            <span class="c1"># Decrement the index by 1 to account for the removed, cleaned state.</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ini_state</span><span class="p">)):</span>
                 <span class="k">if</span> <span class="n">f_state</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ini_state</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
                     <span class="n">ini_state</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">ini_state</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
 
+        <span class="c1"># Clean the recycling if necessary.</span>
+        <span class="c1"># Get rid of recycling boundary conditions, otherwise  we&#39;re getting a  CDF</span>
+        <span class="k">if</span> <span class="n">clean_recycling</span><span class="p">:</span>
+            <span class="n">tmatrix</span><span class="p">[</span><span class="n">f_state</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">tmatrix</span><span class="p">[</span><span class="n">f_state</span><span class="p">,</span> <span class="n">f_state</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># The new target state is the single state since all other target states have been reassigned to.</span>
         <span class="n">f_state</span> <span class="o">=</span> <span class="n">f_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">new_n_states</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">)</span>
         <span class="n">list_of_pdfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">ini_state</span><span class="p">),</span> <span class="n">max_n_lags</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
         <span class="n">prevFmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">)</span>
 
+        <span class="c1"># Option to set the list of lag time in logscale since FPT can be a wide distribution in several orders</span>
+        <span class="k">if</span> <span class="n">logscale</span><span class="p">:</span>
+            <span class="n">lag_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">min_power</span><span class="p">,</span> <span class="n">max_power</span><span class="p">,</span> <span class="n">max_n_lags</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lag_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_n_lags</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># for each ini_state calculate the FPT distribution from transition matrix</span>
         <span class="k">for</span> <span class="n">istateIndex</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ini_state</span><span class="p">)):</span>
             <span class="n">prevFmatrix</span> <span class="o">=</span> <span class="n">tmatrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="c1"># prevFmatrix[:] = tmatrix[:]</span>
             <span class="n">Fmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">new_n_states</span><span class="p">,</span> <span class="n">new_n_states</span><span class="p">))</span>
             <span class="n">list_of_pdfs</span><span class="p">[</span><span class="n">istateIndex</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmatrix</span><span class="p">[</span><span class="n">ini_state</span><span class="p">[</span><span class="n">istateIndex</span><span class="p">],</span> <span class="n">f_state</span><span class="p">]</span>
 
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_calc_fmatrix</span><span class="p">(</span>
-                <span class="n">Fmatrix</span><span class="p">,</span> <span class="n">tmatrix</span><span class="p">,</span> <span class="n">prevFmatrix</span><span class="p">,</span> <span class="n">list_of_pdfs</span><span class="p">,</span> <span class="n">max_n_lags</span><span class="p">,</span> <span class="n">ini_state</span><span class="p">,</span> <span class="n">istateIndex</span><span class="p">,</span> <span class="n">f_state</span><span class="p">,</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">calc_fmatrix</span><span class="p">(</span>
+                <span class="n">Fmatrix</span><span class="p">,</span> <span class="n">tmatrix</span><span class="p">,</span> <span class="n">prevFmatrix</span><span class="p">,</span> <span class="n">list_of_pdfs</span><span class="p">,</span> <span class="n">lag_list</span><span class="p">,</span> <span class="n">ini_state</span><span class="p">,</span> <span class="n">istateIndex</span><span class="p">,</span> <span class="n">f_state</span><span class="p">,</span>
             <span class="p">)</span>
 
+        <span class="c1"># Nomalize the FPT distribution and output</span>
         <span class="n">sum_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">initial_distrib</span><span class="p">)</span>
         <span class="n">initial_distrib</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">initial_distrib</span><span class="p">)</span>
 
         <span class="n">density</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">initial_distrib</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">list_of_pdfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">sum_</span>
 
         <span class="n">dt2</span> <span class="o">=</span> <span class="n">lag_time</span> <span class="o">*</span> <span class="n">dt</span>
-
-        <span class="n">density_vs_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt2</span><span class="p">,</span> <span class="n">dens</span> <span class="o">/</span> <span class="n">dt2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dens</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">density</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="n">logscale</span><span class="p">:</span>
+            <span class="c1"># For logscale the dts at different t are different, we need to let FPT(t)</span>
+            <span class="c1"># absorb them. Otherwise we have to use dt in variable size to calculate mean</span>
+            <span class="c1"># value such as integration of t*dt*FPT(t).</span>
+            <span class="n">dens_list</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[[</span><span class="n">lag_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">dt2</span><span class="p">,</span> <span class="n">density</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">lag_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">dt2</span><span class="p">]]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lag_list</span><span class="p">)):</span>
+                <span class="n">dens_list</span> <span class="o">+=</span> <span class="p">[[</span><span class="n">lag_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">dt2</span><span class="p">,</span> <span class="n">density</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">lag_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">lag_list</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="n">dt2</span><span class="p">]]</span>
+            <span class="n">density_vs_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dens_list</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">density_vs_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">+</span>
+                                   <span class="p">[[(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt2</span><span class="p">,</span> <span class="n">dens</span> <span class="o">/</span> <span class="n">dt2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dens</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lag_list</span><span class="p">,</span> <span class="n">density</span><span class="p">)])</span>
+        <span class="c1"># normalized to 1</span>
+        <span class="n">density_vs_t</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">/=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">density_vs_t</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">density_vs_t</span></div>
 
-    <span class="k">def</span> <span class="nf">_calc_fmatrix</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">Fmatrix</span><span class="p">,</span> <span class="n">tmatrix</span><span class="p">,</span> <span class="n">prevFmatrix</span><span class="p">,</span> <span class="n">list_of_pdfs</span><span class="p">,</span> <span class="n">max_n_lags</span><span class="p">,</span> <span class="n">ini_state</span><span class="p">,</span> <span class="n">istateIndex</span><span class="p">,</span> <span class="n">f_state</span><span class="p">,</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">calc_fmatrix</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">Fmatrix</span><span class="p">,</span> <span class="n">tmatrix</span><span class="p">,</span> <span class="n">prevFmatrix</span><span class="p">,</span> <span class="n">list_of_pdfs</span><span class="p">,</span> <span class="n">lag_list</span><span class="p">,</span> <span class="n">ini_state</span><span class="p">,</span> <span class="n">istateIndex</span><span class="p">,</span> <span class="n">f_state</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_n_lags</span><span class="p">):</span>
-            <span class="n">Fmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">,</span> <span class="n">prevFmatrix</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">prevFmatrix</span><span class="p">)))</span>
-
-            <span class="n">list_of_pdfs</span><span class="p">[</span><span class="n">istateIndex</span><span class="p">,</span> <span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">Fmatrix</span><span class="p">[</span><span class="n">ini_state</span><span class="p">[</span><span class="n">istateIndex</span><span class="p">],</span> <span class="n">f_state</span><span class="p">]</span>
+        <span class="c1"># Calculate FPT distribution from a the recursive formula, Eq. 3 in the paper below:</span>
+        <span class="c1"># E. Suarez, A. J. Pratt, L. T. Chong, D. M. Zuckerman, Protein Science 26, 67-78 (2016).</span>
+        <span class="k">for</span> <span class="n">time_index</span><span class="p">,</span> <span class="n">time</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lag_list</span><span class="p">):</span>
+            <span class="c1"># obtain the new transition matrix from time_index-1 to time_index</span>
+            <span class="k">if</span> <span class="n">time_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">tmatrix_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_power</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tmatrix_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_power</span><span class="p">(</span><span class="n">tmatrix</span><span class="p">,</span> <span class="n">time</span><span class="o">-</span><span class="n">lag_list</span><span class="p">[</span><span class="n">time_index</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">Fmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tmatrix_new</span><span class="p">,</span> <span class="n">prevFmatrix</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">prevFmatrix</span><span class="p">)))</span>
+            <span class="n">list_of_pdfs</span><span class="p">[</span><span class="n">istateIndex</span><span class="p">,</span> <span class="n">time_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">Fmatrix</span><span class="p">[</span><span class="n">ini_state</span><span class="p">[</span><span class="n">istateIndex</span><span class="p">],</span> <span class="n">f_state</span><span class="p">]</span>
             <span class="n">prevFmatrix</span> <span class="o">=</span> <span class="n">Fmatrix</span></div>
 
 
