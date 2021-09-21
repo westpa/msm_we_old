@@ -1,75 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>msm_we.msm_we &mdash; msm_we 0.1.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../index.html" class="icon icon-home"> msm_we
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 0.1.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -77,18 +36,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">msm_we</a></li>
@@ -99,69 +47,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">msm_we</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-        
       <li>msm_we.msm_we</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for msm_we.msm_we</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Main module.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
@@ -198,6 +107,38 @@
 <span class="kn">import</span> <span class="nn">pyemma.coordinates</span> <span class="k">as</span> <span class="nn">coor</span>
 <span class="kn">import</span> <span class="nn">pyemma.coordinates.clustering</span> <span class="k">as</span> <span class="nn">clustering</span>
 <span class="kn">import</span> <span class="nn">pyemma</span>
+
+<span class="c1"># used to check connectivity</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse.csgraph</span> <span class="k">as</span> <span class="nn">csgraph</span>
+
+
+<div class="viewcode-block" id="is_connected"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.is_connected">[docs]</a><span class="k">def</span> <span class="nf">is_connected</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">source_states</span><span class="p">,</span> <span class="n">target_states</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check for connectivity between two states.</span>
+<span class="sd">    If directed is True, then checks for directional connectivity from source_states to target_states.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    matrix: np.array, NxN</span>
+<span class="sd">        Transition matrix</span>
+<span class="sd">    source_states: array-like, N</span>
+<span class="sd">        Source states</span>
+<span class="sd">    target_states: array-like, N</span>
+<span class="sd">        Target states</span>
+<span class="sd">    directed: bool, default=True</span>
+<span class="sd">        Compute directional connectivity</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="ow">not</span> <span class="ow">in</span> <span class="n">csgraph</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="n">directed</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">source_states</span><span class="p">)[</span>
+            <span class="p">:,</span> <span class="n">target_states</span>
+        <span class="p">]</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="inverse_iteration"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.inverse_iteration">[docs]</a><span class="k">def</span> <span class="nf">inverse_iteration</span><span class="p">(</span><span class="n">guess</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
@@ -423,10 +364,12 @@
 <span class="sd">            Name to use in output filenames.</span>
 
 <span class="sd">        basis_pcoord_bounds: list</span>
-<span class="sd">            List of [lower bound, upper bound] in pcoord-space for the basis state</span>
+<span class="sd">            List of [[pcoord0 lower bound, pcoord1 upper bound], [pcoord1 lower bound, pcoord1 upper bound], ...]</span>
+<span class="sd">            in pcoord-space for the basis state</span>
 
 <span class="sd">        target_pcoord_bounds: list</span>
-<span class="sd">            List of [lower bound, upper bound] in pcoord-space for the target state</span>
+<span class="sd">            List of [[pcoord0 lower bound, pcoord1 upper bound], [pcoord1 lower bound, pcoord1 upper bound], ...]</span>
+<span class="sd">            in pcoord-space for the target state</span>
 
 <span class="sd">        dim_reduce_method: str</span>
 <span class="sd">            Dimensionality reduction method. &quot;pca&quot;, &quot;vamp&quot;, or &quot;none&quot;.</span>
@@ -1673,6 +1616,10 @@
 <span class="sd">        ----------</span>
 <span class="sd">        iteration: int</span>
 <span class="sd">            The iteration to return coordinates for</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Array of coordinates for all atoms at the current iteration</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">load_iter_data</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
@@ -2304,7 +2251,9 @@
 
         <span class="k">return</span> <span class="n">dtrajs</span><span class="p">,</span> <span class="n">used_iters</span>
 
-<div class="viewcode-block" id="modelWE.cluster_coordinates"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.cluster_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">cluster_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="n">streaming</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">_cluster_args</span><span class="p">):</span>
+<div class="viewcode-block" id="modelWE.cluster_coordinates"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.cluster_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">cluster_coordinates</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="n">streaming</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">first_cluster_iter</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">_cluster_args</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use k-means to cluster coordinates into `n_clusters` cluster centers, and saves the resulting cluster object</span>
 <span class="sd">        to a file.</span>
@@ -2436,7 +2385,9 @@
 
             <span class="c1"># continued = False</span>
             <span class="n">extra_iters_used</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Clustering&quot;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span>
+                <span class="nb">range</span><span class="p">(</span><span class="n">first_cluster_iter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Clustering&quot;</span>
+            <span class="p">):</span>
 
                 <span class="k">if</span> <span class="n">extra_iters_used</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">extra_iters_used</span> <span class="o">-=</span> <span class="mi">1</span>
@@ -2968,6 +2919,8 @@
 <span class="sd">        Need to update self.cluster_structures with the new, reduced set of clusters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="n">original_fluxmatrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluxMatrixRaw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cleaning flux matrix&quot;</span><span class="p">)</span>
 
         <span class="c1"># Discretize trajectories via clusters</span>
@@ -3169,7 +3122,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">-=</span> <span class="n">n_removed</span>
 
         <span class="c1"># Rebuild the fluxmatrix with whatever params were originally provided</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">get_fluxMatrix</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_fluxMatrixParams</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_fluxMatrix</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_fluxMatrixParams</span><span class="p">)</span>
+        <span class="n">new_fluxmatrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluxMatrixRaw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fluxMatrixRaw</span> <span class="o">=</span> <span class="n">original_fluxmatrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fluxMatrix</span> <span class="o">=</span> <span class="n">new_fluxmatrix</span></div>
 
 <div class="viewcode-block" id="modelWE.get_model_clusters"><a class="viewcode-back" href="../../api.html#msm_we.msm_we.modelWE.get_model_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_model_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -3536,6 +3493,17 @@
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># If this matrix isn&#39;t connected from source to target, then it&#39;s not possible to get an MFPT directly out of it</span>
+        <span class="n">sparse_mat</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span><span class="p">)</span>
+        <span class="n">connected</span> <span class="o">=</span> <span class="n">is_connected</span><span class="p">(</span>
+            <span class="n">sparse_mat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indBasis</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indTargets</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">connected</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                <span class="s2">&quot;There is no path in this matrix from the basis to the target, so no MFPT can be calculted.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
 
         <span class="n">Mss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Tmatrix</span>
 
@@ -4614,46 +4582,30 @@
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, John Russo.
-
-    </p>
+    <p>&#169; Copyright 2021, John Russo.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
