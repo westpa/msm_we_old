@@ -468,7 +468,7 @@
 
         <span class="c1"># Nothing is raised here because this might be fine, depending on what you&#39;re doing.</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Problem getting coordinates, they don&#39;t exist yet.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Model initialized, but coordinates do not exist yet.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">coordsExist</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;msm_we model successfully initialized&quot;</span><span class="p">)</span></div>
