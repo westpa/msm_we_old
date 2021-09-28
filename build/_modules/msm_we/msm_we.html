@@ -1933,14 +1933,19 @@
             <span class="c1"># total_num_iterations = len(self.numSegments)</span>
             <span class="n">total_num_iterations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxIter</span>
 
-            <span class="n">first_rough_iter</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_num_iterations</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">))</span>
             <span class="n">first_iter</span> <span class="o">=</span> <span class="mi">1</span>
 
             <span class="n">rough_ipca</span> <span class="o">=</span> <span class="n">iPCA</span><span class="p">()</span>
 
-            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span>
-                <span class="nb">range</span><span class="p">(</span><span class="n">first_rough_iter</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Initial iPCA&quot;</span>
-            <span class="p">):</span>
+            <span class="c1"># Stride every 10th frame, so you&#39;re only doing the &quot;rough&quot; pca on 10% of the data</span>
+            <span class="k">if</span> <span class="n">total_num_iterations</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+                <span class="n">rough_iters</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+            <span class="c1"># But if you only have 100 frames or fewer, then just do the last-half.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rough_iters</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">total_num_iterations</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">total_num_iterations</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">rough_iters</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Initial iPCA&quot;</span><span class="p">):</span>
 
                 <span class="c1"># TODO: Allow  chunking here so you don&#39;t have  to  go 1  by  1, but N by N</span>
                 <span class="c1"># If you don&#39;t use &#39;fork&#39; context here, this will break in Jupyter.</span>
