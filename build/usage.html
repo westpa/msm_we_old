@@ -48,6 +48,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#model-building-and-preparation">Model building and preparation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#analysis">Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#streaming">Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parallelism">Parallelism</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="code_todos.html">TODOs</a></li>
@@ -132,27 +133,32 @@ than on an instance of a <code class="code docutils literal notranslate"><span c
 </li>
 <li><p>Initialize the model.</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">h5_glob</span><span class="p">,</span> <span class="n">reference_structure_file</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span>
-                <span class="n">basis_pcoord1_bounds</span><span class="p">,</span> <span class="n">target_pcoord1_bounds</span><span class="p">,</span>
-                <span class="n">dim_reduce_method</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">file_paths</span><span class="p">,</span> <span class="n">reference_structure_file</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span>
+                <span class="n">basis_pcoord_bounds</span><span class="p">,</span> <span class="n">target_pcoord_bounds</span><span class="p">,</span>
+                <span class="n">dim_reduce_method</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">pcoord_ndim</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="code docutils literal notranslate"><span class="pre">h5_glob</span></code> is a list of paths to your WESTPA h5 files.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">file_paths</span></code> is a list of paths to your WESTPA h5 files.</p>
 <p><code class="code docutils literal notranslate"><span class="pre">reference_structure_file</span></code> is a file containing a topology describing your system.</p>
 <p><code class="code docutils literal notranslate"><span class="pre">model_name</span></code> is what it sounds like, and is used to label various output files.</p>
-<p><code class="code docutils literal notranslate"><span class="pre">basis_pcoord1_bounds</span></code> is a list of [lower bound, upper bound]  of the basis in pcoord 1 space</p>
-<p><code class="code docutils literal notranslate"><span class="pre">target_pcoord1_bounds</span></code> is a list of [lower bound, upper bound]  of the target in pcoord 1 space</p>
+<p><code class="code docutils literal notranslate"><span class="pre">basis_pcoord1_bounds</span></code> is a list of [[pcoord0 lower bound, pcoord1 upper bound],
+[pcoord1 lower bound, pcoord1 upper bound], …] in pcoord-space for the basis state</p>
+<p><code class="code docutils literal notranslate"><span class="pre">target_pcoord1_bounds</span></code> is a list of [[pcoord0 lower bound, pcoord1 upper bound],
+[pcoord1 lower bound, pcoord1 upper bound], …] in pcoord-space for the target state</p>
 <p><code class="code docutils literal notranslate"><span class="pre">dim_reduce_method</span></code> is the dimensionality reduction method (“pca”, “vamp”, or “none”)</p>
 <p><code class="code docutils literal notranslate"><span class="pre">tau</span></code> is the resampling time, or the length of one WE iteration in physical units.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">pcoord_ndim</span></code> is the dimensionality of the progress coordinate.</p>
 </div></blockquote>
 </li>
 <li><p>Load all coords and pcoords up to the last iteration you want to use for analysis with</p>
 <blockquote>
 <div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_iterations</span><span class="p">()</span>
-<span class="n">model</span><span class="o">.</span><span class="n">get_coordSet</span><span class="p">(</span><span class="n">last_iter</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">get_coordSet</span><span class="p">(</span><span class="n">last_iter</span><span class="p">,</span> <span class="n">streaming</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>where <cite>last_iter</cite> is the number of iterations you have (AKA, the last iteration it’ll load data from.)</p>
+<p>where <code class="code docutils literal notranslate"><span class="pre">last_iter</span></code> is the number of iterations you have (AKA, the last iteration it’ll load data from)
+and <code class="code docutils literal notranslate"><span class="pre">streaming</span></code> enables streaming data processing, which allows large datasets to fit in memory at the cost of
+a (nominally) small performance hit.</p>
 </div></blockquote>
 </li>
 <li><p>Prepare dimensionality reduction transformer by running</p>
@@ -164,22 +170,45 @@ than on an instance of a <code class="code docutils literal notranslate"><span c
 </li>
 <li><p>Do clustering with</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">cluster_coordinates</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">)</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">cluster_coordinates</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">streaming</span><span class="p">,</span>
+    <span class="n">first_cluster_iter</span><span class="p">,</span> <span class="n">use_ray</span><span class="p">,</span> <span class="n">stratified</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_cluster_args</span><span class="p">)</span>
 </pre></div>
 </div>
+<p><code class="code docutils literal notranslate"><span class="pre">n_clusters</span></code> is the total number of clusters if <code class="code docutils literal notranslate"><span class="pre">stratified=False</span></code>, or the number of clusters per bin if <code class="code docutils literal notranslate"><span class="pre">stratified=True</span></code>.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">streaming</span></code> is whether or not to stream over the data.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">first_cluster_iter</span></code> is the first iteration used for building the cluster centers (which may be desirable to exclude
+initial burn-in iterations).</p>
+<p><code class="code docutils literal notranslate"><span class="pre">use_ray</span></code> enables parallelization with the Ray work manager. If enabled, a Ray cluster must be initialized by
+the user <em>before calling this</em>.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">stratified</span></code> enables stratified clustering instead of aggregate clustering. In stratified clustering,
+clustering is done independently within each WE bin. This is strongly recommended to ensure your clusters provide a
+good fine-grained description of your system.</p>
+<p><strong>Note</strong>: At time of writing, stratified clustering implies <code class="code docutils literal notranslate"><span class="pre">streaming=True,</span> <span class="pre">use_ray=True</span></code> and will enable this
+with a warning if they are not set.</p>
+<p>Any additional keyword arguments will be provided directly to the clustering function through <code class="code docutils literal notranslate"><span class="pre">**_cluster_args</span></code>.</p>
 </div></blockquote>
 </li>
 <li><p>Create the flux matrix with</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_fluxMatrix</span><span class="p">(</span><span class="n">lag</span><span class="p">,</span> <span class="n">first_iter</span><span class="p">,</span> <span class="n">last_iter</span><span class="p">)</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">get_fluxMatrix</span><span class="p">(</span><span class="n">lag</span><span class="p">,</span> <span class="n">first_iter</span><span class="p">,</span> <span class="n">last_iter</span><span class="p">,</span> <span class="n">use_ray</span><span class="p">)</span>
 </pre></div>
 </div>
+<p><code class="code docutils literal notranslate"><span class="pre">lag</span></code> is the lag-time used for model-building. Currently, only 0 is supported, which corresponds to looking at
+transitions from each parent segment directly to its child.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">first_iter</span></code>, and <code class="code docutils literal notranslate"><span class="pre">last_iter</span></code> are the first and last iteration to use when computing the flux matrix.
+Note that excluding many iterations may result in limited connectivity of the flux matrix, as early events may have
+provided critical transitions between WE bins that may not be otherwise sampled.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">use_ray</span></code> enables parallelization with the Ray work manager. If enabled, a Ray cluster must be initialized by
+the user <em>before calling this</em>.</p>
 <ol class="loweralpha simple">
 <li><p>Clean disconnected states and sort the flux matrix with</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">organize_fluxMatrix</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">organize_fluxMatrix</span><span class="p">(</span><span class="n">use_ray</span><span class="p">)</span>
 </pre></div>
 </div>
+<p><code class="code docutils literal notranslate"><span class="pre">use_ray</span></code> enables parallelization with the Ray work manager. If enabled, a Ray cluster must be initialized by
+the user <em>before calling this</em>.</p>
 </div></blockquote>
 </li>
 </ol>
@@ -222,6 +251,20 @@ done through PCA or not done.</p>
 <p>Streaming dimensionality reduction is automatically done for PCA.</p>
 <p>To use streaming clustering, pass <code class="code docutils literal notranslate"><span class="pre">streaming=True</span></code> to <code class="code docutils literal notranslate"><span class="pre">cluster_coordinates()</span></code>.</p>
 <p>Streaming is not supported for VAMP, because I don’t know of a streaming implementation of VAMP dimensionality reduction.</p>
+</section>
+<section id="parallelism">
+<h2>Parallelism<a class="headerlink" href="#parallelism" title="Permalink to this headline"></a></h2>
+<p><code class="code docutils literal notranslate"><span class="pre">msm_we</span></code> supports parallelism of many “slow” parts of model-building – namely, clustering, discretization, and
+flux matrix calculations. This is done through the Ray work manager.</p>
+<p>Before invoking any function with <code class="code docutils literal notranslate"><span class="pre">use_ray=True</span></code>, a Ray work manager must be initialized on the machine running
+the analysis. In the simplest case, this can just be</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ray</span>
+<span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><code class="code docutils literal notranslate"><span class="pre">msm_we</span></code> will connect to whatever Ray instance is running on the machine the analysis is being performed on.
+However, this can be used on a cluster to initialize a Ray cluster with workers on a number of nodes, and the <code class="code docutils literal notranslate"><span class="pre">msm_we</span></code>
+running on the same node as the Ray head.</p>
 </section>
 </section>
 
