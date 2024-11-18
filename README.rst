@@ -1,3 +1,13 @@
+==============
+IMPORTANT NOTE
+==============
+
+This is an older version of the ``msm_we`` repository and may contain functionality-breaking bugs. Please download/use/peruse the following repository instead: https://github.com/westpa/msm_we.
+
+-- Nov 18, 2024
+
+
+
 ======
 msm_we
 ======
